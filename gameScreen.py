@@ -8,6 +8,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
 
 # Initialize Pygame
 pygame.init()
@@ -43,7 +44,6 @@ computers.append(2)
 BOX_WIDTH = 40
 BOX_HEIGHT = 40
 color_box = pygame.Surface((BOX_WIDTH, BOX_HEIGHT))
-color_box.fill(RED)  # change this to whatever color you want to display
 
 # create a UNO button
 button_width = 80
@@ -107,10 +107,16 @@ while running:
     screen.blit(card_image, (screen_size[0] * 0.2, screen_size[1] * 0.2))
 
     # Draw the Card image on the screen(front)
-    # screen.blit(card_image, (screen_size[0] * 0.4, screen_size[1] * 0.2))
     if top_card:
         screen.blit(top_card.image, top_card.rect)
-
+        if top_card.color == "yellow":
+            color_box.fill(YELLOW)
+        elif top_card.color == "blue":
+            color_box.fill(BLUE)
+        elif top_card.color == "green":
+            color_box.fill(GREEN)
+        elif top_card.color == "red":
+            color_box.fill(RED)
     # Draw the box showing color of the card
     screen.blit(color_box, (screen_size[0] * 0.55, screen_size[1] * 0.2))
 
