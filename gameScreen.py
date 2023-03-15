@@ -28,40 +28,24 @@ computer_height = 200
 computer_image = pygame.image.load("images/computer.png")
 computer_image = pygame.transform.scale(computer_image, (computer_width, computer_height))
 
-# Load the card's image
-card_image = pygame.image.load("images/card.png")
-card_image = pygame.transform.scale(card_image, (90, 120))
-
 # Set the position of the computer's image on the right side of the screen
 computer_x = screen_size[0] - computer_width
 computer_y = 0
 
+# add computer(player 숫자 받아서 설정(추후에 변경))
 computers = []
 computers.append(1)
 computers.append(2)
 
-# create a small box to display the color of the card
-BOX_WIDTH = 40
-BOX_HEIGHT = 40
-color_box = pygame.Surface((BOX_WIDTH, BOX_HEIGHT))
-
-# create a UNO button
-button_width = 80
-button_height = 40
-uno_button = pygame.Surface((button_width, button_height))
-uno_button.fill(WHITE)
-
-# add text to the button
-font = pygame.font.Font(None, 30)
-text = font.render("UNO", True, BLACK)
-text_rect = text.get_rect(center=(button_width//2, button_height//2))
-uno_button.blit(text, text_rect)
+# Load the card's image(back)
+card_image = pygame.image.load("images/card.png")
+card_image = pygame.transform.scale(card_image, (90, 120))
 
 # create a deck and shuffle it
 deck = Deck()
 deck.shuffle()
 
-# draw five cards from the deck
+# draw five cards from the deck(front)
 hand = []
 for i in range(5):
     card = deck.draw()
@@ -83,11 +67,29 @@ for i, card in enumerate(hand):
     x_pos = deck_x + i * (card_width + deck_spacing)
     y_pos = deck_y
     card.set_position(x_pos, y_pos)
-
+    
+# setting current card(peek)
 top_card = deck.peek()
 if top_card:
     top_card = Card(top_card.value, top_card.color)
     top_card.set_position(screen_size[0] * 0.4, screen_size[1] * 0.2)
+
+# create a small box to display the color of the card
+BOX_WIDTH = 40
+BOX_HEIGHT = 40
+color_box = pygame.Surface((BOX_WIDTH, BOX_HEIGHT))
+
+# create a UNO button
+button_width = 80
+button_height = 40
+uno_button = pygame.Surface((button_width, button_height))
+uno_button.fill(WHITE)
+
+# add text to the button
+font = pygame.font.Font(None, 30)
+text = font.render("UNO", True, BLACK)
+text_rect = text.get_rect(center=(button_width//2, button_height//2))
+uno_button.blit(text, text_rect)
 
 # Start the game loop
 running = True
@@ -117,15 +119,16 @@ while running:
             color_box.fill(GREEN)
         elif top_card.color == "red":
             color_box.fill(RED)
+
+    # draw the cards(player)(front)
+    for card in hand:
+        screen.blit(card.image, card.rect)
+
     # Draw the box showing color of the card
     screen.blit(color_box, (screen_size[0] * 0.55, screen_size[1] * 0.2))
 
     #  Draw the UNO button
     screen.blit(uno_button, (screen_size[0] * 0.55, screen_size[1] * 0.27))
-    
-    # draw the cards(player)
-    for card in hand:
-        screen.blit(card.image, card.rect)
 
     # Update the screen
     pygame.display.flip()
