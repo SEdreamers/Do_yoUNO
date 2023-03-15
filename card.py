@@ -1,12 +1,15 @@
 import pygame
 
 class Card:
-    def __init__(self, value, color):
+    def __init__(self, value, color, color_blind_mode=False):
         self.value = value
         self.color = color
-        self.image_path = f"cards/{color}_{value}.png"
+        if not color_blind_mode:
+            self.image_path = f"cards/defalut_mode/{color}_{value}.png"
+        else:
+            self.image_path = f"cards/color_blind_mode/{color}_{value}.png"
         self.image = pygame.image.load(self.image_path)
-        self.image = pygame.transform.scale(self.image, (90, 120))
+        self.image = pygame.transform.smoothscale(self.image, (80, 120))
         self.rect = self.image.get_rect()
     
     def move(self, dx, dy):
