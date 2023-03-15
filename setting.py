@@ -1,8 +1,6 @@
-## 미리 정해진 4개 크기로 화면 구현 -> 비율변화 구현
+## 미리 정해진 4개 크기로 화면 구현
 import pygame
 import shelve 
-
-
 # Initialize Pygame
 class Setting():
     def start_setting():
