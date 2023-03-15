@@ -1,23 +1,20 @@
 import pygame
-
-# 게임 화면 크기 설정
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+from gameScreen import gameScrean
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
-def main():
+def main(screen_width = 1000, screen_height = 800):
     pygame.init()
 
     # 화면 생성
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Uno Game")
 
     # 폰트 생성
-    font = pygame.font.SysFont("arial", SCREEN_WIDTH // 20, True, True)
+    font = pygame.font.SysFont("arial", screen_width // 20, True, True)
 
     # 메뉴 텍스트 생성
     game_title = font.render("Uno Game", True, WHITE)
@@ -60,7 +57,7 @@ def main():
                     menu_flag += 1
                 elif event.key == 13:
                     if menu_flag == 0:
-                        print("Single Player")
+                        gameScrean(screen_width, screen_height)
                     elif menu_flag == 1:
                         print("Settings")
                     elif menu_flag == 2:
@@ -95,7 +92,7 @@ def main():
 
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            print("Single Player")
+            gameScrean(screen_width, screen_height)
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
             print("Settings")
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
