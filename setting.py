@@ -7,7 +7,7 @@ import shelve
 class Setting():
     def start_setting():
         # Set the default size of the window
-        window_size = (1440, 744)
+        window_size = (1440, 740)
         # Create the window
         screen = pygame.display.set_mode(window_size)
         # Set the title of the window
