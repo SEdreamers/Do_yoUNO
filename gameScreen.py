@@ -39,10 +39,11 @@ computers.append(2)
 
 # Load the card's image(back)
 card_image = pygame.image.load("images/card.png")
-card_image = pygame.transform.scale(card_image, (90, 120))
+card_image = pygame.transform.scale(card_image, (80, 120))
 
 # create a deck and shuffle it
-deck = Deck()
+color_blind_mode = True
+deck = Deck(color_blind_mode)
 deck.shuffle()
 
 # draw five cards from the deck(front)
@@ -53,7 +54,7 @@ for i in range(5):
         hand.append(card)
 
 # set up the card dimensions and spacing
-card_width = 90
+card_width = 80
 card_height = 120
 card_spacing = 20
 
@@ -71,7 +72,7 @@ for i, card in enumerate(hand):
 # setting current card(peek)
 top_card = deck.peek()
 if top_card:
-    top_card = Card(top_card.value, top_card.color)
+    top_card = Card(top_card.value, top_card.color, color_blind_mode)
     top_card.set_position(screen_size[0] * 0.4, screen_size[1] * 0.2)
 
 # create a small box to display the color of the card
