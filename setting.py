@@ -1,6 +1,7 @@
 ## 미리 정해진 4개 크기로 화면 구현 -> 비율변화 구현
 import pygame
 import shelve 
+from gameScreen import gameScrean
 # Initialize Pygame
 class Setting():
     def start_setting(screen_width, screen_height):
@@ -70,16 +71,28 @@ class Setting():
             text_rect_2.center = button_rect_2.center
             buttons2.append((button_rect_2, text_surface_2))
 
+
+        #메뉴 상수
+        menu_flag = 0
+
+
         # Game loop
         running = True
         while running:
             # Handle events
             ## ["size1", "size2", "size3", "size4"]
             # Clear the screen
+                
+
+
             screen.fill('yellow')
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+                
+
+
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     # Check if a button was clicked
                     
@@ -115,6 +128,21 @@ class Setting():
                             elif i == 3:
                                 window_size = (window_size[0] + 100, window_size[1])
                                 screen = pygame.display.set_mode(window_size)
+
+
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        menu_flag -= 1
+                    elif event.key == pygame.K_DOWN:
+                        menu_flag += 1
+                    elif event.key == 13:
+                        if menu_flag == 0:
+                            gameScrean(screen_width, screen_height)
+                        elif menu_flag == 1:
+                            print("Settings")
+                        elif menu_flag == 2:
+                            play = False
+                menu_flag %= 3
 
             # Draw the buttons
             if color_blind.collidepoint(pygame.mouse.get_pos()):
