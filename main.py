@@ -1,5 +1,6 @@
 import pygame
 from gameScreen import gameScrean
+import setting 
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
@@ -94,7 +95,10 @@ def main(screen_width = 1000, screen_height = 800):
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
             gameScrean(screen_width, screen_height)
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
+            set = setting.Setting
+            set.start_setting(screen_width, screen_height)
             print("Settings")
+
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
             play = False
 
