@@ -15,7 +15,7 @@ class Setting():
 
         pygame.init()
         # Set the font for the buttons
-        set_font = pygame.font.SysFont("arial", 40)
+        set_font = pygame.font.SysFont("arial", 40,True, True)
         # Set the text color
         text_color = 'black'
         # Set the button colors
@@ -24,6 +24,9 @@ class Setting():
         # Set the button labels
         blind_label = "Color Blind Mode"
         default_label = "  Default Setting"
+        back_label = "   Go Back"
+
+
         button_labels = ["size1", "size2", "size3", "size4"]
         button_labels_2 = ["+", "-", "<", ">"]
         # Set the button sizes
@@ -45,6 +48,10 @@ class Setting():
         default_text_rect.center = default.center
 
 
+        back_text_surface = set_font.render(back_label,True, text_color)
+        back_text_rect = back_text_surface.get_rect()
+        back = pygame.Rect(600,600,240,30)
+        back_text_rect.center = back.center
 
 
         buttons = []
@@ -85,6 +92,9 @@ class Setting():
                         screen = pygame.display.set_mode(window_size)
                         print("Default Setting")
 
+                    if back.collidepoint(event.pos):
+                        print("Go Back")
+
 
                     for i, (button_rect, _, size) in enumerate(buttons):
                         if button_rect.collidepoint(event.pos):
@@ -123,6 +133,13 @@ class Setting():
             screen.blit(default_text_surface, default)
 
 
+            if back.collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.rect(screen, button_highlight_color, back)
+            else:
+                pygame.draw.rect(screen, button_color,back)
+            screen.blit(back_text_surface, back)
+
+
             # Draw the buttons
             for i, (button_rect, text_surface, _) in enumerate(buttons):
                 if button_rect.collidepoint(pygame.mouse.get_pos()):
@@ -144,4 +161,5 @@ class Setting():
             # Update the display
             pygame.display.update()
         # Quit Pygame
-        pygame.quit()
+        pygame.quit() 
+
