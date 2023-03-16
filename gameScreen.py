@@ -3,7 +3,7 @@ from deck import Deck
 from card import Card
 
 
-def gameScreen(screen_width, screen_height):
+def gameScrean(screen_width, screen_height):
     # Color
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
