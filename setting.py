@@ -162,3 +162,4 @@ class Setting():
             pygame.display.update()
         # Quit Pygame
         pygame.quit() 
+
