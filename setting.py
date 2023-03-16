@@ -137,11 +137,11 @@ class Setting():
                         menu_flag += 1
                     elif event.key == 13:
                         if menu_flag == 0:
-                            gameScrean(screen_width, screen_height)
+                            print("Color blind mode")
                         elif menu_flag == 1:
-                            print("Settings")
+                            print("Default mode")
                         elif menu_flag == 2:
-                            play = False
+                            print("Go Back")
                 menu_flag %= 3
 
             # Draw the buttons
