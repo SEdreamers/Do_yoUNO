@@ -1,23 +1,21 @@
 ## 미리 정해진 4개 크기로 화면 구현 -> 비율변화 구현
 import pygame
 import shelve 
-
-
 # Initialize Pygame
 class Setting():
-    def start_setting():
+    def start_setting(screen_width, screen_height):
         # Set the default size of the window
-        window_size = (1000, 800)
+        window_size = (screen_width, screen_height)
         # Create the window
         screen = pygame.display.set_mode(window_size)
         # Set the title of the window
-        pygame.display.set_caption("Resizable_window")
+        pygame.display.set_caption("Resizable window")
         SAVE_DATA = shelve.open("Save Data")
-
+    
 
         pygame.init()
         # Set the font for the buttons
-        set_font = pygame.font.SysFont("Minecraft", 40)
+        set_font = pygame.font.SysFont("arial", 40)
         # Set the text color
         text_color = 'black'
         # Set the button colors
@@ -30,8 +28,6 @@ class Setting():
         button_labels_2 = ["+", "-", "<", ">"]
         # Set the button sizes
         button_sizes = [(800, 600), (1024, 768), (1280, 720), (1920, 1080)]
-
-
 
 
 
@@ -109,10 +105,6 @@ class Setting():
                             elif i == 3:
                                 window_size = (window_size[0] + 100, window_size[1])
                                 screen = pygame.display.set_mode(window_size)
-            
-
-
-            
 
             # Draw the buttons
             if color_blind.collidepoint(pygame.mouse.get_pos()):
@@ -147,7 +139,6 @@ class Setting():
                 else:
                     pygame.draw.rect(screen, button_color, button_rect_2)
                 screen.blit(text_surface_2, button_rect_2)
-
 
 
             # Update the display
