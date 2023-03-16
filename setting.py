@@ -1,23 +1,21 @@
 ## 미리 정해진 4개 크기로 화면 구현 -> 비율변화 구현
 import pygame
 import shelve 
-
-
 # Initialize Pygame
 class Setting():
-    def start_setting():
+    def start_setting(screen_width, screen_height):
         # Set the default size of the window
-        window_size = (1000, 800)
+        window_size = (screen_width, screen_height)
         # Create the window
         screen = pygame.display.set_mode(window_size)
         # Set the title of the window
-        pygame.display.set_caption("Resizable_window")
+        pygame.display.set_caption("Resizable window")
         SAVE_DATA = shelve.open("Save Data")
-
+    
 
         pygame.init()
         # Set the font for the buttons
-        set_font = pygame.font.SysFont("Minecraft", 40)
+        set_font = pygame.font.SysFont("arial", 40,True, True)
         # Set the text color
         text_color = 'black'
         # Set the button colors
@@ -26,12 +24,13 @@ class Setting():
         # Set the button labels
         blind_label = "Color Blind Mode"
         default_label = "  Default Setting"
+        back_label = "   Go Back"
+
+
         button_labels = ["size1", "size2", "size3", "size4"]
         button_labels_2 = ["+", "-", "<", ">"]
         # Set the button sizes
         button_sizes = [(800, 600), (1024, 768), (1280, 720), (1920, 1080)]
-
-
 
 
 
@@ -49,6 +48,10 @@ class Setting():
         default_text_rect.center = default.center
 
 
+        back_text_surface = set_font.render(back_label,True, text_color)
+        back_text_rect = back_text_surface.get_rect()
+        back = pygame.Rect(600,600,240,30)
+        back_text_rect.center = back.center
 
 
         buttons = []
@@ -89,6 +92,9 @@ class Setting():
                         screen = pygame.display.set_mode(window_size)
                         print("Default Setting")
 
+                    if back.collidepoint(event.pos):
+                        print("Go Back")
+
 
                     for i, (button_rect, _, size) in enumerate(buttons):
                         if button_rect.collidepoint(event.pos):
@@ -109,10 +115,6 @@ class Setting():
                             elif i == 3:
                                 window_size = (window_size[0] + 100, window_size[1])
                                 screen = pygame.display.set_mode(window_size)
-            
-
-
-            
 
             # Draw the buttons
             if color_blind.collidepoint(pygame.mouse.get_pos()):
@@ -129,6 +131,13 @@ class Setting():
             else:
                 pygame.draw.rect(screen, button_color,default)
             screen.blit(default_text_surface, default)
+
+
+            if back.collidepoint(pygame.mouse.get_pos()):
+                pygame.draw.rect(screen, button_highlight_color, back)
+            else:
+                pygame.draw.rect(screen, button_color,back)
+            screen.blit(back_text_surface, back)
 
 
             # Draw the buttons
@@ -149,8 +158,7 @@ class Setting():
                 screen.blit(text_surface_2, button_rect_2)
 
 
-
             # Update the display
             pygame.display.update()
         # Quit Pygame
-        pygame.quit()
+        pygame.quit() 
