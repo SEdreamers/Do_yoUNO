@@ -62,6 +62,7 @@ def main(screen_width = 1000, screen_height = 800):
                     elif menu_flag == 1:
                         print("Settings")
                     elif menu_flag == 2:
+                        
                         play = False
             menu_flag %= 3
 
