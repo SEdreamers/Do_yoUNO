@@ -5,7 +5,7 @@ class Card:
         self.value = value
         self.color = color
         if not color_blind_mode:
-            self.image_path = f"cards/defalut_mode/{color}_{value}.png"
+            self.image_path = f"cards/default_mode/{color}_{value}.png"
         else:
             self.image_path = f"cards/color_blind_mode/{color}_{value}.png"
         self.image = pygame.image.load(self.image_path)
