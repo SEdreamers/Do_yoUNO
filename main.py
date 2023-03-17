@@ -10,7 +10,7 @@ RED = (255, 0, 0)
 
 def main(screen_width = 1000, screen_height = 800):
     pygame.init()
-
+    
     # 화면 생성
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Uno Game")

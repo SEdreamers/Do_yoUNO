@@ -39,12 +39,14 @@ def gameScrean(screen_width, screen_height):
     # Load the card's image(back)
     card_image = pygame.image.load("images/card.png")
     card_image = pygame.transform.scale(card_image, (screen_size[0] / 12.5, screen_size[0] / 8.333))
-
+    
+    # Load the image 
     player_background_image = pygame.image.load("images/skyblue.jpg")
     player_background_image = pygame.transform.scale(player_background_image, (screen_size[0] - computer_width, screen_size[1] * 0.4))
 
     computer_background_image = pygame.image.load("images/black.jpg")
     computer_background_image = pygame.transform.scale(computer_background_image, (computer_width, screen_size[1]))
+    
     # create a deck and shuffle it
     color_blind_mode = False
     deck = Deck()
@@ -56,7 +58,7 @@ def gameScrean(screen_width, screen_height):
         card = deck.draw()
         if card:
             hand.append(card)
-
+    
     # set up the card dimensions and spacing
     card_width = screen_size[0] / 12.5
     card_height = screen_size[0] / 8.333
@@ -67,18 +69,6 @@ def gameScrean(screen_width, screen_height):
     deck_x = screen_size[0] / 20
     deck_y = screen_size[0] / 2
     deck_spacing = screen_size[0] / 100
-
-    # setting player's deck position 
-    for i, card in enumerate(hand):
-        x_pos = deck_x + i * (card_width + deck_spacing)
-        y_pos = deck_y
-        card.set_position(x_pos, y_pos)
-        
-    # setting current card(peek)
-    top_card = deck.peek()
-    if top_card:
-        top_card = Card(top_card.value, top_card.color)
-        top_card.set_position(screen_size[0] * 0.4, screen_size[1] * 0.2)
 
     # create a small box to display the color of the card
     BOX_WIDTH = screen_size[0] / 25
@@ -95,14 +85,35 @@ def gameScrean(screen_width, screen_height):
     text = font.render("UNO", True, BLACK)
     text_rect = text.get_rect(center=(button_width//2, button_height//2))
     uno_button.blit(text, text_rect)
+    
+    # 임시로 앞에 넣어두기
+    top_card = deck.pop()
+    # Draw the Deck image on the screen(back)
+    back_card = Card(0, "back")
 
     # Start the game loop
     running = True
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                clicked_sprites = [s for s in hand if s.rect.collidepoint(pos)]
+                if back_card.rect.collidepoint(pos):
+                    hand.append(deck.pop())
+                for sprite in clicked_sprites:
+                    if sprite.can_play_on(top_card):
+                        deck.append(top_card)
+                        top_card = sprite 
+                        hand.remove(sprite)
+                
+        # setting player's deck position 
+        for i, card in enumerate(hand):
+            x_pos = deck_x + i * (card_width + deck_spacing)
+            y_pos = deck_y
+            card.set_position(x_pos, y_pos)
         # Draw the background image
         screen.blit(background_image, (0, 0))
         screen.blit(player_background_image, (0, screen_size[1] * 0.6))
@@ -112,37 +123,35 @@ def gameScrean(screen_width, screen_height):
             screen.blit(computer_image, (computer_x, computer_y + i * computer_height))
         
         # Draw the Deck image on the screen(back)
-        screen.blit(card_image, (screen_size[0] * 0.2, screen_size[1] * 0.2))
+        back_card.set_position(screen_size[0] * 0.2, screen_size[1] * 0.2)
+        screen.blit(card_image, back_card.rect)
 
-        # Draw the Card image on the screen(front)
+        # setting current card
+        if top_card:
+            top_card = Card(top_card.value, top_card.color)
+            top_card.set_position(screen_size[0] * 0.4, screen_size[1] * 0.2)
+        # Draw the top card image on the screen(front)
         if top_card:
             if not color_blind_mode:
-                top_card.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{top_card.color}_{top_card.value}.png"), (card_width, card_height))
-                screen.blit(top_card.default_image, top_card.default_rect)
+                screen.blit(top_card.default_image, top_card.rect)
             else:
-                top_card.color_blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{top_card.color}_{top_card.value}.png"), (card_width, card_height))
-                screen.blit(top_card.blind_image, top_card.blind_rect)
+                screen.blit(top_card.blind_image, top_card.rect)
             color_box = colorBox.ColorBox(top_card.color, BOX_WIDTH, BOX_HEIGHT, color_blind_mode)
             
-
-
         # draw the cards(player)(front)
         for card in hand:
-            if not color_blind_mode:
-                card.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{card.color}_{card.value}.png"), (card_width, card_height))                
-                screen.blit(card.default_image, card.default_rect)
-            else:
-                card.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{card.color}_{card.value}.png"), (card_width, card_height))              
-                screen.blit(card.blind_image, card.blind_rect)
+            if not color_blind_mode:                
+                screen.blit(card.default_image, card.rect)
+            else:              
+                screen.blit(card.blind_image, card.rect)
 
         # Draw the box showing color of the card
         screen.blit(color_box.image, (screen_size[0] * 0.55, screen_size[1] * 0.2))
 
         #  Draw the UNO button
         screen.blit(uno_button, (screen_size[0] * 0.55, screen_size[1] * 0.27))
-
+        
         # Update the screen
         pygame.display.flip()
-
-    # Quit Pygame
+                
     pygame.quit()

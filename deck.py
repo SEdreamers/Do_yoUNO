@@ -33,3 +33,8 @@ class Deck:
             return self.cards[-1]
         else:
             return None
+    def append(self, card):
+        self.cards.append(card)
+    
+    def pop(self):
+        return self.cards.pop(0)
