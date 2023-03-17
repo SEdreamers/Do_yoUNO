@@ -4,11 +4,9 @@ class Card:
     def __init__(self, value, color):
         self.value = value
         self.color = color
-        self.default_image = pygame.image.load(f"cards/default_mode/{color}_{value}.png")
-        self.default_image = pygame.transform.smoothscale(self.default_image, (80, 120))
+        self.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{color}_{value}.png"), (80, 120))
         self.default_rect = self.default_image.get_rect()
-        self.blind_image = pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png")
-        self.blind_image = pygame.transform.smoothscale(self.blind_image, (80, 120))
+        self.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png"), (80, 120))
         self.blind_rect = self.blind_image.get_rect()
     
     def move(self, dx, dy):

@@ -117,8 +117,10 @@ def gameScrean(screen_width, screen_height):
         # Draw the Card image on the screen(front)
         if top_card:
             if not color_blind_mode:
+                top_card.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{top_card.color}_{top_card.value}.png"), (card_width, card_height))
                 screen.blit(top_card.default_image, top_card.default_rect)
             else:
+                top_card.color_blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{top_card.color}_{top_card.value}.png"), (card_width, card_height))
                 screen.blit(top_card.blind_image, top_card.blind_rect)
             color_box = colorBox.ColorBox(top_card.color, BOX_WIDTH, BOX_HEIGHT, color_blind_mode)
             
@@ -127,8 +129,10 @@ def gameScrean(screen_width, screen_height):
         # draw the cards(player)(front)
         for card in hand:
             if not color_blind_mode:
+                card.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{card.color}_{card.value}.png"), (card_width, card_height))                
                 screen.blit(card.default_image, card.default_rect)
             else:
+                card.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{card.color}_{card.value}.png"), (card_width, card_height))              
                 screen.blit(card.blind_image, card.blind_rect)
 
         # Draw the box showing color of the card
