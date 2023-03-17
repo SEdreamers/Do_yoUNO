@@ -1,21 +1,24 @@
 import pygame
 
 class Card:
-    def __init__(self, value, color, color_blind_mode=False):
+    def __init__(self, value, color):
         self.value = value
         self.color = color
-        if not color_blind_mode:
-            self.image_path = f"cards/default_mode/{color}_{value}.png"
-        else:
-            self.image_path = f"cards/color_blind_mode/{color}_{value}.png"
-        self.image = pygame.image.load(self.image_path)
-        self.image = pygame.transform.smoothscale(self.image, (80, 120))
-        self.rect = self.image.get_rect()
+        self.default_image = pygame.image.load(f"cards/default_mode/{color}_{value}.png")
+        self.default_image = pygame.transform.smoothscale(self.default_image, (80, 120))
+        self.default_rect = self.default_image.get_rect()
+        self.blind_image = pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png")
+        self.blind_image = pygame.transform.smoothscale(self.blind_image, (80, 120))
+        self.blind_rect = self.blind_image.get_rect()
     
     def move(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
+        self.default_rect.x += dx
+        self.default_rect.y += dy
+        self.blind_rect.x += dx
+        self.blind_rect.y += dy
     
     def set_position(self, x, y):
-        self.rect.x = x
-        self.rect.y = y
+        self.default_rect.x = x
+        self.default_rect.y = y
+        self.blind_rect.x = x
+        self.blind_rect.y = y

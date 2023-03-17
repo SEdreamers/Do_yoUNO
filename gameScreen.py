@@ -51,7 +51,7 @@ def gameScrean(screen_width, screen_height):
     computer_background_image = pygame.transform.scale(computer_background_image, (computer_width, screen_size[1]))
     # create a deck and shuffle it
     color_blind_mode = True
-    deck = Deck(color_blind_mode)
+    deck = Deck()
     deck.shuffle()
 
     # draw five cards from the deck(front)
@@ -81,7 +81,7 @@ def gameScrean(screen_width, screen_height):
     # setting current card(peek)
     top_card = deck.peek()
     if top_card:
-        top_card = Card(top_card.value, top_card.color, color_blind_mode)
+        top_card = Card(top_card.value, top_card.color)
         top_card.set_position(screen_size[0] * 0.4, screen_size[1] * 0.2)
 
     # create a small box to display the color of the card
@@ -121,7 +121,10 @@ def gameScrean(screen_width, screen_height):
 
         # Draw the Card image on the screen(front)
         if top_card:
-            screen.blit(top_card.image, top_card.rect)
+            if not color_blind_mode:
+                screen.blit(top_card.default_image, top_card.default_rect)
+            else:
+                screen.blit(top_card.blind_image, top_card.blind_rect)   
             if top_card.color == "yellow":
                 color_box.fill(YELLOW)
             elif top_card.color == "blue":
@@ -133,7 +136,10 @@ def gameScrean(screen_width, screen_height):
 
         # draw the cards(player)(front)
         for card in hand:
-            screen.blit(card.image, card.rect)
+            if not color_blind_mode:
+                screen.blit(card.default_image, card.default_rect)
+            else:
+                screen.blit(card.blind_image, card.blind_rect)
 
         # Draw the box showing color of the card
         screen.blit(color_box, (screen_size[0] * 0.55, screen_size[1] * 0.2))
