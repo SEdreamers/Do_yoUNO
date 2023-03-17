@@ -1,16 +1,12 @@
 import pygame
 from deck import Deck
 from card import Card
-
+import colorBox
 
 def gameScrean(screen_width, screen_height):
     # Color
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
-    RED = (255, 0, 0)
-    GREEN = (0, 255, 0)
-    BLUE = (0, 0, 255)
-    YELLOW = (255, 255, 0)
 
     screen_size = (screen_width, screen_height)
 
@@ -50,7 +46,7 @@ def gameScrean(screen_width, screen_height):
     computer_background_image = pygame.image.load("images/black.jpg")
     computer_background_image = pygame.transform.scale(computer_background_image, (computer_width, screen_size[1]))
     # create a deck and shuffle it
-    color_blind_mode = True
+    color_blind_mode = False
     deck = Deck()
     deck.shuffle()
 
@@ -87,7 +83,6 @@ def gameScrean(screen_width, screen_height):
     # create a small box to display the color of the card
     BOX_WIDTH = screen_size[0] / 25
     BOX_HEIGHT = screen_size[0] / 25
-    color_box = pygame.Surface((BOX_WIDTH, BOX_HEIGHT))
 
     # create a UNO button
     button_width = screen_size[0] / 12.5
@@ -124,15 +119,10 @@ def gameScrean(screen_width, screen_height):
             if not color_blind_mode:
                 screen.blit(top_card.default_image, top_card.default_rect)
             else:
-                screen.blit(top_card.blind_image, top_card.blind_rect)   
-            if top_card.color == "yellow":
-                color_box.fill(YELLOW)
-            elif top_card.color == "blue":
-                color_box.fill(BLUE)
-            elif top_card.color == "green":
-                color_box.fill(GREEN)
-            elif top_card.color == "red":
-                color_box.fill(RED)
+                screen.blit(top_card.blind_image, top_card.blind_rect)
+            color_box = colorBox.ColorBox(top_card.color, BOX_WIDTH, BOX_HEIGHT, color_blind_mode)
+            
+
 
         # draw the cards(player)(front)
         for card in hand:
@@ -142,7 +132,7 @@ def gameScrean(screen_width, screen_height):
                 screen.blit(card.blind_image, card.blind_rect)
 
         # Draw the box showing color of the card
-        screen.blit(color_box, (screen_size[0] * 0.55, screen_size[1] * 0.2))
+        screen.blit(color_box.image, (screen_size[0] * 0.55, screen_size[1] * 0.2))
 
         #  Draw the UNO button
         screen.blit(uno_button, (screen_size[0] * 0.55, screen_size[1] * 0.27))
