@@ -20,7 +20,7 @@ def gameScrean(screen_width, screen_height):
 
     # Set up the game screen
     screen = pygame.display.set_mode(screen_size)
-    background_image = pygame.image.load("images/background.jpg")
+    background_image = pygame.image.load("images/green.jpg")
     background_image = pygame.transform.scale(background_image, screen_size)
 
     # Get the dimensions of the computer's image
@@ -28,7 +28,7 @@ def gameScrean(screen_width, screen_height):
     computer_height = screen_size[1] / 5
 
     # Load the computer's image
-    computer_image = pygame.image.load("images/computer.png")
+    computer_image = pygame.image.load("images/gray.jpg")
     computer_image = pygame.transform.scale(computer_image, (computer_width, computer_height))
 
     # Set the position of the computer's image on the right side of the screen
@@ -44,6 +44,11 @@ def gameScrean(screen_width, screen_height):
     card_image = pygame.image.load("images/card.png")
     card_image = pygame.transform.scale(card_image, (screen_size[0] / 12.5, screen_size[0] / 8.333))
 
+    player_background_image = pygame.image.load("images/skyblue.jpg")
+    player_background_image = pygame.transform.scale(player_background_image, (screen_size[0] - computer_width, screen_size[1] * 0.4))
+
+    computer_background_image = pygame.image.load("images/black.jpg")
+    computer_background_image = pygame.transform.scale(computer_background_image, (computer_width, screen_size[1]))
     # create a deck and shuffle it
     color_blind_mode = True
     deck = Deck(color_blind_mode)
@@ -60,6 +65,7 @@ def gameScrean(screen_width, screen_height):
     card_width = screen_size[0] / 12.5
     card_height = screen_size[0] / 8.333
     card_spacing = screen_size[0] / 50
+    # fill player background
 
     # set up the deck position and spacing
     deck_x = screen_size[0] / 20
@@ -104,7 +110,8 @@ def gameScrean(screen_width, screen_height):
         
         # Draw the background image
         screen.blit(background_image, (0, 0))
-
+        screen.blit(player_background_image, (0, screen_size[1] * 0.6))
+        screen.blit(computer_background_image, (screen_size[0] - computer_width, 0))
         # Draw the computer's image on the screen
         for i in range(len(computers)):
             screen.blit(computer_image, (computer_x, computer_y + i * computer_height))
