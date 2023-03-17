@@ -1,3 +1,4 @@
+## # 이벤트 처리, # 마우스 클릭 시 에 추가해야 화면 전환. 
 import pygame
 from gameScreen import gameScrean
 import setting
@@ -61,6 +62,8 @@ def main(screen_width = 1000, screen_height = 800):
                     if menu_flag == 0:
                         gameScrean(screen_width, screen_height)
                     elif menu_flag == 1:
+                        set = setting.Setting
+                        set.start_setting(screen_width, screen_height)
                         print("Settings")
                     elif menu_flag == 2:
                         
@@ -105,8 +108,6 @@ def main(screen_width = 1000, screen_height = 800):
             play = False
 
         pygame.display.update()
-
     pygame.quit()
-
 if __name__=='__main__':
     main()
