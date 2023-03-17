@@ -1,6 +1,7 @@
 import pygame
 from gameScreen import gameScrean
-import setting 
+import setting
+import colorBox
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
