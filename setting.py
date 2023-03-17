@@ -2,6 +2,7 @@
 import pygame
 import shelve 
 import main
+import time
 
 # Initialize Pygame
 class Setting():
@@ -114,15 +115,19 @@ class Setting():
                             print("Go Back")
                         elif menu_flag == 3:
                             window_size = screen_sizes[0]
+                            screen = pygame.display.set_mode(window_size)
                             print("size1")
                         elif menu_flag == 4:
                             window_size = screen_sizes[1]
+                            screen = pygame.display.set_mode(window_size)
                             print("size2")
                         elif menu_flag == 5:
                             window_size = screen_sizes[2]
+                            screen = pygame.display.set_mode(window_size)
                             print("size3")
                         elif menu_flag == 6:
                             window_size = screen_sizes[3]
+                            screen = pygame.display.set_mode(window_size)
                             print("size4") 
                 menu_flag %= 7
                 
@@ -194,6 +199,7 @@ class Setting():
                 screen = pygame.display.set_mode(window_size)
                 print("Default Setting")
             elif back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                time.sleep(0.15)
                 main.main()
                 print("Go Back")
             elif size1_text_rect.collidepoint(mouse_pos) and mouse_click[0]:

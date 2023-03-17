@@ -79,7 +79,7 @@ def main(screen_width = 1000, screen_height = 800):
         # 마우스 이벤트 처리
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()
-        mouse_focused = pygame.mouse.get_focused()
+        # mouse_focused = pygame.mouse.get_focused()
         
         # 메뉴 시각화
         if single_player_rect.collidepoint(mouse_pos) or menu_flag == 0:
