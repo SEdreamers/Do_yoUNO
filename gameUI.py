@@ -65,6 +65,7 @@ class GameUI:
         self.uno_button.blit(text, text_rect)
 
     def display(self, players, top_card, back_card):
+        # card 위치 설정(player card)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
             y_pos = self.deck_y
@@ -96,6 +97,7 @@ class GameUI:
             color_box = colorBox.ColorBox(top_card.color, self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
         # Draw the card that player has
         players[0].draw()
+
         # Draw the box showing color of the card
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))
 
