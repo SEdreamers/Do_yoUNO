@@ -1,7 +1,6 @@
 import pygame
-from gameScreen import gameScrean
+from game import Game
 import setting
-import colorBox
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
@@ -43,7 +42,7 @@ def main(screen_width = 1000, screen_height = 800):
 
     #메뉴 상수
     menu_flag = 0
-
+    uno_game = Game(screen_width, screen_height, color_blind_mode=True)
     # 게임 루프
     play = True
     while play:
@@ -59,7 +58,7 @@ def main(screen_width = 1000, screen_height = 800):
                     menu_flag += 1
                 elif event.key == 13:
                     if menu_flag == 0:
-                        gameScrean(screen_width, screen_height)
+                        uno_game.run()
                     elif menu_flag == 1:
                         print("Settings")
                     elif menu_flag == 2:
@@ -68,6 +67,7 @@ def main(screen_width = 1000, screen_height = 800):
             menu_flag %= 3
 
         # 화면 그리기
+
         screen.fill(BLACK)
         screen.blit(game_title, game_title_rect)
         screen.blit(single_player_text, single_player_rect)
@@ -95,7 +95,7 @@ def main(screen_width = 1000, screen_height = 800):
 
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            gameScrean(screen_width, screen_height)
+            uno_game.run()
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
             set = setting.Setting
             set.start_setting(screen_width, screen_height)
