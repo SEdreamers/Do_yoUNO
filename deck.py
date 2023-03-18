@@ -22,7 +22,7 @@ class Deck:
     def shuffle(self):
         random.shuffle(self.cards)
     
-    def draw(self):
+    def pop(self):
         if len(self.cards) > 0:
             return self.cards.pop()
         else:

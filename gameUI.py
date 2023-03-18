@@ -1,8 +1,5 @@
 from turtle import color
 import pygame
-from deck import Deck
-from card import Card
-from computer import Computer
 import colorBox
 class GameUI:
     def __init__(self, screen_width, screen_height, color_blind_mode):
@@ -66,8 +63,9 @@ class GameUI:
         text = font.render("UNO", True, BLACK)
         text_rect = text.get_rect(center=(button_width//2, button_height//2))
         self.uno_button.blit(text, text_rect)
-    def gameScreen(self, hand, computers, top_card, back_card):
-        for i, card in enumerate(hand):
+
+    def display(self, players, top_card, back_card):
+        for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
             y_pos = self.deck_y
             card.set_position(x_pos, y_pos)
@@ -77,9 +75,9 @@ class GameUI:
         self.screen.blit(self.player_background_image, (0, self.screen_size[1] * 0.6))
         self.screen.blit(self.computer_background_image, (self.screen_size[0] - self.computer_width, 0))
             
-        # Draw the computer's image on the screen
-        for i, computer in enumerate(computers):
-            computer.draw(i)
+        # Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
+        for i in range(1, len(players)):
+            players[i].draw(i - 1)
                         
         # Draw the Deck image on the screen(back)
         back_card.set_position(self.screen_size[0] * 0.2, self.screen_size[1] * 0.2)
@@ -96,14 +94,8 @@ class GameUI:
             else:
                 self.screen.blit(top_card.blind_image, top_card.rect)
             color_box = colorBox.ColorBox(top_card.color, self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
-                
-        # draw the cards(player)(front)
-        for card in hand:
-            if not self.color_blind_mode:                
-                self.screen.blit(card.default_image, card.rect)
-            else:              
-                self.screen.blit(card.blind_image, card.rect)
-
+        # Draw the card that player has
+        players[0].draw()
         # Draw the box showing color of the card
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))
 
