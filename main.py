@@ -98,7 +98,6 @@ def main(screen_width = 1000, screen_height = 800):
 
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            print(1)
             uno_game.run()
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
             set = setting.Setting
