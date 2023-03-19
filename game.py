@@ -20,10 +20,7 @@ class Game:
         # Set up the Deck
         self.deck = Deck()
         self.deck.shuffle()
-
-        # top_card deck에서 하나 뽑아서 설정
-        self.top_card = self.deck.pop()
-
+        
         # Draw the Deck image on the screen(back)
         self.back_card = Card(0, "back")
 
@@ -38,8 +35,23 @@ class Game:
             computers.append(Computer(self.screen, self.deck))
         self.players.extend(computers)
         
+        # turn과 방향 세팅
         self.turn_num = -1
         self.reverse = False
+
+        # top_card deck에서 하나 뽑아서 설정
+        self.top_card = self.deck.pop()
+        
+        # 시작 카드(top_card) 동작 처리
+        if self.top_card.value == 'skip':
+            self.turn_num += 1
+        elif self.top_card.value == 'reverse':
+            self.reverse = not self.reverse
+        elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
+            for _ in range(int(self.top_card.value[4])):
+               self.players[0].hand.cards.append(self.deck.pop())
+        else: ## 추후 나머지 기술 카드 동작 처리 추가 
+            pass 
 
         # Game 너비, 높이 기본 배경 설정
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), True)
