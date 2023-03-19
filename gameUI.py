@@ -26,6 +26,10 @@ class GameUI:
         self.card_image = pygame.image.load("images/card.png")
         self.card_image = pygame.transform.scale(self.card_image, (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
         
+        # Load the computer's card image(back)
+        self.computer_card_image = pygame.image.load("images/card.png")
+        self.computer_card_image = pygame.transform.scale(self.card_image, (self.computer_width / 12.5, self.computer_height / 8.333))
+        
         # Load the image 
         self.player_background_image = pygame.image.load("images/skyblue.jpg")
         self.player_background_image = pygame.transform.scale(self.player_background_image, (self.screen_size[0] - self.computer_width, self.screen_size[1] * 0.4))

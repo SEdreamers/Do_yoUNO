@@ -37,6 +37,9 @@ class Game:
         for _ in range(1):
             computers.append(Computer(self.screen, self.deck))
         self.players.extend(computers)
+        
+        self.turn_num = -1
+        self.reverse = False
 
         # Game 너비, 높이 기본 배경 설정
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), True)
@@ -44,9 +47,29 @@ class Game:
     def run(self):
         while self.running:
             pygame.init()
-            self.handle_events()
             self.update()
             self.render()
+
+            # reverse에 따라 turn 방향 설정
+            if not self.reverse:
+                self.turn_num += 1
+                if self.turn_num >= len(self.players):
+                    self.turn_num = 0
+            else:
+                self.turn_num -= 1
+                if self.turn_num < 0:
+                    self.turn_num = len(self.players) - 1
+            
+            # Human turn인지 Computer turn인지 구분
+            if isinstance(self.players[self.turn_num], Human): # Human turn
+                print('Human turn')
+                running = True
+                while running:
+                    running = self.handle_events()
+            else: # Computer turn
+                print('Computer turn')
+                pass ## computer가 할 동작 추후 추가
+            
         pygame.quit()
 
     # function is responsible for handling user input and events
@@ -58,12 +81,15 @@ class Game:
                 pos = pygame.mouse.get_pos()
                 if self.back_card.rect.collidepoint(pos):
                     self.players[0].hand.cards.append(self.deck.pop())
+                    return False
                 clicked_sprites = [s for s in self.players[0].hand.cards if s.rect.collidepoint(pos)]
                 for sprite in clicked_sprites:
                     if sprite.can_play_on(self.top_card):
                         self.deck.append(self.top_card)
                         self.top_card = sprite 
-                        self.players[0].hand.cards.remove(sprite) 
+                        self.players[0].hand.cards.remove(sprite)
+                        return False
+        return True
 
     # This function is responsible for updating the game state and logic
     def update(self):
