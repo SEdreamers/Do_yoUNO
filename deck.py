@@ -22,7 +22,7 @@ class Deck:
     def shuffle(self):
         random.shuffle(self.cards)
     
-    def draw(self):
+    def pop(self):
         if len(self.cards) > 0:
             return self.cards.pop()
         else:
@@ -33,3 +33,8 @@ class Deck:
             return self.cards[-1]
         else:
             return None
+    def append(self, card):
+        self.cards.append(card)
+    
+    def pop(self):
+        return self.cards.pop(0)
