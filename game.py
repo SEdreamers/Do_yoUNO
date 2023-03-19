@@ -34,7 +34,7 @@ class Game:
         self.players.append(human)
         # add computers(player 숫자 받아서 설정)
         computers = []
-        for _ in range(1):
+        for _ in range(3):
             computers.append(Computer(self.screen, self.deck))
         self.players.extend(computers)
         
@@ -62,13 +62,19 @@ class Game:
             
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
-                print('Human turn')
+                print('Human turn:' + str(self.turn_num))
                 running = True
                 while running:
                     running = self.handle_events()
             else: # Computer turn
-                print('Computer turn')
+                print('Computer turn:' + str(self.turn_num))
                 pass ## computer가 할 동작 추후 추가
+            
+            ''' test
+            for p in range(len(self.players)):
+                print(p, end=': ')
+                print(self.players[p].hand.cards)
+            '''
             
         pygame.quit()
 
@@ -80,14 +86,31 @@ class Game:
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 pos = pygame.mouse.get_pos()
                 if self.back_card.rect.collidepoint(pos):
-                    self.players[0].hand.cards.append(self.deck.pop())
+                    self.players[self.turn_num].hand.cards.append(self.deck.pop())
                     return False
-                clicked_sprites = [s for s in self.players[0].hand.cards if s.rect.collidepoint(pos)]
+                clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                 for sprite in clicked_sprites:
                     if sprite.can_play_on(self.top_card):
-                        self.deck.append(self.top_card)
                         self.top_card = sprite 
-                        self.players[0].hand.cards.remove(sprite)
+                        self.deck.append(self.top_card)
+                        self.players[self.turn_num].hand.cards.remove(sprite)
+                        
+                        # 색 없는 기술카드 동작 처리
+                        if self.top_card.value == 'skip':
+                            if not self.reverse:
+                                self.turn_num += 1
+                            else:
+                                self.turn_num -= 1
+                        elif self.top_card.value == 'reverse':
+                            self.reverse = not self.reverse
+                        elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
+                            for _ in range(int(self.top_card.value[4])):
+                                if not self.reverse:
+                                    self.players[self.turn_num+1].hand.cards.append(self.deck.pop())
+                                else:
+                                    self.players[self.turn_num-1].hand.cards.append(self.deck.pop())
+                        else: ## 추후 나머지 기술 카드 동작 처리 추가 
+                            pass 
                         return False
         return True
 
