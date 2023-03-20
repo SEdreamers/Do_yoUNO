@@ -8,7 +8,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
-def main(screen_width = 1000, screen_height = 800):
+def main(screen_width = 800, screen_height = 600):
     pygame.init()
     
     # 화면 생성
@@ -16,7 +16,7 @@ def main(screen_width = 1000, screen_height = 800):
     pygame.display.set_caption("Uno Game")
 
     # 폰트 생성
-    font = pygame.font.SysFont("arial", screen_width // 20, True, True)
+    font = pygame.font.SysFont("arial", screen_width // 20, True)
 
     # 메뉴 텍스트 생성
     game_title = font.render("Uno Game", True, WHITE)
@@ -44,6 +44,7 @@ def main(screen_width = 1000, screen_height = 800):
     #메뉴 상수
     menu_flag = 0
     uno_game = Game(screen_width, screen_height, color_blind_mode=True)
+    set = setting.Setting(screen_width, screen_height)
     # 게임 루프
     play = True
     while play:
@@ -61,9 +62,7 @@ def main(screen_width = 1000, screen_height = 800):
                     if menu_flag == 0:
                         uno_game.run()
                     elif menu_flag == 1:
-                        set = setting.Setting
-                        set.start_setting(screen_width, screen_height)
-                        print("Settings")
+                        set.run(screen_width, screen_height)
                     elif menu_flag == 2:
                         
                         play = False
@@ -100,10 +99,7 @@ def main(screen_width = 1000, screen_height = 800):
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
             uno_game.run()
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            set = setting.Setting
-            set.start_setting(screen_width, screen_height)
-            print("Settings")
-
+            set.run(screen_width, screen_height)
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
             play = False
 
