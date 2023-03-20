@@ -59,7 +59,6 @@ class Game:
     def run(self):
         while self.running:
             pygame.init()
-            self.update()
             self.render()
 
             # reverse에 따라 turn 방향 설정
@@ -78,16 +77,16 @@ class Game:
                 running = True
                 while running:
                     running = self.handle_events()
+                self.update()
             else: # Computer turn
                 print('Computer turn:' + str(self.turn_num))
                 pass ## computer가 할 동작 추후 추가
             
-            ''' test
-            for p in range(len(self.players)):
-                print(p, end=': ')
-                print(self.players[p].hand.cards)
             '''
-            
+            for i in range(len(self.players)):
+                print(i, end=': ')
+                print(self.players[i].hand.cards)
+            '''
         pygame.quit()
 
     # function is responsible for handling user input and events
@@ -106,29 +105,21 @@ class Game:
                         self.top_card = sprite 
                         self.deck.append(self.top_card)
                         self.players[self.turn_num].hand.cards.remove(sprite)
-                        
-                        # 색 없는 기술카드 동작 처리
-                        if self.top_card.value == 'skip':
-                            if not self.reverse:
-                                self.turn_num += 1
-                            else:
-                                self.turn_num -= 1
-                        elif self.top_card.value == 'reverse':
-                            self.reverse = not self.reverse
-                        elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
-                            for _ in range(int(self.top_card.value[4])):
-                                if not self.reverse:
-                                    self.players[self.turn_num+1].hand.cards.append(self.deck.pop())
-                                else:
-                                    self.players[self.turn_num-1].hand.cards.append(self.deck.pop())
-                        else: ## 추후 나머지 기술 카드 동작 처리 추가 
-                            pass 
                         return False
         return True
 
     # This function is responsible for updating the game state and logic
     def update(self):
-        pass
+        # 색 없는 기술카드 동작 처리
+        if self.top_card.value == 'skip':
+            self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
+        elif self.top_card.value == 'reverse':
+            self.reverse = self.top_card.reverse_action(self.reverse)
+        elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
+            self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
+        else: ## 추후 나머지 기술 카드 동작 처리 추가 
+            pass 
+            
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
