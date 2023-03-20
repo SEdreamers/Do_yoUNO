@@ -24,3 +24,27 @@ class Card(pygame.sprite.Sprite):
         
         # Otherwise, the card can't be played
         return False
+    
+    def skip_action(self, turn_num, players_num, reverse):
+        if not reverse:
+            turn_num += 1
+            if turn_num >= players_num:
+                return 0
+        else:
+            turn_num -= 1
+            if turn_num < 0:
+                return players_num - 1
+        return turn_num
+        
+    def reverse_action(self, reverse):
+        return not reverse
+    
+    def draw_action(self, deck, players, turn_num, value, reverse):
+        for _ in range(value):
+                if not reverse:
+                    players[turn_num+1].hand.cards.append(deck.pop())
+                else:
+                    players[turn_num-1].hand.cards.append(deck.pop())
+    
+    def __repr__(self):
+        return self.color + ' ' + self.value
