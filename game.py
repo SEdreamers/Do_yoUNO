@@ -57,10 +57,10 @@ class Game:
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), True)
 
     def run(self):
+        pygame.init()
+        self.GameUI.display(self.players, self.top_card, self.back_card)
+        
         while self.running:
-            pygame.init()
-            self.render()
-
             # reverse에 따라 turn 방향 설정
             if not self.reverse:
                 self.turn_num += 1
@@ -74,9 +74,7 @@ class Game:
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 print('Human turn:' + str(self.turn_num))
-                running = True
-                while running:
-                    running = self.handle_events()
+                self.handle_events()
                 self.update()
             else: # Computer turn
                 print('Computer turn:' + str(self.turn_num))
@@ -87,26 +85,27 @@ class Game:
                 print(i, end=': ')
                 print(self.players[i].hand.cards)
             '''
+            self.render()
         pygame.quit()
 
     # function is responsible for handling user input and events
     def handle_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                pos = pygame.mouse.get_pos()
-                if self.back_card.rect.collidepoint(pos):
-                    self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                    return False
-                clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
-                for sprite in clicked_sprites:
-                    if sprite.can_play_on(self.top_card):
-                        self.top_card = sprite 
-                        self.deck.append(self.top_card)
-                        self.players[self.turn_num].hand.cards.remove(sprite)
-                        return False
-        return True
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    pos = pygame.mouse.get_pos()
+                    if self.back_card.rect.collidepoint(pos):
+                        self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                        return
+                    clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
+                    for sprite in clicked_sprites:
+                        if sprite.can_play_on(self.top_card):
+                            self.top_card = sprite 
+                            self.deck.append(self.top_card)
+                            self.players[self.turn_num].hand.cards.remove(sprite)
+                            return
 
     # This function is responsible for updating the game state and logic
     def update(self):
