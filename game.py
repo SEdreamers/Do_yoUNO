@@ -36,7 +36,7 @@ class Game:
         self.players.extend(computers)
         
         # turn과 방향 세팅
-        self.turn_num = -1
+        self.turn_num = 0
         self.reverse = False
 
         # top_card deck에서 하나 뽑아서 설정
@@ -44,12 +44,11 @@ class Game:
         
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
-            self.turn_num += 1
+            self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
         elif self.top_card.value == 'reverse':
-            self.reverse = not self.reverse
+            self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
-            for _ in range(int(self.top_card.value[4])):
-               self.players[0].hand.cards.append(self.deck.pop())
+            self.top_card.draw_action(self.deck, self.players, self.turn_num-1, int(self.top_card.value[4]), self.reverse)
         else: ## 추후 나머지 기술 카드 동작 처리 추가 
             pass 
 
@@ -61,16 +60,6 @@ class Game:
         self.GameUI.display(self.players, self.top_card, self.back_card)
         
         while self.running:
-            # reverse에 따라 turn 방향 설정
-            if not self.reverse:
-                self.turn_num += 1
-                if self.turn_num >= len(self.players):
-                    self.turn_num = 0
-            else:
-                self.turn_num -= 1
-                if self.turn_num < 0:
-                    self.turn_num = len(self.players) - 1
-            
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 print('Human turn:' + str(self.turn_num))
@@ -81,11 +70,22 @@ class Game:
                 pass ## computer가 할 동작 추후 추가
             
             '''
+            # test
             for i in range(len(self.players)):
-                print(i, end=': ')
+                print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
                 print(self.players[i].hand.cards)
             '''
             self.render()
+            
+            # turn 전환
+            if not self.reverse:
+                self.turn_num += 1
+                if self.turn_num >= len(self.players):
+                    self.turn_num = 0
+            else:
+                self.turn_num -= 1
+                if self.turn_num < 0:
+                    self.turn_num = len(self.players) - 1
         pygame.quit()
 
     # function is responsible for handling user input and events
