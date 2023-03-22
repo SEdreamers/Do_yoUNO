@@ -10,7 +10,7 @@ class Game:
         self.screen_size = (screen_width, screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
-
+    
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
         background_image = pygame.image.load("images/green.jpg")
@@ -27,7 +27,7 @@ class Game:
         # players 저장
         self.players = []
         # human player 만들기!
-        human = Human(self.screen, self.deck, True)
+        human = Human(self.screen, self.deck, self.color_blind_mode)
         self.players.append(human)
         # add computers(player 숫자 받아서 설정)
         computers = []
@@ -60,6 +60,7 @@ class Game:
         self.GameUI.display(self.players, self.top_card, self.back_card)
         
         while self.running:
+
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 print('Human turn:' + str(self.turn_num))
