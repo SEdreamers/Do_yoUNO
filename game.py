@@ -60,14 +60,20 @@ class Game:
         self.GameUI.display(self.players, self.top_card, self.back_card)
         
         while self.running:
+        
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
-                print('Human turn:' + str(self.turn_num))
                 self.handle_events()
                 self.update()
+                print('Human turn:' + str(self.turn_num))
             else: # Computer turn
+                self.handle_events()
+                self.update()
                 print('Computer turn:' + str(self.turn_num))
-                pass ## computer가 할 동작 추후 추가
+                
+
+
+
             
             '''
             # test
