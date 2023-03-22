@@ -1,8 +1,9 @@
 ## # 이벤트 처리, # 마우스 클릭 시 에 추가해야 화면전환 또는 설정변경. 
 import pygame
 import shelve 
-import main
 import time
+
+
 
 # Initialize Pygame
 class Setting():
@@ -15,6 +16,7 @@ class Setting():
         SAVE_DATA = shelve.open("Save Data")
     
         self.running = True
+        self.color_blind_mode = False 
 
         pygame.init()
         # Set the font for the buttons
@@ -40,6 +42,10 @@ class Setting():
         self.back_text_surface = self.font.render("Go Back",True, 'white')
         self.back_text_rect = self.back_text_surface.get_rect()
         
+        # Create the Exit buttons
+        self.exit_text_surface = self.font.render("Exit",True, 'white')
+        self.exit_text_rect = self.exit_text_surface.get_rect()
+
         # Create the buttons
         self.size1_text_surface = self.screen_sizes_font.render("size1",True, 'white')
         self.size1_text_rect = self.size1_text_surface.get_rect()       
@@ -65,17 +71,17 @@ class Setting():
 
         while self.running:
             pygame.init()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                
             self.screen.fill('black')
             # 제목 또는 버튼 출력
             self.screen.blit(self.game_title, self.game_title_rect)
             self.screen.blit(self.blind_text_surface, self.blind_text_rect)
             self.screen.blit(self.default_text_surface, self.default_text_rect)
             self.screen.blit(self.back_text_surface, self.back_text_rect)
+            self.screen.blit(self.exit_text_surface, self.exit_text_rect)
+
             self.screen.blit(self.size1_text_surface,self.size1_text_rect)
             self.screen.blit(self.size2_text_surface,self.size2_text_rect)
             self.screen.blit(self.size3_text_surface,self.size3_text_rect)
@@ -97,6 +103,13 @@ class Setting():
                 self.back_text_surface = self.font.render("Go Back", True, "red")
             else: self.back_text_surface = self.font.render("Go Back", True, "white")
 
+            if self.exit_text_rect.collidepoint(mouse_pos):
+                self.exit_text_surface = self.font.render("Exit", True, "red")
+            else: self.exit_text_surface = self.font.render("Exit", True, "white")
+
+
+
+
             if self.size1_text_rect.collidepoint(mouse_pos):
                 self.size1_text_surface = self.screen_sizes_font.render("size1", True, "red")
             else: self.size1_text_surface = self.screen_sizes_font.render("size1", True, "white")
@@ -113,16 +126,30 @@ class Setting():
                 self.size4_text_surface = self.screen_sizes_font.render("size4", True, "red")
             else: self.size4_text_surface = self.screen_sizes_font.render("size4", True, "white")
 
+            
              # 마우스 클릭 시
             if  self.blind_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
-                print("color_blind mode")
+                # print("color_blind mode")
+                self.color_blind_mode = True
+                self.gets() 
+
             elif self.default_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = (800, 600)
                 screen = pygame.display.set_mode(window_size)
+
+                self.color_blind_mode = False 
+                self.gets()
                 self.reposition(screen)
+                
             elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
-                time.sleep(0.15)
-                main.main(window_size[0], window_size[1])
+                time.sleep(0.3)
+                return window_size[0], window_size[1]
+                
+
+            elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                self.running = False
+
+
             elif self.size1_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = self.screen_sizes[0]
                 screen = pygame.display.set_mode(window_size)
@@ -170,6 +197,14 @@ class Setting():
         self.back_text_rect.centerx = screen.get_rect().centerx
         self.back_text_rect.y = screen.get_size()[1] / 1.333
 
+        self.exit_text_surface = self.font.render("Exit",True, 'white')
+        self.exit_text_rect = self.back_text_surface.get_rect()
+        self.exit_text_rect.centerx = screen.get_rect().centerx
+        self.exit_text_rect.x = screen.get_size()[0] / 2.222
+        self.exit_text_rect.y = screen.get_size()[1] / 1.111
+
+
+
         self.size1_text_surface = self.screen_sizes_font.render("size1",True, 'white')
         self.size1_text_rect = self.size1_text_surface.get_rect() 
         self.size1_text_rect.centerx = screen.get_rect().centerx
@@ -193,3 +228,6 @@ class Setting():
         self.size4_text_rect.centerx = screen.get_rect().centerx
         self.size4_text_rect.x = screen.get_size()[0] / 1.25
         self.size4_text_rect.y = screen.get_size()[1] / 4
+    
+    def gets(self):
+        return self.color_blind_mode

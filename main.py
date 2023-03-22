@@ -1,12 +1,14 @@
 ## # 이벤트 처리, # 마우스 클릭 시 에 추가해야 화면 전환. 
 import pygame
 from game import Game
-import setting
+import setting 
+from colorBox import ColorBox
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+
 
 def main(screen_width = 800, screen_height = 600):
     pygame.init()
@@ -43,8 +45,9 @@ def main(screen_width = 800, screen_height = 600):
 
     #메뉴 상수
     menu_flag = 0
-    uno_game = Game(screen_width, screen_height, color_blind_mode=True)
     set = setting.Setting(screen_width, screen_height)
+
+    
     # 게임 루프
     play = True
     while play:
@@ -59,7 +62,9 @@ def main(screen_width = 800, screen_height = 600):
                 elif event.key == pygame.K_DOWN:
                     menu_flag += 1
                 elif event.key == 13:
+
                     if menu_flag == 0:
+                        uno_game = Game(screen_width, screen_height, color_blind_mode=set.gets())
                         uno_game.run()
                     elif menu_flag == 1:
                         set.run(screen_width, screen_height)
@@ -95,11 +100,16 @@ def main(screen_width = 800, screen_height = 600):
         else:
             exit_text = font.render("Exit", True, WHITE)
 
+
+        
+
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
+            uno_game = Game(screen_width, screen_height, color_blind_mode=set.gets())
             uno_game.run()
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
             set.run(screen_width, screen_height)
+
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
             play = False
 

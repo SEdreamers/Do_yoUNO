@@ -19,3 +19,4 @@ class Computer(Player):
         computer_x = self.screen_size[0] - self.computer_width
         computer_y = 0
         self.screen.blit(self.computer_image, (computer_x, computer_y + i * self.computer_height))
+    
