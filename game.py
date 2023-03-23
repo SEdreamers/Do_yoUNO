@@ -20,11 +20,11 @@ class Game:
         self.running = True
 
         # Set up the Deck
-        self.deck = Deck()
+        self.deck = Deck(self.screen_size[0], self.screen_size[1])
         self.deck.shuffle()
 
         # Draw the Deck image on the screen(back)
-        self.back_card = Card(0, "back")
+        self.back_card = Card(0, "back", screen_width, screen_height)
 
         # players 저장
         self.players = []
@@ -98,12 +98,11 @@ class Game:
 
     # function is responsible for handling user input and events
     def handle_events(self):
-        while True:
+        while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
 
-                
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
@@ -119,7 +118,7 @@ class Game:
     
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
-        while True:
+        while self.running:
             hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
             for element in hand_card_list:  
                 if  element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
@@ -133,21 +132,23 @@ class Game:
                 self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
                 return 
             
-                
-            
-           
+                          
     # This function is responsible for updating the game state and logic
     def update(self):
-        # 색 없는 기술카드 동작 처리
+        # 색 있는 기술카드 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
-        else: ## 추후 나머지 기술 카드 동작 처리 추가 
-            pass 
-
+        # 색 없는 기술카드 동작
+        elif self.top_card.value == 'wild_draw4':
+            pass
+        elif self.top_card.value == 'wild_swap':
+            pass
+        elif self.top_card.value == 'wild':
+            pass
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
