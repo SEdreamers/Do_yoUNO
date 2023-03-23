@@ -4,7 +4,7 @@ from human import Human
 from computer import Computer
 from gameUI import GameUI
 from card import Card   
-import setting 
+import innersetting 
 import time 
 
 class Game:
@@ -17,8 +17,8 @@ class Game:
         self.color_blind_mode = color_blind_mode
 
 
-        ##setting.py의 Setting class
-        self.set = setting.Setting(self.screen_width, self.screen_height)
+        ##innersetting.py의 Setting class
+        self.set = innersetting.Setting(self.screen_width, self.screen_height)
 
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
