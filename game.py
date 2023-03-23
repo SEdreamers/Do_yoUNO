@@ -60,13 +60,14 @@ class Game:
 
     def run(self):
         pygame.init()
-        self.GameUI.display(self.players, self.top_card, self.back_card)
+        self.GameUI.display(self.players, self.top_card, self.back_card, self.reverse)
 
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
-                self.handle_events()
-                self.update()
+                is_draw = self.handle_events()
+                if not is_draw: # 카드를 낸 경우만
+                    self.update()
                 print('Human turn:' + str(self.turn_num))
             else: # Computer turn
                 self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
@@ -74,8 +75,6 @@ class Game:
                 print('Computer turn:' + str(self.turn_num))
                 
 
-
-            
             # 카드 개수와 종류 출력하는 test
             for i in range(len(self.players)):
                 print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
@@ -108,14 +107,15 @@ class Game:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                        return
+                        print('-' + str(self.reverse))
+                        return True
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(sprite)
-                            return
+                            return False
     
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
@@ -151,7 +151,7 @@ class Game:
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.top_card, self.back_card)
+        self.GameUI.display(self.players, self.top_card, self.back_card, self.reverse)
 
 
 
