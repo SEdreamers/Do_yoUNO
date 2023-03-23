@@ -25,6 +25,23 @@ class Card(pygame.sprite.Sprite):
         # Otherwise, the card can't be played
         return False
     
+
+
+
+    ## 컴퓨터가 가진 카드 중 top_card와 숫자 또는 색깔이 똑같은 카드를 자동으로 골라주는 함수.(game.py -> auto_handling()에서 사용.)
+    def submit_card(self, other_card):  
+        if self.color == other_card.color:
+            return self
+
+        # Check if the numbers match
+        if self.value == other_card.value:
+            return self
+        
+        # Otherwise, the card can't be played
+        return False
+
+
+
     def skip_action(self, turn_num, players_num, reverse):
         if not reverse:
             turn_num += 1

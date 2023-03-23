@@ -4,6 +4,8 @@ from human import Human
 from computer import Computer
 from gameUI import GameUI
 from card import Card
+import time 
+
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode):
         pygame.init()
@@ -30,8 +32,9 @@ class Game:
         human = Human(self.screen, self.deck, self.color_blind_mode)
         self.players.append(human)
         # add computers(player 숫자 받아서 설정)
+
         computers = []
-        for _ in range(3):
+        for _ in range(1):
             computers.append(Computer(self.screen, self.deck))
         self.players.extend(computers)
 
@@ -40,7 +43,7 @@ class Game:
         self.reverse = False
 
         # top_card deck에서 하나 뽑아서 설정
-        self.top_card = self.deck.pop()
+        self.top_card = self.deck.pop()  
 
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
@@ -60,27 +63,26 @@ class Game:
         self.GameUI.display(self.players, self.top_card, self.back_card)
 
         while self.running:
-
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 self.handle_events()
                 self.update()
                 print('Human turn:' + str(self.turn_num))
             else: # Computer turn
-                self.handle_events()
+                self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
                 self.update()
                 print('Computer turn:' + str(self.turn_num))
+                
 
 
-
-
-
-            '''
-            # test
+            
+            # 카드 개수와 종류 출력하는 test
             for i in range(len(self.players)):
                 print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
                 print(self.players[i].hand.cards)
-            '''
+            
+
+
             self.render()
 
             # turn 전환
@@ -112,6 +114,26 @@ class Game:
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(sprite)
                             return
+    
+
+    def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
+        while True:
+            hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
+            for element in hand_card_list:  
+                if  element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 
+                    time.sleep(1)
+                    self.top_card = element
+                    self.deck.append(self.top_card)
+                    self.players[self.turn_num].hand.cards.remove(element)  ##카드 제출
+                    return
+            else:
+                time.sleep(1)
+                self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
+                return 
+            
+                
+            
+           
 
     # This function is responsible for updating the game state and logic
     def update(self):
@@ -129,3 +151,23 @@ class Game:
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
         self.GameUI.display(self.players, self.top_card, self.back_card)
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+self.back_card 는 뒷면 그려진 카드 뭉치
+
+
+
+
+self.top_card 는 앞면이 보이는 카드 더미 맨 윗장
+'''

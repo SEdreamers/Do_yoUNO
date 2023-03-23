@@ -30,3 +30,4 @@ class Computer(Player):
         for x in range(N):
             self.screen.blit(self.backcard_image,(computer_x+ x*self.computer_height*0.1, computer_y+ i * self.computer_height))
         print("남은 카드 수:" + str(Player.count_cards(self)))
+        
