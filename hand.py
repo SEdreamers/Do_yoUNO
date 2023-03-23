@@ -3,7 +3,7 @@ class Hand:
         self.screen = screen
         self.deck = deck
         self.cards = []
-        for _ in range(5):
+        for _ in range(5):      ## 처음 주어지는 카드 수
             card = self.deck.pop()
             if card:
                 self.cards.append(card)

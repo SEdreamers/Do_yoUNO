@@ -2,7 +2,7 @@
 import pygame
 import shelve 
 import time
-
+import main
 
 
 # Initialize Pygame
@@ -131,19 +131,19 @@ class Setting():
             if  self.blind_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 # print("color_blind mode")
                 self.color_blind_mode = True
-                self.gets() 
+                # self.gets() 
 
             elif self.default_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = (800, 600)
                 screen = pygame.display.set_mode(window_size)
 
                 self.color_blind_mode = False 
-                self.gets()
+                # self.gets()
                 self.reposition(screen)
                 
             elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 time.sleep(0.3)
-                return window_size[0], window_size[1]
+                main.main(window_size[0], window_size[1],self.color_blind_mode)
                 
 
             elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
@@ -228,6 +228,9 @@ class Setting():
         self.size4_text_rect.centerx = screen.get_rect().centerx
         self.size4_text_rect.x = screen.get_size()[0] / 1.25
         self.size4_text_rect.y = screen.get_size()[1] / 4
-    
-    def gets(self):
-        return self.color_blind_mode
+
+
+
+
+    # def gets(self):
+    #     return self.color_blind_mode 

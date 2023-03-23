@@ -2,7 +2,8 @@ import random
 from card import Card
 
 class Deck:
-    def __init__(self):
+    def __init__(self, screen_width, screen_height):
+        self.screen_size = (screen_width, screen_height)
         self.cards = []
         self.load_cards()
     
@@ -12,11 +13,11 @@ class Deck:
         colors = ["red", "green", "blue", "yellow"]
         for color in colors:
             for value in values:
-                card = Card(value, color)
+                card = Card(value, color, self.screen_size[0], self.screen_size[1])
                 self.cards.append(card)
         for value in colorless_values:
             for _ in range(4):
-                card = Card(value, "black")
+                card = Card(value, "black", self.screen_size[0], self.screen_size[1])
                 self.cards.append(card)
                 
     def shuffle(self):
