@@ -25,7 +25,7 @@ class Game:
 
         # Draw the Deck image on the screen(back)
         self.back_card = Card(0, "back", screen_width, screen_height)
-
+    
         # players 저장
         self.players = []
         # human player 만들기!
@@ -42,7 +42,10 @@ class Game:
         self.turn_num = 0
         self.reverse = False
 
-        # top_card deck에서 하나 뽑아서 설정
+        self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
+        self.lst = self.firstDeck.showlist()
+        not_first_top_list = [x for x in self.lst if "reverse" or "draw2" or "draw4" or "wild" or "wild_draw4" or "wild_swap" in x]
+        print(not_first_top_list)
         self.top_card = self.deck.pop()  
 
         # 시작 카드(top_card) 동작 처리
@@ -56,7 +59,7 @@ class Game:
             pass 
 
         # Game 너비, 높이 기본 배경 설정
-        self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), True)
+        self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode)
 
     def run(self):
         pygame.init()

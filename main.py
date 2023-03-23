@@ -11,7 +11,6 @@ RED = (255, 0, 0)
 
 def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     pygame.init()
-     
     # 화면 생성
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Uno Game")
@@ -108,7 +107,6 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             uno_game.run()
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
             set.run(screen_width, screen_height)
-
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
             play = False
 
