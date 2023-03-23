@@ -3,15 +3,22 @@ from deck import Deck
 from human import Human
 from computer import Computer
 from gameUI import GameUI
-from card import Card
+from card import Card   
+import setting 
 import time 
 
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode):
         pygame.init()
-        self.screen_size = (screen_width, screen_height)
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.screen_size = (self.screen_width, self.screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
+
+
+        ##setting.py의 Setting class
+        self.set = setting.Setting(self.screen_width, self.screen_height)
 
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -24,7 +31,7 @@ class Game:
         self.deck.shuffle()
 
         # Draw the Deck image on the screen(back)
-        self.back_card = Card(0, "back", screen_width, screen_height)
+        self.back_card = Card(0, "back", self.screen_width, self.screen_height)
     
         # players 저장
         self.players = []
@@ -66,6 +73,7 @@ class Game:
         self.GameUI.display(self.players, self.top_card, self.back_card, self.reverse)
 
         while self.running:
+
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 is_draw = self.handle_events()
@@ -100,16 +108,25 @@ class Game:
 
     # function is responsible for handling user input and events
     def handle_events(self):
+        game_paused = False 
         while self.running:
-            for event in pygame.event.get():
+            if game_paused == True: pass
+
+            for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
                     self.running = False
-
+                if event.type == pygame.KEYDOWN: 
+                    if event.key == pygame.K_ESCAPE: 
+                        print("Pause!")
+                        game_paused = True
+                        self.set.run(self.screen_width, self.screen_height)
+                        
+                    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                        print('-' + str(self.reverse))
+                        print('-' + str(self.reverse))     ## reverse 여부. 
                         return True
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
