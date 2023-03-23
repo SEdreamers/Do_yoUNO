@@ -102,6 +102,8 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+
+                
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
@@ -120,21 +122,20 @@ class Game:
         while True:
             hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
             for element in hand_card_list:  
-                if  element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 
-                    time.sleep(1)
+                if  element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
+                    time.sleep(1.5)
                     self.top_card = element
                     self.deck.append(self.top_card)
                     self.players[self.turn_num].hand.cards.remove(element)  ##카드 제출
                     return
-            else:
-                time.sleep(1)
+            else:   
+                time.sleep(1.5)
                 self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
                 return 
             
                 
             
            
-
     # This function is responsible for updating the game state and logic
     def update(self):
         # 색 없는 기술카드 동작 처리
@@ -165,8 +166,6 @@ class Game:
 
 '''
 self.back_card 는 뒷면 그려진 카드 뭉치
-
-
 
 
 self.top_card 는 앞면이 보이는 카드 더미 맨 윗장
