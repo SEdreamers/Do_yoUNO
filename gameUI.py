@@ -57,6 +57,10 @@ class GameUI:
         button_height = self.screen_size[0] / 25
         self.uno_button = pygame.Surface((button_width, button_height))
         self.uno_button.fill(WHITE)
+        
+        # create a direction icon
+        self.direction_icon = pygame.image.load("images/direction.png")
+        self.direction_icon = pygame.transform.scale(self.direction_icon, (self.screen_size[0] // 25, self.screen_size[0] // 25 * 4))
 
         # add text to the button
         font = pygame.font.Font(None, self.screen_size[0] // 42)
@@ -64,7 +68,8 @@ class GameUI:
         text_rect = text.get_rect(center=(button_width//2, button_height//2))
         self.uno_button.blit(text, text_rect)
 
-    def display(self, players, top_card, back_card):
+
+    def display(self, players, top_card, back_card, reverse):
         # card 위치 설정(player card)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
@@ -104,5 +109,15 @@ class GameUI:
         #  Draw the UNO button
         self.screen.blit(self.uno_button, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27))
             
+        # Draw the direction icon
+        if reverse:
+            direction_icon = pygame.transform.rotate(self.direction_icon, 180)
+        else:
+            direction_icon = self.direction_icon
+        direction_rect = direction_icon.get_rect()
+        direction_rect.x = self.screen_size[0] - self.screen_size[0] / 3.333 - 40
+        direction_rect.centery = self.screen.get_rect().centery
+        self.screen.blit(direction_icon, direction_rect)
+        
         # Update the screen
         pygame.display.flip()
