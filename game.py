@@ -46,11 +46,12 @@ class Game:
             computers.append(Computer(self.screen, self.deck, i))
         self.players.extend(computers)
 
-        # turn, reverse, skip 세팅
+        # turn, reverse, skip, game_paused, start_time 세팅
         self.turn_num = 0
         self.reverse = False
         self.skip = False
-
+        self.game_paused = False 
+        self.start_time = -1
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
         self.lst = self.firstDeck.showlist()
@@ -88,10 +89,10 @@ class Game:
         pygame.init()
 
         if self.skip: # 시작 카드가 skip 카드인 경우
-            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip)
+            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
             self.skip = False
         else:
-            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
         
         try: 
             with open('play_data.txt','w') as play_data_file: 
@@ -102,17 +103,32 @@ class Game:
 
 
         while self.running:
+            self.start_time = pygame.time.get_ticks() # 타이머 시작 시간
+            
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 print('Human turn:' + str(self.turn_num))
-                is_draw = self.handle_events()
-                if not is_draw: # 카드를 낸 경우만
-                    self.update()
+                self.game_paused = False 
+                while self.running:
+                    if self.game_paused == True: # 게임 일시정지
+                        pass
+                    is_draw, is_action = self.handle_events()
+                    if not is_draw and is_action: # 카드를 낸 경우
+                        self.update()
+                        break
+                    elif is_action: # 카드를 먹은 경우
+                        break
+                    
+                    remaining_time = self.render() # 화면 업데이트
+                    if not is_action and remaining_time == 0: # 제한 시간 내에 카드를 내지 못한 경우
+                        self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
+                        break
+                
             else: # Computer turn
                 print('Computer turn:' + str(self.turn_num))
                 self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
                 self.update()
-                
+                self.render()
             
             '''
             # 카드 개수와 종류 출력하는 test
@@ -120,10 +136,6 @@ class Game:
                 print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
                 print(self.players[i].hand.cards)
             '''
-            
-
-
-            self.render()
 
             # turn 전환
             if not self.reverse:
@@ -137,11 +149,7 @@ class Game:
         pygame.quit()
 
     # function is responsible for handling user input and events
-    def handle_events(self):
-        game_paused = False 
-        while self.running:
-            if game_paused == True: pass
-
+    def handle_events(self):    
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
                     with open('play_data.txt','w') as play_data_file: 
@@ -150,26 +158,25 @@ class Game:
                 if event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
-                        game_paused = True
+                        self.game_paused = True
                         self.set.run(self.screen_width, self.screen_height)
-                        
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-
-                        print('-' + str(self.reverse))     ## reverse 여부. 
-
-                        return True
+                        # 카드를 먹은 경우
+                        return True, True # 카드를 먹었는지, 플레이어가 클릭 했는지 여부
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(sprite)
-                            return False
-    
+                            # 카드를 낸 경우
+                            return False, True # 카드를 먹었는지, 플레이어가 클릭 했는지 여부
+            # 아무 행동도 하지 않은 경우
+            return None, False # None, 플레이어가 클릭 했는지 여부
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
         while self.running:
@@ -192,6 +199,7 @@ class Game:
         # 색 있는 기술카드 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
+            print(self.turn_num)
             self.skip = True
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
@@ -207,17 +215,9 @@ class Game:
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+        remaining_time = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
         self.skip = False
-
-
-
-
-
-
-
-
-
+        return remaining_time # 제한 시간(남은 시간) return
 
 
 '''
