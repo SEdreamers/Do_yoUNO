@@ -58,6 +58,15 @@ class Game:
         # Game 너비, 높이 기본 배경 설정
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), True)
         self.clock = pygame.time.Clock()
+        
+        # Set animation arrival
+        self.deck_x = self.screen_size[0] / 20
+        self.deck_y = self.screen_size[0] / 2
+        self.deck_spacing = self.screen_size[0] / 100
+        # set up the card dimensions and spacing
+        self.card_width = self.screen_size[0] / 12.5
+        self.card_height = self.screen_size[0] / 8.333
+        self.card_spacing = self.screen_size[0] / 50
 
     def run(self):
         pygame.init()
@@ -99,7 +108,7 @@ class Game:
     # function is responsible for handling user input and events
     def handle_events(self):
         while True:
-            self.clock.tick(50)
+            self.clock.tick(100)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -107,10 +116,22 @@ class Game:
                 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if self.back_card.rect.collidepoint(pos):
+                    if self.back_card.rect.collidepoint(pos):           
+                        x_pos = self.deck_x + (len(self.players[0].hand.cards)) * (self.card_width + self.deck_spacing)
+                        y_pos = self.deck_y
+                        x = self.back_card.rect.x
+                        y = self.back_card.rect.y
+                        speed = ((x_pos - x) / 10, (y_pos - y) / 10)
+                        print(self.back_card.rect.x, self.back_card.rect.y)
+                        self.back_card.control(speed[0], speed[1])
+                        for _ in range(10):
+                            self.back_card.update()
+                            self.screen.blit(self.back_card.image, self.back_card.rect)
+                            pygame.display.update()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
                         print('-' + str(self.reverse))
                         return True
+                    
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
