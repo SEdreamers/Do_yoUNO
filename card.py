@@ -43,11 +43,19 @@ class Card(pygame.sprite.Sprite):
         return not reverse
     
     def draw_action(self, deck, players, turn_num, value, reverse):
+        # 카드 강제 부여할 플레이어 선택
+        if not reverse:
+            turn_num += 1
+            if turn_num >= len(players):
+                turn_num = 0
+        else:
+            turn_num -= 1
+            if turn_num < 0:
+                turn_num = len(players) - 1
+                
+        # value만큼 카드 강제 부여
         for _ in range(value):
-                if not reverse:
-                    players[turn_num+1].hand.cards.append(deck.pop())
-                else:
-                    players[turn_num-1].hand.cards.append(deck.pop())
+                players[turn_num].hand.cards.append(deck.pop())
 
     def choose_color(self, screen, color_blind_mode):
         pass

@@ -158,9 +158,6 @@ class Game:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-
-                        print('-' + str(self.reverse))     ## reverse 여부. 
-
                         return True
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
