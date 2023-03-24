@@ -10,6 +10,6 @@ class Human(Player):
     # draw the cards(player)(front)
         for card in self.hand.cards:
             if not self.color_blind_mode:                
-                self.screen.blit(card.default_image, card.rect)
+                self.screen.blit(card.image, card.rect)
             else:              
                 self.screen.blit(card.blind_image, card.rect)

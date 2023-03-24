@@ -1,18 +1,25 @@
 import pygame
 
 class Card(pygame.sprite.Sprite): 
-    def __init__(self, value, color):
+    def __init__(self, value, color, screen):
         super().__init__()
+        self.movex = 0 # move along X
+        self.movey = 0 # move along Y
+        self.screen_size = (screen.get_width(), screen.get_height())
         self.value = value
         self.color = color
-        self.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{color}_{value}.png"), (80, 120))
-        self.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png"), (80, 120))
-        self.rect = self.default_image.get_rect()
+        self.image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{color}_{value}.png"), (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
+        self.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png"), (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
+        self.rect = self.image.get_rect()
 
     def set_position(self, x, y):
         self.rect.x = x
         self.rect.y = y
         
+    def control(self, x, y):
+        self.movex += x
+        self.movey += y
+    
     def can_play_on(self, other_card):
         # Check if the colors match
         if self.color == other_card.color:
@@ -24,11 +31,6 @@ class Card(pygame.sprite.Sprite):
         
         # Otherwise, the card can't be played
         return False
-    
-
-
-
-
 
     def skip_action(self, turn_num, players_num, reverse):
         if not reverse:
@@ -53,3 +55,7 @@ class Card(pygame.sprite.Sprite):
     
     def __repr__(self):
         return self.color + ' ' + self.value
+    
+    def update(self):
+        self.rect.x = self.rect.x + self.movex
+        self.rect.y = self.rect.y + self.movey

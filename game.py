@@ -20,11 +20,11 @@ class Game:
         self.running = True
 
         # Set up the Deck
-        self.deck = Deck()
+        self.deck = Deck(self.screen)
         self.deck.shuffle()
 
         # Draw the Deck image on the screen(back)
-        self.back_card = Card(0, "back")
+        self.back_card = Card(0, "back", self.screen)
 
         # players 저장
         self.players = []
@@ -57,6 +57,7 @@ class Game:
 
         # Game 너비, 높이 기본 배경 설정
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), True)
+        self.clock = pygame.time.Clock()
 
     def run(self):
         pygame.init()
@@ -98,6 +99,7 @@ class Game:
     # function is responsible for handling user input and events
     def handle_events(self):
         while True:
+            self.clock.tick(50)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -112,6 +114,12 @@ class Game:
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
+                            speed = ((self.screen_size[0] * 0.4 - sprite.rect.x) / 10, (self.screen_size[1] * 0.2 - sprite.rect.y) / 10)
+                            sprite.control(speed[0], speed[1])
+                            for _ in range(10):
+                                sprite.update()
+                                self.players[0].draw()
+                                pygame.display.update()
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(sprite)

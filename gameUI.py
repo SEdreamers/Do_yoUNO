@@ -1,9 +1,9 @@
-from turtle import color
 import pygame
 import colorBox
 class GameUI:
     def __init__(self, screen_width, screen_height, color_blind_mode):
-         # Color
+        self.clock = pygame.time.Clock()
+        # Color
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
@@ -33,10 +33,6 @@ class GameUI:
         self.computer_background_image = pygame.image.load("images/black.jpg")
         self.computer_background_image = pygame.transform.scale(self.computer_background_image, (self.computer_width, self.screen_size[1]))
         
-        # # create a deck and shuffle it
-        # color_blind_mode = False
-        # deck = Deck()
-        # deck.shuffle()
 
         # set up the card dimensions and spacing
         self.card_width = self.screen_size[0] / 12.5
@@ -121,3 +117,6 @@ class GameUI:
         
         # Update the screen
         pygame.display.flip()
+        self.clock.tick(60)
+
+    
