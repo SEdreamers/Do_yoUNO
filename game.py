@@ -3,15 +3,23 @@ from deck import Deck
 from human import Human
 from computer import Computer
 from gameUI import GameUI
-from card import Card
+from card import Card   
+import innersetting 
 import time 
+import json
 
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode):
         pygame.init()
-        self.screen_size = (screen_width, screen_height)
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.screen_size = (self.screen_width, self.screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
+
+
+        ##innersetting.py의 Setting class
+        self.set = innersetting.Setting(self.screen_width, self.screen_height)
 
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -24,8 +32,8 @@ class Game:
         self.deck.shuffle()
 
         # Draw the Deck image on the screen(back)
-        self.back_card = Card(0, "back", screen_width, screen_height)
-
+        self.back_card = Card(0, "back", self.screen_width, self.screen_height)
+    
         # players 저장
         self.players = []
         # human player 만들기!
@@ -43,8 +51,13 @@ class Game:
         self.reverse = False
         self.skip = False
 
-        # top_card deck에서 하나 뽑아서 설정
-        self.top_card = self.deck.pop()
+
+        self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
+        self.lst = self.firstDeck.showlist()
+        not_first_top_list = [x for x in self.lst if "reverse" or "draw2" or "draw4" or "wild" or "wild_draw4" or "wild_swap" in x]
+        # print(not_first_top_list)
+        self.top_card = self.deck.pop()  
+
 
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
@@ -58,15 +71,35 @@ class Game:
             pass 
 
         # Game 너비, 높이 기본 배경 설정
-        self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), True)
+        self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode)
+        
+
+
+
+        # 실행중이던 게임을 딕셔너리 형태로 저장
+        self.data = {
+            "hi":1
+        }
+
+
+
 
     def run(self):
         pygame.init()
+
         if self.skip: # 시작 카드가 skip 카드인 경우
             self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip)
             self.skip = False
         else:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+        
+        try: 
+            with open('play_data.txt','w') as play_data_file: 
+                json.dump(self.data, play_data_file)
+        except: 
+            print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
+
+
 
         while self.running:
             # Human turn인지 Computer turn인지 구분
@@ -105,15 +138,29 @@ class Game:
 
     # function is responsible for handling user input and events
     def handle_events(self):
+        game_paused = False 
         while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
+            if game_paused == True: pass
 
+            for event in pygame.event.get(): 
+                if event.type == pygame.QUIT:
+                    with open('play_data.txt','w') as play_data_file: 
+                        json.dump(self.data, play_data_file)
+                    self.running = False
+                if event.type == pygame.KEYDOWN: 
+                    if event.key == pygame.K_ESCAPE: 
+                        print("Pause!")
+                        game_paused = True
+                        self.set.run(self.screen_width, self.screen_height)
+                        
+                    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
+
+                        print('-' + str(self.reverse))     ## reverse 여부. 
+
                         return True
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:

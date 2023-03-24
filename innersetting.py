@@ -1,8 +1,7 @@
 ## # 이벤트 처리, # 마우스 클릭 시 에 추가해야 화면전환 또는 설정변경. 
 import pygame
 import time
-import main
-import json
+import game
 
 # Initialize Pygame
 class Setting():
@@ -61,33 +60,17 @@ class Setting():
         self.size4_text_rect = self.size4_text_surface.get_rect()
 
         self.reposition(self.screen)
-
-
-        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
-        self.data ={
-
-        }
-
+    
     def run(self, screen_width, screen_height):
+
         window_size = (screen_width, screen_height)
         self.screen = pygame.display.set_mode(window_size)
-        
-
-        try: 
-            with open('setting_data.txt','w') as setting_data_file: 
-                json.dump(self.data, setting_data_file)
-        except: 
-            print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
-
 
         while self.running:
             pygame.init()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    with open('setting_data.txt','w') as setting_data_file: 
-                        json.dump(self.data, setting_data_file)
                     self.running = False
-                    
             self.screen.fill('black')
             # 제목 또는 버튼 출력
             self.screen.blit(self.game_title, self.game_title_rect)
@@ -157,8 +140,8 @@ class Setting():
                 
             elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 time.sleep(0.3)
-                main.main(window_size[0], window_size[1],self.color_blind_mode)
-                
+                play = game.Game(window_size[0], window_size[1],self.color_blind_mode)
+                play.run()
 
             elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 self.running = False

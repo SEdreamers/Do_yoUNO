@@ -29,8 +29,6 @@ class Computer(Player):
         computer_y = 0
         self.screen.blit(self.computer_image, (computer_x, computer_y + i * self.computer_height))
 
-        # print(i)
-
         N = Player.count_cards(self)
         for x in range(N):
             self.screen.blit(self.backcard_image,(computer_x+ x*self.computer_height*0.1, computer_y+ i * self.computer_height))
