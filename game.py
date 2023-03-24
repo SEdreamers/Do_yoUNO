@@ -6,6 +6,7 @@ from gameUI import GameUI
 from card import Card   
 import innersetting 
 import time 
+import json
 
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode):
@@ -52,7 +53,7 @@ class Game:
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
         self.lst = self.firstDeck.showlist()
         not_first_top_list = [x for x in self.lst if "reverse" or "draw2" or "draw4" or "wild" or "wild_draw4" or "wild_swap" in x]
-        print(not_first_top_list)
+        # print(not_first_top_list)
         self.top_card = self.deck.pop()  
 
         # 시작 카드(top_card) 동작 처리
@@ -67,13 +68,29 @@ class Game:
 
         # Game 너비, 높이 기본 배경 설정
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode)
+        
+
+
+
+        # 실행중이던 게임을 딕셔너리 형태로 저장
+        self.data = {
+            "hi":1
+        }
+
+
+
 
     def run(self):
         pygame.init()
         self.GameUI.display(self.players, self.top_card, self.back_card, self.reverse)
-
+       
+        
+        try: 
+            with open('play_data.txt','w') as play_data_file: 
+                json.dump(self.data, play_data_file)
+        except: 
+            print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
         while self.running:
-
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 is_draw = self.handle_events()
@@ -114,6 +131,8 @@ class Game:
 
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
+                    with open('play_data.txt','w') as play_data_file: 
+                        json.dump(self.data, play_data_file)
                     self.running = False
                 if event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: 

@@ -1,6 +1,5 @@
 ## # 이벤트 처리, # 마우스 클릭 시 에 추가해야 화면전환 또는 설정변경. 
 import pygame
-import shelve 
 import time
 import game
 
@@ -12,7 +11,6 @@ class Setting():
         # Create the window
         self.screen = pygame.display.set_mode(self.window_size)
         # Set the title of the window
-        SAVE_DATA = shelve.open("Save Data")
     
         self.running = True
         self.color_blind_mode = False 
