@@ -42,13 +42,15 @@ class Game:
         # add computers(player 숫자 받아서 설정)
 
         computers = []
-        for _ in range(1):
-            computers.append(Computer(self.screen, self.deck))
+        for i in range(1):
+            computers.append(Computer(self.screen, self.deck, i))
         self.players.extend(computers)
 
-        # turn과 방향 세팅
+        # turn, reverse, skip 세팅
         self.turn_num = 0
         self.reverse = False
+        self.skip = False
+
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
         self.lst = self.firstDeck.showlist()
@@ -56,9 +58,11 @@ class Game:
         # print(not_first_top_list)
         self.top_card = self.deck.pop()  
 
+
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
+            self.skip = True
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
@@ -82,31 +86,40 @@ class Game:
 
     def run(self):
         pygame.init()
-        self.GameUI.display(self.players, self.top_card, self.back_card, self.reverse)
-       
+
+        if self.skip: # 시작 카드가 skip 카드인 경우
+            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip)
+            self.skip = False
+        else:
+            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
         
         try: 
             with open('play_data.txt','w') as play_data_file: 
                 json.dump(self.data, play_data_file)
         except: 
             print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
+
+
+
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
+                print('Human turn:' + str(self.turn_num))
                 is_draw = self.handle_events()
                 if not is_draw: # 카드를 낸 경우만
                     self.update()
-                print('Human turn:' + str(self.turn_num))
             else: # Computer turn
+                print('Computer turn:' + str(self.turn_num))
                 self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
                 self.update()
-                print('Computer turn:' + str(self.turn_num))
                 
-
+            
+            '''
             # 카드 개수와 종류 출력하는 test
             for i in range(len(self.players)):
                 print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
                 print(self.players[i].hand.cards)
+            '''
             
 
 
@@ -145,7 +158,9 @@ class Game:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
+
                         print('-' + str(self.reverse))     ## reverse 여부. 
+
                         return True
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
@@ -177,6 +192,7 @@ class Game:
         # 색 있는 기술카드 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
+            self.skip = True
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
@@ -191,8 +207,8 @@ class Game:
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.top_card, self.back_card, self.reverse)
-
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+        self.skip = False
 
 
 

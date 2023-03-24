@@ -1,6 +1,8 @@
 from turtle import color
 import pygame
 import colorBox
+from human import Human
+
 class GameUI:
     def __init__(self, screen_width, screen_height, color_blind_mode):
          # Color
@@ -69,7 +71,7 @@ class GameUI:
         self.uno_button.blit(text, text_rect)
 
 
-    def display(self, players, top_card, back_card, reverse):
+    def display(self, players, turn_num, top_card, back_card, reverse, skip):
         # card 위치 설정(player card)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
@@ -118,6 +120,13 @@ class GameUI:
         direction_rect.x = self.screen_size[0] - self.screen_size[0] / 3.333 - 40
         direction_rect.centery = self.screen.get_rect().centery
         self.screen.blit(direction_icon, direction_rect)
+        
+        # draw the skip icon
+        if skip: 
+            if isinstance(players[turn_num], Human): # turn을 skip 당한 플레이어가 Human일 경우
+                players[turn_num].skip_draw()
+            else: # turn을 skip 당한 플레이어가 Computer일 경우
+                players[turn_num].skip_draw(int(players[turn_num].name[8]))
         
         # Update the screen
         pygame.display.flip()
