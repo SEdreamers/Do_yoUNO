@@ -4,7 +4,6 @@ import sys
 
 BLACK = (0, 0, 0)
 
-
 class GameOverUI:
     def __init__(self, screen_width, screen_height, winner, color_blind_mode):
         self.menu_flag = 0
@@ -14,14 +13,14 @@ class GameOverUI:
         self.screen = pygame.display.set_mode(self.screen_size)
 
         # 폰트 설정
-        self.main_font = pygame.font.SysFont("arial", self.screen_size[0] // 17, True)
-        self.font = pygame.font.SysFont("arial", self.screen_size[0] // 20, True)
+        self.main_font = pygame.font.Font("font/game2.ttf", self.screen_size[0] // 15)
+        self.font = pygame.font.Font("font/game2.ttf", self.screen_size[0] // 20)
 
         # 색약 모드 설정
         self.color_blind_mode = color_blind_mode
 
-        # 승리자 출력
-        self.winner = self.main_font.render(f'Winner is {winner}!', True, 'yellow')
+        # 승리자 글자
+        self.winner = self.main_font.render(f'Winner is {winner}', True, 'blue')
         self.winner_rect = self.winner.get_rect()
         self.winner_rect.centerx = self.screen.get_rect().centerx
         self.winner_rect.y = self.screen.get_size()[1] / 2.4
@@ -36,14 +35,24 @@ class GameOverUI:
         self.exit_text = self.font.render("Exit", True, 'white')
         self.exit_rect = self.exit_text.get_rect()
         self.exit_rect.centerx = self.screen.get_rect().centerx
-        self.exit_rect.y = self.screen.get_size()[1] / 1.333
+        self.exit_rect.y = self.screen.get_size()[1] / 1.4
+        
+        self.frame_index = 0 # gif frame index
 
         self.uno_game = game.Game(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
 
     def display(self):
         pygame.display.set_caption("Game Over")
         self.screen.fill(BLACK)
-
+        
+        # 폭죽 이미지 출력
+        if self.frame_index <= 90:
+            gif_image = pygame.image.load(f"images/confetti_images/confetti_{self.frame_index}.png")
+            gif_image = pygame.transform.scale(gif_image, self.screen_size) 
+            self.frame_index += 1
+            self.screen.blit(gif_image, gif_image.get_rect())
+        
+        # 글자 출력
         self.screen.blit(self.winner, self.winner_rect)
         self.screen.blit(self.new_game_text, self.new_game_rect)
         self.screen.blit(self.exit_text, self.exit_rect)
@@ -88,5 +97,6 @@ class GameOverUI:
             self.uno_game.run() # 새 게임 불러오기
         elif self.exit_rect.collidepoint(mouse_pos) and mouse_click:
             sys.exit() # 종료
-
         pygame.display.flip()
+
+
