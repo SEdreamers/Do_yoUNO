@@ -4,6 +4,10 @@ import colorBox
 from human import Human
 
 class GameUI:
+
+    # for keyboard selection
+    cur_card = 0
+
     def __init__(self, screen_width, screen_height, color_blind_mode):
          # Color
         BLACK = (0, 0, 0)
@@ -48,7 +52,7 @@ class GameUI:
         # set up the deck position and spacing
         self.deck_x = self.screen_size[0] / 20
         self.deck_y = self.screen_size[0] / 2
-        self.deck_spacing = self.screen_size[0] / 100
+        self.deck_spacing = -self.screen_size[0] / 40
 
         # create a small box to display the color of the card
         self.BOX_WIDTH = self.screen_size[0] / 25
@@ -127,6 +131,8 @@ class GameUI:
                 players[turn_num].skip_draw()
             else: # turn을 skip 당한 플레이어가 Computer일 경우
                 players[turn_num].skip_draw(int(players[turn_num].name[8]))
+
+        pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
         
         # Update the screen
         pygame.display.flip()

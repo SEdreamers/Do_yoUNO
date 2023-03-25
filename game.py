@@ -175,11 +175,29 @@ class Game:
                     with open('play_data.txt','w') as play_data_file: 
                         json.dump(self.data, play_data_file)
                     self.running = False
-                if event.type == pygame.KEYDOWN: 
+                elif event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
                         game_paused = True
-                        self.set.run(self.screen_width, self.screen_height)          
+                        self.set.run(self.screen_width, self.screen_height)
+                    elif event.key == pygame.K_LEFT:
+                        GameUI.cur_card -= 1
+                        if GameUI.cur_card < 0:
+                            GameUI.cur_card = 0
+                        self.render()
+                    elif event.key == pygame.K_RIGHT:
+                        GameUI.cur_card += 1
+                        if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
+                            GameUI.cur_card = len(self.players[0].hand.cards) - 1
+                        self.render()
+                    elif event.key == 13: ## press entered
+                        entered_card = self.players[0].hand.cards[GameUI.cur_card]
+                        if entered_card.can_play_on(self.top_card):
+                            self.top_card = entered_card
+                            self.deck.append(self.top_card)
+                            self.players[self.turn_num].hand.cards.remove(entered_card)
+                            return True
+                
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -196,7 +214,7 @@ class Game:
                             start_time = pygame.time.get_ticks()   
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
-                            self.players[self.turn_num].hand.cards.remove(sprite)
+                            self.players[self.turn_num].hand.cards.remove(sprite)                   
                             
                             
             if self.card_clicked is not None:
@@ -227,10 +245,6 @@ class Game:
                             running = False
                             return False
                     clock.tick(fps)
-
-
-            
-
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
         start_time = None
