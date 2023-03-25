@@ -49,10 +49,11 @@ class Game:
             computers.append(Computer(self.screen, self.deck, i))
         self.players.extend(computers)
 
-        # turn, reverse, skip 세팅
+        # turn, reverse, skip, start time 세팅
         self.turn_num = 0
         self.reverse = False
         self.skip = False
+        self.start_time = -1
 
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
@@ -92,10 +93,10 @@ class Game:
         pygame.init()
 
         if self.skip: # 시작 카드가 skip 카드인 경우
-            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip)
+            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
             self.skip = False
         else:
-            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
         
         try: 
             with open('play_data.txt','w') as play_data_file: 
@@ -142,6 +143,7 @@ class Game:
 
     # function is responsible for handling user input and events
     def handle_events(self):
+        self.start_time = pygame.time.get_ticks() # 타이머 시작 시간
         game_paused = False
         # for animation
         move_speed = 5
@@ -168,6 +170,11 @@ class Game:
         clock = pygame.time.Clock()
         fps = 500
         while self.running:
+            count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time) # 타이머 시간 업데이트
+            if count_down == 0: # 제한 시간 내에 카드를 내지 못한 경우
+                self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
+                return
+            
             if game_paused == True: pass
             # Calculate the interpolation ratio 
             for event in pygame.event.get(): 
@@ -233,6 +240,7 @@ class Game:
 
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time) # 타이머 안뜨게 화면 업데이트
         start_time = None
         self.card_clicked = None
         move_speed = 5
@@ -312,7 +320,7 @@ class Game:
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
         self.skip = False
 
 
