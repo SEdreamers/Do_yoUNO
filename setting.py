@@ -2,7 +2,10 @@
 import pygame
 import time
 import main
-import json
+import util
+import controls
+# from util import load_save, reset_keys 
+
 
 # Initialize Pygame
 class Setting():
@@ -17,6 +20,14 @@ class Setting():
         self.color_blind_mode = False 
 
         pygame.init()
+
+
+
+        self.actions = {'color_blind_mode': False}
+        save = util.load_save()
+        self.control_handler = controls.Controls_Handler(save)
+
+
         # Set the font for the buttons
         self.font = pygame.font.SysFont("arial", screen_width // 20, True)
         self.screen_sizes_font = pygame.font.SysFont("arial", screen_width // 40, True)
@@ -63,29 +74,18 @@ class Setting():
         self.reposition(self.screen)
 
 
-        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
-        self.data ={
-
-        }
+        
 
     def run(self, screen_width, screen_height):
         window_size = (screen_width, screen_height)
         self.screen = pygame.display.set_mode(window_size)
         
 
-        try: 
-            with open('setting_data.txt','w') as setting_data_file: 
-                json.dump(self.data, setting_data_file)
-        except: 
-            print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
-
 
         while self.running:
             pygame.init()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    with open('setting_data.txt','w') as setting_data_file: 
-                        json.dump(self.data, setting_data_file)
                     self.running = False
                     
             self.screen.fill('black')
@@ -141,11 +141,17 @@ class Setting():
             else: self.size4_text_surface = self.screen_sizes_font.render("size4", True, "white")
 
             
+
+
+
              # 마우스 클릭 시
             if  self.blind_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 # print("color_blind mode")
                 self.color_blind_mode = True
-                # self.gets() 
+                # self.gets()
+                self.actions['color_blind_mode'] = True
+                 
+                 
 
             elif self.default_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = (800, 600)
@@ -180,9 +186,15 @@ class Setting():
                 window_size = self.screen_sizes[3]
                 screen = pygame.display.set_mode(window_size)
                 self.reposition(screen)
- 
-        # Update the display
+
+
+
+
+
+            self.control_handler.update(self.actions)
+            # Update the display
             pygame.display.update()
+            util.reset_keys(self.actions)
         # Quit Pygame
         pygame.quit()
             
