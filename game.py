@@ -183,9 +183,8 @@ class Game:
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                        print('-' + str(self.reverse))     ## reverse 여부. 
-                        
-                        
+                        return True
+
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
