@@ -3,6 +3,7 @@ from deck import Deck
 from human import Human
 from computer import Computer
 from gameUI import GameUI
+import gameoverUI
 from card import Card  
 from player import Player
 import innersetting 
@@ -117,18 +118,20 @@ class Game:
                 print('Computer turn:' + str(self.turn_num))
                 self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
                 self.update()
-                
-            
             '''
             # 카드 개수와 종류 출력하는 test
             for i in range(len(self.players)):
                 print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
                 print(self.players[i].hand.cards)
             '''
-            
-
-
             self.render()
+            
+            # 게임 오버 판별
+            if self.players[self.turn_num].hand.is_empty():
+                game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
+                while True:
+                    game_over.display() # 게임 오버 화면 불러오기
+                    pygame.display.flip()
 
             # turn 전환
             if not self.reverse:
