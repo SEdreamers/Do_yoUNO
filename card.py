@@ -6,8 +6,8 @@ class Card(pygame.sprite.Sprite):
         self.value = value
         self.color = color
         self.screen_size = (screen_width, screen_height)
-        self.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{color}_{value}.png"), (self.screen_size[0] / 10, self.screen_size[1] / 5))
-        self.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png"), (self.screen_size[0] / 10, self.screen_size[1] / 5))
+        self.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{color}_{value}.png"), (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
+        self.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png"), (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
         self.rect = self.default_image.get_rect()
 
     def set_position(self, x, y):
