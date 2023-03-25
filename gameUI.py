@@ -131,19 +131,18 @@ class GameUI:
         
         
         # draw the timer
-        elapsed_time = -1
-        
-        if isinstance(players[turn_num], Human): # 플레이어가 사람일 때만   
-            elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
-            remaining_time =int(16 - elapsed_time)
-            if remaining_time > 9:
-                timer = self.timer_font.render(str(remaining_time), True, pygame.Color('black'))
-            elif remaining_time > 4:
-                timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('black'))
-            else:
-                timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('red'))
-            timer_rect = timer.get_rect()
+        elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
+        remaining_time =int(16 - elapsed_time)
+        if remaining_time > 9:
+            timer = self.timer_font.render(str(remaining_time), True, pygame.Color('black'))
+        elif remaining_time > 3:
+            timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('black'))
+        else:
+            timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('red'))
+        if isinstance(players[turn_num], Human): # 인간 플레이어일 때
             self.screen.blit(timer, (self.screen_size[0] * 0.63, self.screen_size[1] * 0.02))
+        else: # 컴퓨터 플레이어일 때 
+            self.screen.blit(timer, (-100, -100)) # 화면 밖으로 타이머 배치
 
         # Update the screen
         pygame.display.flip()
