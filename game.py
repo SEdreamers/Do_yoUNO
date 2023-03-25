@@ -3,11 +3,13 @@ from deck import Deck
 from human import Human
 from computer import Computer
 from gameUI import GameUI
-from card import Card   
+from card import Card  
+from player import Player
 import innersetting 
 import time 
 import json
 import math
+import copy
 
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode):
@@ -142,7 +144,7 @@ class Game:
     def handle_events(self):
         game_paused = False
         # for animation
-        move_speed = 10
+        move_speed = 5
         self.card_clicked = None
         deck_x = self.screen_size[0] / 20
         deck_y = self.screen_size[0] / 2
@@ -151,15 +153,17 @@ class Game:
         # set position
         self.hand_card_pos_temp = [deck_x + (len(self.players[0].hand.cards) - 1) * temp, deck_y]
         self.hand_card_pos = [temp + self.hand_card_pos_temp[0], self.hand_card_pos_temp[1]]
-       
+
         # set rect
         self.back_card.set_position(self.screen_size[0] * 0.2, self.screen_size[1] * 0.2)
         self.players[0].hand.cards[len(self.players[0].hand.cards) - 1].set_position(self.hand_card_pos_temp[0], self.hand_card_pos_temp[1])
         self.back_rect = self.back_card.rect
         self.hand_rect = self.players[0].hand.cards[len(self.players[0].hand.cards) - 1].rect
+    
         # set distance
         back_to_hand = math.dist(self.back_card_pos, self.hand_card_pos) / move_speed
         hand_to_deck = math.dist(self.hand_card_pos_temp, self.top_card_pos) / move_speed
+
         start_time = None
         clock = pygame.time.Clock()
         fps = 500
@@ -190,8 +194,7 @@ class Game:
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
                             self.card_clicked = sprite
-                            start_time = pygame.time.get_ticks()
-                            
+                            start_time = pygame.time.get_ticks()   
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(sprite)
@@ -210,7 +213,7 @@ class Game:
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
                         if ratio == 1:
-                            self.card_clicked = None
+                            running = False
                             return True 
                     else:
                         elapsed_time = pygame.time.get_ticks() - start_time
@@ -221,10 +224,8 @@ class Game:
                                                     current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
-                        if ratio == 1:
-                            print(self.card_clicked.rect.center)
-                            print(self.top_card_pos)
-                            self.card_clicked = None 
+                        if ratio == 1: 
+                            running = False
                             return False
                     clock.tick(fps)
 
@@ -233,20 +234,64 @@ class Game:
 
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
+        start_time = None
+        self.card_clicked = None
+        move_speed = 5
+        clock = pygame.time.Clock()
+        fps = 1000
+        # set computer position
+        computer_width = self.screen_size[0] / 3.333
+        computer_height = self.screen_size[1] / 5
+        computer_x = self.screen_size[0] - computer_width
+        computer_y = 0
+        self.card_len = Player.count_cards(self.players[self.turn_num])
+        self.computer_pos_temp = [computer_x+ self.card_len * computer_height*0.1, computer_y+ self.turn_num * computer_height]
+        self.computer_pos = [computer_x+ (self.card_len + 1)* computer_height*0.1, computer_y+ self.turn_num * computer_height]
+        back_to_com = math.dist(self.back_card_pos, self.computer_pos) / move_speed
+        com_to_deck = math.dist(self.computer_pos_temp, self.top_card_pos) / move_speed
         while self.running:
             hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
             for element in hand_card_list:  
-                if  element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
+                if element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                     time.sleep(1.5)
+                    self.card_clicked = element
+                    start_time = pygame.time.get_ticks()
                     self.top_card = element
                     self.deck.append(self.top_card)
                     self.players[self.turn_num].hand.cards.remove(element)  ##카드 제출
-                    return
-            else:   
+                    break
+            if self.card_clicked == None:   
                 time.sleep(1.5)
+                self.card_clicked = self.back_card
+                start_time = pygame.time.get_ticks()
                 self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
-                return 
-            
+                
+            running = True
+            while running:
+                if self.card_clicked == self.back_card:
+                    elapsed_time = pygame.time.get_ticks() - start_time
+                    ratio = min(elapsed_time / back_to_com, 1)
+                    current_pos = self.card_clicked.rect.center
+                    new_pos = self.computer_pos
+                    self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                                    current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                    self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                    pygame.display.flip()
+                    if ratio == 1:
+                        return 
+                else:
+                    elapsed_time = pygame.time.get_ticks() - start_time
+                    ratio = min(elapsed_time / com_to_deck, 1)
+                    current_pos = self.computer_pos_temp
+                    new_pos = self.top_card_pos
+                    self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                                    current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                    self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                    pygame.display.flip()
+                    if ratio == 1:
+                        return 
+                clock.tick(fps)
+
                           
     # This function is responsible for updating the game state and logic
     def update(self):
