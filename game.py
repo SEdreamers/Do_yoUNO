@@ -203,7 +203,7 @@ class Game:
             if self.card_clicked is not None:
                 running = True
                 while running:
-                    if self.card_clicked == self.back_card:
+                    if self.card_clicked is self.back_card:
                         elapsed_time = pygame.time.get_ticks() - start_time
                         ratio = min(elapsed_time / back_to_hand, 1)
                         current_pos = self.card_clicked.rect.center
@@ -212,6 +212,7 @@ class Game:
                                                     current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
+                        clock.tick(fps)
                         if ratio == 1:
                             running = False
                             return True 
@@ -224,10 +225,11 @@ class Game:
                                                     current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
+                        clock.tick(fps)
                         if ratio == 1: 
                             running = False
                             return False
-                    clock.tick(fps)
+                    
 
 
             
@@ -268,7 +270,7 @@ class Game:
                 
             running = True
             while running:
-                if self.card_clicked == self.back_card:
+                if self.card_clicked is self.back_card:
                     elapsed_time = pygame.time.get_ticks() - start_time
                     ratio = min(elapsed_time / back_to_com, 1)
                     current_pos = self.card_clicked.rect.center
@@ -277,6 +279,7 @@ class Game:
                                                     current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
                     self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                     pygame.display.flip()
+                    clock.tick(fps)
                     if ratio == 1:
                         return 
                 else:
@@ -288,9 +291,10 @@ class Game:
                                                     current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
                     self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                     pygame.display.flip()
+                    clock.tick(fps)
                     if ratio == 1:
                         return 
-                clock.tick(fps)
+                
 
                           
     # This function is responsible for updating the game state and logic
