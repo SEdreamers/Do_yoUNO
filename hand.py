@@ -10,3 +10,4 @@ class Hand:
 
     def is_empty(self):
         return len(self.cards) == 0
+    
