@@ -153,7 +153,7 @@ class Game:
         self.card_clicked = None
         deck_x = self.screen_size[0] / 20
         deck_y = self.screen_size[0] / 2
-        temp = self.screen_size[0] / 50 + self.screen_size[0] / 12.5
+        temp = -self.screen_size[0] / 40 + self.screen_size[0] / 12.5
         
         # set position
         self.hand_card_pos_temp = [deck_x + (len(self.players[0].hand.cards) - 1) * temp, deck_y]
@@ -176,7 +176,7 @@ class Game:
             count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time) # 타이머 시간 업데이트
             if count_down == 0: # 제한 시간 내에 카드를 내지 못한 경우
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
-                return
+                self.card_clicked = self.back_card
             
             if game_paused == True: pass
             # Calculate the interpolation ratio 
@@ -203,10 +203,11 @@ class Game:
                     elif event.key == 13: ## press entered
                         entered_card = self.players[0].hand.cards[GameUI.cur_card]
                         if entered_card.can_play_on(self.top_card):
+                            self.card_clicked = entered_card
+                            start_time = pygame.time.get_ticks()
                             self.top_card = entered_card
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(entered_card)
-                            return True
                 
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -215,7 +216,6 @@ class Game:
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                        return True
 
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
