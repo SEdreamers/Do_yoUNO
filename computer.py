@@ -32,6 +32,7 @@ class Computer(Player):
         N = Player.count_cards(self)
         for x in range(N):
             self.screen.blit(self.backcard_image,(computer_x+ x*self.computer_height*0.1, computer_y+ i * self.computer_height))
+            
         # print("남은 카드 수:" + str(Player.count_cards(self)))  ##컴퓨터 플레이어의 남은 카드 장수 출력. game.py에서 test로 출력가능. 이 부분 생략. 
     
     def skip_draw(self, i): # draw the skip icon

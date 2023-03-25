@@ -8,9 +8,5 @@ class Hand:
             if card:
                 self.cards.append(card)
 
-    def count(self):
-        return len(self.cards)
-
     def is_empty(self):
         return len(self.cards) == 0
-    
