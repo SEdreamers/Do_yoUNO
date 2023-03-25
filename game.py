@@ -7,6 +7,7 @@ from card import Card
 import innersetting 
 import time 
 import json
+import math
 
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode):
@@ -33,7 +34,7 @@ class Game:
 
         # Draw the Deck image on the screen(back)
         self.back_card = Card(0, "back", self.screen_width, self.screen_height)
-    
+        
         # players 저장
         self.players = []
         # human player 만들기!
@@ -80,8 +81,9 @@ class Game:
         self.data = {
             "hi":1
         }
-
-
+        
+        self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
+        self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
 
 
     def run(self):
@@ -138,10 +140,32 @@ class Game:
 
     # function is responsible for handling user input and events
     def handle_events(self):
-        game_paused = False 
+        game_paused = False
+        # for animation
+        move_speed = 10
+        self.card_clicked = None
+        deck_x = self.screen_size[0] / 20
+        deck_y = self.screen_size[0] / 2
+        temp = self.screen_size[0] / 50 + self.screen_size[0] / 12.5
+        
+        # set position
+        self.hand_card_pos_temp = [deck_x + (len(self.players[0].hand.cards) - 1) * temp, deck_y]
+        self.hand_card_pos = [temp + self.hand_card_pos_temp[0], self.hand_card_pos_temp[1]]
+       
+        # set rect
+        self.back_card.set_position(self.screen_size[0] * 0.2, self.screen_size[1] * 0.2)
+        self.players[0].hand.cards[len(self.players[0].hand.cards) - 1].set_position(self.hand_card_pos_temp[0], self.hand_card_pos_temp[1])
+        self.back_rect = self.back_card.rect
+        self.hand_rect = self.players[0].hand.cards[len(self.players[0].hand.cards) - 1].rect
+        # set distance
+        back_to_hand = math.dist(self.back_card_pos, self.hand_card_pos) / move_speed
+        hand_to_deck = math.dist(self.hand_card_pos_temp, self.top_card_pos) / move_speed
+        start_time = None
+        clock = pygame.time.Clock()
+        fps = 500
         while self.running:
             if game_paused == True: pass
-
+            # Calculate the interpolation ratio 
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
                     with open('play_data.txt','w') as play_data_file: 
@@ -151,25 +175,62 @@ class Game:
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
                         game_paused = True
-                        self.set.run(self.screen_width, self.screen_height)
-                        
+                        self.set.run(self.screen_width, self.screen_height)          
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
+                        self.card_clicked = self.back_card
+                        start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-
                         print('-' + str(self.reverse))     ## reverse 여부. 
-
-                        return True
+                        
+                        
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
+                            self.card_clicked = sprite
+                            start_time = pygame.time.get_ticks()
+                            
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(sprite)
+                            
+                            
+            if self.card_clicked is not None:
+                running = True
+                while running:
+                    if self.card_clicked == self.back_card:
+                        elapsed_time = pygame.time.get_ticks() - start_time
+                        ratio = min(elapsed_time / back_to_hand, 1)
+                        current_pos = self.card_clicked.rect.center
+                        new_pos = self.hand_card_pos
+                        self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                                    current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                        self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                        pygame.display.flip()
+                        if ratio == 1:
+                            self.card_clicked = None
+                            return True 
+                    else:
+                        elapsed_time = pygame.time.get_ticks() - start_time
+                        ratio = min(elapsed_time / hand_to_deck, 1)
+                        current_pos = self.card_clicked.rect.center
+                        new_pos = self.top_card_pos
+                        self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                                    current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                        self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                        pygame.display.flip()
+                        if ratio == 1:
+                            print(self.card_clicked.rect.center)
+                            print(self.top_card_pos)
+                            self.card_clicked = None 
                             return False
-    
+                    clock.tick(fps)
+
+
+            
+
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
         while self.running:
