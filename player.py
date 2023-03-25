@@ -8,4 +8,4 @@ class Player:
     def get_hand(self):
         return self.hand
     def count_cards(self):
-        return self.hand.count()
+        return len(self.hand.cards)
