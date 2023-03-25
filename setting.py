@@ -61,11 +61,13 @@ class Setting():
         self.size4_text_rect = self.size4_text_surface.get_rect()
 
         self.reposition(self.screen)
-
+ 
 
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         self.data ={
+            
 
+ 
         }
 
     def run(self, screen_width, screen_height):
@@ -87,7 +89,7 @@ class Setting():
                     with open('setting_data.txt','w') as setting_data_file: 
                         json.dump(self.data, setting_data_file)
                     self.running = False
-                    
+
             self.screen.fill('black')
             # 제목 또는 버튼 출력
             self.screen.blit(self.game_title, self.game_title_rect)

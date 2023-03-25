@@ -52,11 +52,26 @@ class Game:
         self.skip = False
 
 
-        self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
-        self.lst = self.firstDeck.showlist()
-        not_first_top_list = [x for x in self.lst if "reverse" or "draw2" or "draw4" or "wild" or "wild_draw4" or "wild_swap" in x]
-        # print(not_first_top_list)
+
+        # Draw the top card image on the screen
         self.top_card = self.deck.pop()  
+
+
+       
+        self.font = pygame.font.SysFont("arial", self.screen_size[0] // 45, True)
+        ## self.font는 uno button 구현 시 사용됨. 
+        # create a UNO button
+        button_width = self.screen_size[0] / 12.5
+        button_height = self.screen_size[0] / 25
+        self.uno_button = pygame.Surface((button_width, button_height))
+        self.uno_button.fill('black')
+        # add text to the button
+        self.text = self.font.render("UNO", True, 'white')
+        self.text_rect = self.text.get_rect(center=(button_width//2, button_height//2))
+        self.uno_button.blit(self.text, self.text_rect)
+        
+
+
 
 
         # 시작 카드(top_card) 동작 처리
@@ -88,10 +103,10 @@ class Game:
         pygame.init()
 
         if self.skip: # 시작 카드가 skip 카드인 경우
-            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip)
+            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.uno_button)
             self.skip = False
         else:
-            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.uno_button)
         
         try: 
             with open('play_data.txt','w') as play_data_file: 
@@ -101,7 +116,27 @@ class Game:
 
 
 
+
+
+        
         while self.running:
+
+            
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = pygame.mouse.get_pressed()
+            # 메뉴 시각화(붉은색으로 변경)
+            if self.text_rect.collidepoint(mouse_pos):
+                self.text = self.font.render("UNO", True, 'red')
+            else:
+                self.text = self.font.render("UNO", True, 'white')
+            # 마우스 클릭 시
+            if self.text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                print(1)
+                pass 
+
+             
+
+
             # Human turn인지 Computer turn인지 구분
             if isinstance(self.players[self.turn_num], Human): # Human turn
                 print('Human turn:' + str(self.turn_num))
@@ -114,17 +149,17 @@ class Game:
                 self.update()
                 
             
-            '''
+            
             # 카드 개수와 종류 출력하는 test
             for i in range(len(self.players)):
                 print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
                 print(self.players[i].hand.cards)
-            '''
             
-
-
             self.render()
 
+            
+            
+            
             # turn 전환
             if not self.reverse:
                 self.turn_num += 1
@@ -134,6 +169,9 @@ class Game:
                 self.turn_num -= 1
                 if self.turn_num < 0:
                     self.turn_num = len(self.players) - 1
+
+            
+            pygame.display.flip()
         pygame.quit()
 
     # function is responsible for handling user input and events
@@ -141,6 +179,22 @@ class Game:
         game_paused = False 
         while self.running:
             if game_paused == True: pass
+
+            
+            ## 내 손에 카드가 한 장 남은 경우. setting화면 뜸.
+            if len(self.players[self.turn_num].hand.cards) == 1: 
+                    game_paused = True
+                    self.set.run(self.screen_width, self.screen_height)
+
+            ## 내 손에 카드가 더 이상 없으면 게임 종료. setting화면 뜸. 
+            if len(self.players[self.turn_num].hand.cards) == 0: 
+                    game_paused = True
+                    self.set.run(self.screen_width, self.screen_height)
+            
+            
+
+
+
 
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
@@ -152,17 +206,17 @@ class Game:
                         print("Pause!")
                         game_paused = True
                         self.set.run(self.screen_width, self.screen_height)
-                        
-                    
+                
+
+
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.back_card.rect.collidepoint(pos):
-                        self.players[self.turn_num].hand.cards.append(self.deck.pop())
-
+                        self.players[self.turn_num].hand.cards.append(self.deck.pop())                                ## 카드 추가 
                         print('-' + str(self.reverse))     ## reverse 여부. 
-
                         return True
-                    clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
+                    
+                    clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]  ## 카드 제출
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
                             self.top_card = sprite 
@@ -174,6 +228,7 @@ class Game:
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
         while self.running:
             hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
+
             for element in hand_card_list:  
                 if  element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                     time.sleep(1.5)
@@ -207,12 +262,8 @@ class Game:
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip)
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.uno_button)
         self.skip = False
-
-
-
-
 
 
 

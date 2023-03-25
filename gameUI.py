@@ -1,4 +1,3 @@
-from turtle import color
 import pygame
 import colorBox
 from human import Human
@@ -9,7 +8,10 @@ class GameUI:
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
-        font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
+        self.font = pygame.font.SysFont("arial", self.screen_size[0] // 45, True)
+        ## self.font는 uno button 구현 시 사용됨. 
+       
+        
         self.color_blind_mode = color_blind_mode
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -54,24 +56,21 @@ class GameUI:
         self.BOX_WIDTH = self.screen_size[0] / 25
         self.BOX_HEIGHT = self.screen_size[0] / 25
 
-        # create a UNO button
-        button_width = self.screen_size[0] / 12.5
-        button_height = self.screen_size[0] / 25
-        self.uno_button = pygame.Surface((button_width, button_height))
-        self.uno_button.fill(WHITE)
+       
         
         # create a direction icon
         self.direction_icon = pygame.image.load("images/direction.png")
         self.direction_icon = pygame.transform.scale(self.direction_icon, (self.screen_size[0] // 25, self.screen_size[0] // 25 * 4))
 
-        # add text to the button
-        font = pygame.font.Font(None, self.screen_size[0] // 42)
-        text = font.render("UNO", True, BLACK)
-        text_rect = text.get_rect(center=(button_width//2, button_height//2))
-        self.uno_button.blit(text, text_rect)
+        
 
 
-    def display(self, players, turn_num, top_card, back_card, reverse, skip):
+        
+
+
+
+
+    def display(self, players, turn_num, top_card, back_card, reverse, skip, uno_button):
         # card 위치 설정(player card)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
@@ -107,10 +106,15 @@ class GameUI:
 
         # Draw the box showing color of the card
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))
+        
+
+
 
         #  Draw the UNO button
-        self.screen.blit(self.uno_button, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27))
-            
+        self.screen.blit(uno_button, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27))
+        
+
+
         # Draw the direction icon
         if reverse:
             direction_icon = pygame.transform.rotate(self.direction_icon, 180)
@@ -127,6 +131,13 @@ class GameUI:
                 players[turn_num].skip_draw()
             else: # turn을 skip 당한 플레이어가 Computer일 경우
                 players[turn_num].skip_draw(int(players[turn_num].name[8]))
-        
+
+
+       
         # Update the screen
-        pygame.display.flip()
+        pygame.display.flip()   ## flip()은 전체 surface 업데이트, update()는 특정 부분만 update. 
+    
+
+        
+
+        
