@@ -25,7 +25,7 @@ class Setting():
 
         self.actions = {'color_blind_mode': False}
         save = util.load_save()
-        self.control_handler = controls.Controls_Handler(save)
+        # self.control_handler = controls.Controls_Handler(save)
 
 
         # Set the font for the buttons
@@ -244,7 +244,7 @@ class Setting():
 
 
 
-            self.control_handler.update(self.actions)
+            # self.control_handler.update(self.actions)
             # Update the display
             pygame.display.update()
             util.reset_keys(self.actions)
