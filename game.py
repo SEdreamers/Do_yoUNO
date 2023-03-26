@@ -329,6 +329,11 @@ class Game:
         back_to_com = math.dist(self.back_card_pos, self.computer_pos) / move_speed
         com_to_deck = math.dist(self.computer_pos_temp, self.top_card_pos) / move_speed
         
+        if len(self.players[self.turn_num].hand.cards) == 1:
+            is_uno_clicked = random.choices(range(0,2), weights=[1,9]) # 컴퓨터 플레이어의 uno 버튼 누를 확률 90%로 설정
+            if not is_uno_clicked: # 카드가 1장 남았는데 uno 버튼을 누르지 않은 경우 카드 1장 강제 부여
+                self.players[self.turn_num].hand.cards.append(self.deck.pop())
+            
             
         while self.running:
             elapsed_time = (pygame.time.get_ticks() - start_time2) / 1000
