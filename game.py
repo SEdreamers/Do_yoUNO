@@ -114,7 +114,7 @@ class Game:
 
         while self.running:
             # Human turn인지 Computer turn인지 구분
-            if isinstance(self.players[self.turn_num], Human): # Human turn
+            if self.turn_num == 0: # Human turn
                 print('Human turn:' + str(self.turn_num))
                 is_draw = self.handle_events()
                 if not is_draw: # 카드를 낸 경우만
@@ -207,6 +207,7 @@ class Game:
             if count_down == 0: # 제한 시간 내에 카드를 내지 못한 경우
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
+
             elapsed_time = (pygame.time.get_ticks() - start_time2) / 1000
             if int(elapsed_time) > delay_time:
                 elapsed_time = delay_time
@@ -219,6 +220,7 @@ class Game:
             if int(elapsed_time) == delay_time and len(self.players[self.turn_num].hand.cards) == 1: 
                 if self.players[self.turn_num].name not in self.clicked_uno: # 카드가 1장 남았는데 delay time내에 uno 버튼을 누르지 않은 경우 카드 1장 강제 부여
                     self.players[self.turn_num].hand.cards.append(self.deck.pop())
+
             
             if game_paused == True: pass
             # Calculate the interpolation ratio 
