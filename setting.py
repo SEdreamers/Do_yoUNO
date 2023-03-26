@@ -82,11 +82,64 @@ class Setting():
         
 
 
+        
+        #메뉴 상수
+        menu_flag = 0
         while self.running:
             pygame.init()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                    
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        menu_flag -= 1
+                    elif event.key == pygame.K_DOWN:
+                        menu_flag += 1
+                    elif event.key == 13:
+                        if menu_flag == 0:
+                            print("Color blind mode")
+                            self.color_blind_mode = True
+                        elif menu_flag == 1:
+                            print("Default mode")
+                            window_size = (800, 600)
+                            screen = pygame.display.set_mode(window_size)
+                            self.color_blind_mode = False 
+                            # self.gets()
+                            self.reposition(screen)
+                            
+                        elif menu_flag == 2:
+                            time.sleep(0.3)
+                            main.main(window_size[0], window_size[1],self.color_blind_mode)
+                            
+                        elif menu_flag == 3: 
+                            self.running = False
+                            
+                        elif menu_flag == 4:
+                            window_size = self.screen_sizes[0]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size1")
+                        elif menu_flag == 5:
+                            window_size = self.screen_sizes[1]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size2")
+                        elif menu_flag == 6:
+                            window_size = self.screen_sizes[2]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size3")
+                        elif menu_flag == 7:
+                            window_size = self.screen_sizes[3]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size4") 
+                menu_flag %= 8        
+                    
+                    
+                    
+                    
                     
             self.screen.fill('black')
             # 제목 또는 버튼 출력
@@ -105,38 +158,38 @@ class Setting():
             mouse_click = pygame.mouse.get_pressed()
 
             ## 색깔 변화. 
-            if self.blind_text_rect.collidepoint(mouse_pos):
+            if self.blind_text_rect.collidepoint(mouse_pos) or menu_flag == 0:
                 self.blind_text_surface = self.font.render("Color Blind Mode", True, "red")
             else: self.blind_text_surface = self.font.render("Color Blind Mode", True, "white")
 
-            if self.default_text_rect.collidepoint(mouse_pos):
+            if self.default_text_rect.collidepoint(mouse_pos) or menu_flag == 1:
                 self.default_text_surface = self.font.render("Default Setting", True, "red")
             else: self.default_text_surface = self.font.render("Default Setting", True, "white")
 
-            if self.back_text_rect.collidepoint(mouse_pos):
+            if self.back_text_rect.collidepoint(mouse_pos) or menu_flag == 2:
                 self.back_text_surface = self.font.render("Go Back", True, "red")
             else: self.back_text_surface = self.font.render("Go Back", True, "white")
 
-            if self.exit_text_rect.collidepoint(mouse_pos):
+            if self.exit_text_rect.collidepoint(mouse_pos) or menu_flag == 3:
                 self.exit_text_surface = self.font.render("Exit", True, "red")
             else: self.exit_text_surface = self.font.render("Exit", True, "white")
 
 
 
 
-            if self.size1_text_rect.collidepoint(mouse_pos):
+            if self.size1_text_rect.collidepoint(mouse_pos) or menu_flag == 4:
                 self.size1_text_surface = self.screen_sizes_font.render("size1", True, "red")
             else: self.size1_text_surface = self.screen_sizes_font.render("size1", True, "white")
 
-            if self.size2_text_rect.collidepoint(mouse_pos):
+            if self.size2_text_rect.collidepoint(mouse_pos) or menu_flag == 5:
                 self.size2_text_surface = self.screen_sizes_font.render("size2", True, "red")
             else: self.size2_text_surface = self.screen_sizes_font.render("size2", True, "white")
             
-            if self.size3_text_rect.collidepoint(mouse_pos):
+            if self.size3_text_rect.collidepoint(mouse_pos) or menu_flag == 6:
                 self.size3_text_surface = self.screen_sizes_font.render("size3", True, "red")
             else: self.size3_text_surface = self.screen_sizes_font.render("size3", True, "white")
             
-            if self.size4_text_rect.collidepoint(mouse_pos):
+            if self.size4_text_rect.collidepoint(mouse_pos) or menu_flag == 7:
                 self.size4_text_surface = self.screen_sizes_font.render("size4", True, "red")
             else: self.size4_text_surface = self.screen_sizes_font.render("size4", True, "white")
 

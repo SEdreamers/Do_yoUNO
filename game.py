@@ -344,6 +344,10 @@ class Game:
                         self.clicked_uno.append(self.players[idx+1].name)
             # print(self.random_delay)
             for event in pygame.event.get(): 
+                if event.type == pygame.QUIT:
+                    with open('play_data.txt','w') as play_data_file: 
+                        json.dump(self.data, play_data_file)
+                    self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
