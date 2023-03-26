@@ -87,10 +87,26 @@ class GameUI:
         self.screen.blit(self.background_image, (0, 0))
         self.screen.blit(self.player_background_image, (0, self.screen_size[1] * 0.6))
         self.screen.blit(self.computer_background_image, (self.screen_size[0] - self.computer_width, 0))
-            
+
         # Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
         for i in range(1, len(players)):
             players[i].draw(i - 1)
+        
+        # draw turn indicator
+        if turn_num == 0:
+            image_rect = self.player_background_image.get_rect()
+            rect = pygame.Rect(0, 0, image_rect.width, image_rect.height)
+            rect_surface = pygame.Surface((image_rect.width, image_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(rect_surface, (0, 255, 0), rect, 5)
+            self.screen.blit(rect_surface, (0, self.screen_size[1] * 0.6))
+        else:
+            image_rect = self.computer_image.get_rect()
+            computer_x = self.screen_size[0] - self.computer_width
+            computer_y = 0
+            rect = pygame.Rect(0, 0, image_rect.width, image_rect.height)
+            rect_surface = pygame.Surface((image_rect.width, image_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(rect_surface, (0, 255, 0), rect, 5)
+            self.screen.blit(rect_surface, (computer_x, computer_y + (turn_num - 1) * self.computer_height))
                         
         # Draw the Deck image on the screen(back)
         back_card.set_position(self.screen_size[0] * 0.2, self.screen_size[1] * 0.2)

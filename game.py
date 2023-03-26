@@ -46,7 +46,7 @@ class Game:
         # add computers(player 숫자 받아서 설정)
 
         computers = []
-        for i in range(1):
+        for i in range(2):
             computers.append(Computer(self.screen, self.deck, i))
         self.players.extend(computers)
 
@@ -109,7 +109,7 @@ class Game:
 
         while self.running:
             # Human turn인지 Computer turn인지 구분
-            if isinstance(self.players[self.turn_num], Human): # Human turn
+            if self.turn_num == 0: # Human turn
                 print('Human turn:' + str(self.turn_num))
                 is_draw = self.handle_events()
                 if not is_draw: # 카드를 낸 경우만
@@ -177,6 +177,7 @@ class Game:
             if count_down == 0: # 제한 시간 내에 카드를 내지 못한 경우
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
+                start_time = pygame.time.get_ticks()
             
             if game_paused == True: pass
             # Calculate the interpolation ratio 
