@@ -59,8 +59,6 @@ class GameUI:
         self.BOX_WIDTH = self.screen_size[0] / 25
         self.BOX_HEIGHT = self.screen_size[0] / 25
 
-        button_width = self.screen_size[0] / 12.5
-        button_height = self.screen_size[0] / 25
         '''
         # create a UNO button
        
@@ -75,6 +73,17 @@ class GameUI:
         # create a direction icon
         self.direction_icon = pygame.image.load("images/direction.png")
         self.direction_icon = pygame.transform.scale(self.direction_icon, (self.screen_size[0] // 25, self.screen_size[0] // 25 * 4))
+
+        # create buttons colorbox
+        self.blue_box = colorBox.ColorBox('blue', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
+        self.green_box = colorBox.ColorBox('green', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
+        self.red_box = colorBox.ColorBox('red', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
+        self.yellow_box = colorBox.ColorBox('yellow', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
+
+        self.blue_box_button = self.blue_box.image
+        self.green_box_button = self.green_box.image
+        self.red_box_button = self.red_box.image
+        self.yellow_box_button = self.yellow_box.image
 
         '''
         # add text to the button
@@ -174,6 +183,23 @@ class GameUI:
             self.screen.blit(timer, (self.screen_size[0] * 0.63, self.screen_size[1] * 0.02))
         else: # 컴퓨터 플레이어일 때 
             self.screen.blit(timer, (-100, -100)) # 화면 밖으로 타이머 배치
+
+        # choose color when wild card
+        if color_box.name == 'black': # and isinstance(players[turn_num], Human)
+            surface = pygame.Surface((self.screen_size[0] / 1.5, self.screen_size[1] / 1.5))
+
+            font = pygame.font.SysFont("arial", self.screen_size[0] // 30, True)
+            text_surface = font.render("CHOOSE COLOR", True, (255, 255, 255))
+            surface.blit(text_surface, (surface.get_width() / 3, surface.get_height() / 8))
+
+            surface.blit(self.blue_box_button, (surface.get_width() / 8, surface.get_height() / 2))
+            surface.blit(self.green_box_button, (surface.get_width() * 3 / 8, surface.get_height() / 2))
+            surface.blit(self.red_box_button, (surface.get_width() * 5 / 8, surface.get_height() / 2))
+            surface.blit(self.yellow_box_button, (surface.get_width() * 7 / 8, surface.get_height() / 2))
+
+            self.screen.blit(surface, (self.screen_size[0] / 6.666, self.screen_size[1] / 6.666))
+        else:
+            pass
 
         # Update the screen
         pygame.display.flip()
