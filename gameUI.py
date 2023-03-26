@@ -8,7 +8,7 @@ class GameUI:
     # for keyboard selection
     cur_card = 0
 
-    def __init__(self, screen_width, screen_height, color_blind_mode):
+    def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
          # Color
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
@@ -59,21 +59,30 @@ class GameUI:
         self.BOX_WIDTH = self.screen_size[0] / 25
         self.BOX_HEIGHT = self.screen_size[0] / 25
 
-        # create a UNO button
         button_width = self.screen_size[0] / 12.5
         button_height = self.screen_size[0] / 25
+        '''
+        # create a UNO button
+       
         self.uno_button = pygame.Surface((button_width, button_height))
         self.uno_button.fill(WHITE)
+        '''
+        # create a UNO button
+        self.uno_btn = uno_btn
+        self.uno_btn = pygame.transform.scale(self.uno_btn, (self.screen_size[0] / 12.5, self.screen_size[0] * 0.054))
+        
         
         # create a direction icon
         self.direction_icon = pygame.image.load("images/direction.png")
         self.direction_icon = pygame.transform.scale(self.direction_icon, (self.screen_size[0] // 25, self.screen_size[0] // 25 * 4))
 
+        '''
         # add text to the button
         font = pygame.font.Font(None, self.screen_size[0] // 42)
         text = font.render("UNO", True, BLACK)
         text_rect = text.get_rect(center=(button_width//2, button_height//2))
         self.uno_button.blit(text, text_rect)
+        '''
 
 
     def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time):
@@ -87,10 +96,26 @@ class GameUI:
         self.screen.blit(self.background_image, (0, 0))
         self.screen.blit(self.player_background_image, (0, self.screen_size[1] * 0.6))
         self.screen.blit(self.computer_background_image, (self.screen_size[0] - self.computer_width, 0))
-            
+
         # Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
         for i in range(1, len(players)):
             players[i].draw(i - 1)
+        
+        # draw turn indicator
+        if turn_num == 0:
+            image_rect = self.player_background_image.get_rect()
+            rect = pygame.Rect(0, 0, image_rect.width, image_rect.height)
+            rect_surface = pygame.Surface((image_rect.width, image_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(rect_surface, (0, 255, 0), rect, 5)
+            self.screen.blit(rect_surface, (0, self.screen_size[1] * 0.6))
+        else:
+            image_rect = self.computer_image.get_rect()
+            computer_x = self.screen_size[0] - self.computer_width
+            computer_y = 0
+            rect = pygame.Rect(0, 0, image_rect.width, image_rect.height)
+            rect_surface = pygame.Surface((image_rect.width, image_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(rect_surface, (0, 255, 0), rect, 5)
+            self.screen.blit(rect_surface, (computer_x, computer_y + (turn_num - 1) * self.computer_height))
                         
         # Draw the Deck image on the screen(back)
         back_card.set_position(self.screen_size[0] * 0.2, self.screen_size[1] * 0.2)
@@ -114,7 +139,7 @@ class GameUI:
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))
 
         #  Draw the UNO button
-        self.screen.blit(self.uno_button, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27))
+        self.screen.blit(self.uno_btn, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27))
             
         # Draw the direction icon
         if reverse:
