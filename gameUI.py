@@ -4,12 +4,17 @@ import colorBox
 from human import Human
 
 class GameUI:
-    def __init__(self, screen_width, screen_height, color_blind_mode):
+
+    # for keyboard selection
+    cur_card = 0
+
+    def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
          # Color
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
         font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
+        self.timer_font = pygame.font.SysFont("arial", self.screen_size[0]  // 25, True)
         self.color_blind_mode = color_blind_mode
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -48,30 +53,39 @@ class GameUI:
         # set up the deck position and spacing
         self.deck_x = self.screen_size[0] / 20
         self.deck_y = self.screen_size[0] / 2
-        self.deck_spacing = self.screen_size[0] / 100
+        self.deck_spacing = -self.screen_size[0] / 40
 
         # create a small box to display the color of the card
         self.BOX_WIDTH = self.screen_size[0] / 25
         self.BOX_HEIGHT = self.screen_size[0] / 25
 
-        # create a UNO button
         button_width = self.screen_size[0] / 12.5
         button_height = self.screen_size[0] / 25
+        '''
+        # create a UNO button
+       
         self.uno_button = pygame.Surface((button_width, button_height))
         self.uno_button.fill(WHITE)
+        '''
+        # create a UNO button
+        self.uno_btn = uno_btn
+        self.uno_btn = pygame.transform.scale(self.uno_btn, (self.screen_size[0] / 12.5, self.screen_size[0] * 0.054))
+        
         
         # create a direction icon
         self.direction_icon = pygame.image.load("images/direction.png")
         self.direction_icon = pygame.transform.scale(self.direction_icon, (self.screen_size[0] // 25, self.screen_size[0] // 25 * 4))
 
+        '''
         # add text to the button
         font = pygame.font.Font(None, self.screen_size[0] // 42)
         text = font.render("UNO", True, BLACK)
         text_rect = text.get_rect(center=(button_width//2, button_height//2))
         self.uno_button.blit(text, text_rect)
+        '''
 
 
-    def display(self, players, turn_num, top_card, back_card, reverse, skip):
+    def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time):
         # card 위치 설정(player card)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
@@ -82,10 +96,26 @@ class GameUI:
         self.screen.blit(self.background_image, (0, 0))
         self.screen.blit(self.player_background_image, (0, self.screen_size[1] * 0.6))
         self.screen.blit(self.computer_background_image, (self.screen_size[0] - self.computer_width, 0))
-            
+
         # Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
         for i in range(1, len(players)):
             players[i].draw(i - 1)
+        
+        # draw turn indicator
+        if turn_num == 0:
+            image_rect = self.player_background_image.get_rect()
+            rect = pygame.Rect(0, 0, image_rect.width, image_rect.height)
+            rect_surface = pygame.Surface((image_rect.width, image_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(rect_surface, (0, 255, 0), rect, 5)
+            self.screen.blit(rect_surface, (0, self.screen_size[1] * 0.6))
+        else:
+            image_rect = self.computer_image.get_rect()
+            computer_x = self.screen_size[0] - self.computer_width
+            computer_y = 0
+            rect = pygame.Rect(0, 0, image_rect.width, image_rect.height)
+            rect_surface = pygame.Surface((image_rect.width, image_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(rect_surface, (0, 255, 0), rect, 5)
+            self.screen.blit(rect_surface, (computer_x, computer_y + (turn_num - 1) * self.computer_height))
                         
         # Draw the Deck image on the screen(back)
         back_card.set_position(self.screen_size[0] * 0.2, self.screen_size[1] * 0.2)
@@ -109,7 +139,7 @@ class GameUI:
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))
 
         #  Draw the UNO button
-        self.screen.blit(self.uno_button, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27))
+        self.screen.blit(self.uno_btn, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27))
             
         # Draw the direction icon
         if reverse:
@@ -117,7 +147,7 @@ class GameUI:
         else:
             direction_icon = self.direction_icon
         direction_rect = direction_icon.get_rect()
-        direction_rect.x = self.screen_size[0] - self.screen_size[0] / 3.333 - 40
+        direction_rect.x = self.screen_size[0] * 0.64
         direction_rect.centery = self.screen.get_rect().centery
         self.screen.blit(direction_icon, direction_rect)
         
@@ -127,6 +157,25 @@ class GameUI:
                 players[turn_num].skip_draw()
             else: # turn을 skip 당한 플레이어가 Computer일 경우
                 players[turn_num].skip_draw(int(players[turn_num].name[8]))
+
+        pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
         
+        
+        # draw the timer
+        elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
+        remaining_time =int(16 - elapsed_time)
+        if remaining_time > 9:
+            timer = self.timer_font.render(str(remaining_time), True, pygame.Color('black'))
+        elif remaining_time > 3:
+            timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('black'))
+        else:
+            timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('red'))
+        if isinstance(players[turn_num], Human): # 인간 플레이어일 때
+            self.screen.blit(timer, (self.screen_size[0] * 0.63, self.screen_size[1] * 0.02))
+        else: # 컴퓨터 플레이어일 때 
+            self.screen.blit(timer, (-100, -100)) # 화면 밖으로 타이머 배치
+
         # Update the screen
         pygame.display.flip()
+        
+        return 16 - int(elapsed_time) # 남은 시간 return
