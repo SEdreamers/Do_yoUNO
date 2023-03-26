@@ -42,12 +42,12 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
 
     #메뉴 상수
     menu_flag = 0
-    set = setting.Setting(screen_width, screen_height)
 
     
     # 게임 루프
     play = True
     while play:
+        
         
         # 이벤트 처리
         for event in pygame.event.get():
@@ -64,6 +64,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
                         uno_game = game.Game(screen_width, screen_height, color_blind_mode)
                         uno_game.run()
                     elif menu_flag == 1:
+                        set = setting.Setting(screen_width, screen_height)
                         set.run(screen_width, screen_height)
                     elif menu_flag == 2:
                         
@@ -97,14 +98,12 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         else:
             exit_text = font.render("Exit", True, WHITE)
 
-
-        
-
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
             uno_game = game.Game(screen_width, screen_height, color_blind_mode)
             uno_game.run()
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
+            set = setting.Setting(screen_width, screen_height)
             set.run(screen_width, screen_height)
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
             play = False

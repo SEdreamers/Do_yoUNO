@@ -8,7 +8,9 @@ import json
 class Setting():
     def __init__(self, screen_width, screen_height):
          # Set the default size of the window
-        self.window_size = (screen_width, screen_height)
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.window_size = (self.screen_width, self.screen_height)
         # Create the window
         self.screen = pygame.display.set_mode(self.window_size)
         # Set the title of the window
@@ -18,8 +20,8 @@ class Setting():
 
         pygame.init()
         # Set the font for the buttons
-        self.font = pygame.font.SysFont("arial", screen_width // 20, True)
-        self.screen_sizes_font = pygame.font.SysFont("arial", screen_width // 40, True)
+        self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
+        self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
         
         # Set the button sizes
         self.screen_sizes = [(400, 300), (600, 450), (800, 600), (1000, 750)]
