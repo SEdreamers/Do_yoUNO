@@ -21,6 +21,12 @@ class Human(Player):
                 self.screen.blit(card.default_image, card.rect)
             else:              
                 self.screen.blit(card.blind_image, card.rect)
+
+    def draw_one(self, cur_card):
+        if not self.color_blind_mode:                
+            self.screen.blit(self.hand.cards[cur_card].default_image, self.hand.cards[cur_card].rect)
+        else:              
+            self.screen.blit(self.hand.cards[cur_card].blind_image, self.hand.cards[cur_card].rect)
                 
     def skip_draw(self): # draw the skip icon
         skip_x = (self.screen_size[0] - self.screen_size[0] / 3.333) / 2

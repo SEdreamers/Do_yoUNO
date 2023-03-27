@@ -252,6 +252,9 @@ class Game:
                             self.top_card = entered_card
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(entered_card)
+                            if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
+                                GameUI.cur_card = len(self.players[0].hand.cards) - 1
+                                self.render()
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -261,15 +264,18 @@ class Game:
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
 
                     clicked_sprites = [s for s in self.players[self.turn_num].hand.cards if s.rect.collidepoint(pos)]
-                    
+                    play = True
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
                             self.card_clicked = sprite
                             start_time = pygame.time.get_ticks()   
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
-                            self.players[self.turn_num].hand.cards.remove(sprite)           
-                    
+                            self.players[self.turn_num].hand.cards.remove(sprite)
+                        if sprite.color == 'black':
+                            while play:
+                                play = False
+
                     if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
                         if self.players[self.turn_num].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[self.turn_num].name)
@@ -411,13 +417,6 @@ class Game:
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
-        # 색 없는 기술카드 동작
-        elif self.top_card.value == 'wild_draw4':
-            pass
-        elif self.top_card.value == 'wild_swap':
-            pass
-        elif self.top_card.value == 'wild':
-            pass
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
