@@ -205,6 +205,7 @@ class Game:
             count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time) # 타이머 시간 업데이트
             
             if count_down == 0: # 제한 시간 내에 카드를 내지 못한 경우
+                start_time = pygame.time.get_ticks()
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
 
