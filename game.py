@@ -205,7 +205,7 @@ class Game:
         while self.running:
             count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time) # 타이머 시간 업데이트
             
-            if count_down == 0: # 제한 시간 내에 카드를 내지 못한 경우
+            if count_down <= 0: # 제한 시간 내에 카드를 내지 못한 경우
                 start_time = pygame.time.get_ticks()
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
@@ -242,6 +242,9 @@ class Game:
                         print("Pause!")
                         game_paused = True
                         self.set.run(self.screen_width, self.screen_height)
+                    elif event.key == pygame.K_q:
+                        self.running = False
+                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
                     elif event.key == pygame.K_LEFT:
                         GameUI.cur_card -= 1
                         if GameUI.cur_card < 0:
@@ -287,6 +290,28 @@ class Game:
                                             self.top_card.color = 'yellow'
                                             self.render()
                                             play = False
+                                    elif event.type == pygame.KEYDOWN:
+                                        if event.key == pygame.K_RIGHT:
+                                            GameUI.color_flag += 1
+                                            GameUI.color_flag %= 4
+                                            self.render()
+                                        elif event.key == pygame.K_LEFT:
+                                            GameUI.color_flag -= 1
+                                            GameUI.color_flag %= 4
+                                            self.render()
+                                        elif event.key == 13:
+                                            if GameUI.color_flag == 0:
+                                                self.top_card.color = 'blue'
+                                            elif GameUI.color_flag == 1:
+                                                self.top_card.color = 'green'
+                                            elif GameUI.color_flag == 2:
+                                                self.top_card.color = 'red'
+                                            elif GameUI.color_flag == 3:
+                                                self.top_card.color = 'yellow'
+                                            self.render()
+                                            play == False
+                                            return False
+                
                 # mouse handling    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -329,6 +354,27 @@ class Game:
                                         self.top_card.color = 'yellow'
                                         self.render()
                                         play = False
+                                elif event.type == pygame.KEYDOWN:
+                                    if event.key == pygame.K_RIGHT:
+                                        GameUI.color_flag += 1
+                                        GameUI.color_flag %= 4
+                                        self.render()
+                                    elif event.key == pygame.K_LEFT:
+                                        GameUI.color_flag -= 1
+                                        GameUI.color_flag %= 4
+                                        self.render()
+                                    elif event.key == 13:
+                                        if GameUI.color_flag == 0:
+                                            self.top_card.color = 'blue'
+                                        elif GameUI.color_flag == 1:
+                                            self.top_card.color = 'green'
+                                        elif GameUI.color_flag == 2:
+                                            self.top_card.color = 'red'
+                                        elif GameUI.color_flag == 3:
+                                            self.top_card.color = 'yellow'
+                                        self.render()
+                                        play == False
+                                        return False
 
                     if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
                         if self.players[self.turn_num].name not in self.clicked_uno:

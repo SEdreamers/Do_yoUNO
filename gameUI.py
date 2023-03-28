@@ -8,6 +8,7 @@ class GameUI:
     # for keyboard selection
     cur_card = 0
     exit_flag = 0
+    color_flag = 0
 
     def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
          # Color
@@ -186,6 +187,7 @@ class GameUI:
             else: # turn을 skip 당한 플레이어가 Computer일 경우
                 players[turn_num].skip_draw(int(players[turn_num].name[8]))
 
+        # draw current card selection
         pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
         
         
@@ -225,6 +227,15 @@ class GameUI:
         self.exit_menu_rect.x = self.screen_size[0] / 80
         self.exit_menu_rect.y = self.screen_size[1] / 60
         self.screen.blit(self.exit_menu, self.exit_menu_rect)
+
+        if color_box.name == 'black' and GameUI.color_flag == 0:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 4, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
+        elif color_box.name == 'black' and GameUI.color_flag == 1:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 2.408, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
+        elif color_box.name == 'black' and GameUI.color_flag == 2:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 1.716, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
+        elif color_box.name == 'black' and GameUI.color_flag == 3:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 1.335, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
 
         # Update the screen
         pygame.display.flip()
