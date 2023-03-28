@@ -7,13 +7,14 @@ class GameUI:
 
     # for keyboard selection
     cur_card = 0
+    exit_flag = 0
 
     def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
          # Color
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
-        self.font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
+        self.font = pygame.font.SysFont("arial", self.screen_size[0] // 30, True)
         self.timer_font = pygame.font.SysFont("arial", self.screen_size[0]  // 25, True)
         self.color_blind_mode = color_blind_mode
         # Set up the game screen
@@ -216,6 +217,14 @@ class GameUI:
             self.screen.blit(self.surface, (self.screen_size[0] / 6, self.screen_size[1] / 6))
         else:
             pass
+
+        self.exit_menu = self.font.render("Exit", True, 'black')
+        if GameUI.exit_flag == 1:
+            self.exit_menu = self.font.render("Exit", True, 'red')
+        self.exit_menu_rect = self.exit_menu.get_rect()
+        self.exit_menu_rect.x = self.screen_size[0] / 80
+        self.exit_menu_rect.y = self.screen_size[1] / 60
+        self.screen.blit(self.exit_menu, self.exit_menu_rect)
 
         # Update the screen
         pygame.display.flip()

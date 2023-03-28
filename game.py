@@ -1,4 +1,5 @@
 import pygame
+import main
 from deck import Deck
 from human import Human
 from computer import Computer
@@ -226,10 +227,16 @@ class Game:
             if game_paused == True: pass
             # Calculate the interpolation ratio 
             for event in pygame.event.get(): 
+                pos = pygame.mouse.get_pos()
+                if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
+                    GameUI.exit_flag = 1
+                else:
+                    GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
                     with open('play_data.txt','w') as play_data_file: 
                         json.dump(self.data, play_data_file)
                     self.running = False
+                # keyboard handling
                 elif event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
@@ -280,9 +287,10 @@ class Game:
                                             self.top_card.color = 'yellow'
                                             self.render()
                                             play = False
-                    
+                # mouse handling    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
+                    print(pos)
                     if self.back_card.rect.collidepoint(pos):
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
@@ -326,6 +334,10 @@ class Game:
                         if self.players[self.turn_num].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[self.turn_num].name)
                         # print(clicked_uno)
+                    # exit 버튼이 클릭 된 경우
+                    if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
+                        self.running = False
+                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
                             
                             
             if self.card_clicked is not None:
