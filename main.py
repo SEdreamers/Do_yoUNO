@@ -12,17 +12,20 @@ RED = (255, 0, 0)
 
 def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     pygame.init()
-
-
+    
     try:
-            with open('setting_data.json') as game_file:
-                data = json.load(game_file)
-                color = data['color_blind_mode']     ## 저장된 값 불러오기. 
-                size = data["size"] 
-    except: pass 
+        with open('setting_data.json','w') as game_file:
+            data = json.load(game_file)
+            color = data['color_blind_mode']     ## 저장된 값 불러오기. 
+            size = data["size"]
+            screen = pygame.display.set_mode(size[0],size[1])
+    except: 
+        print("No file created yet!")
+        screen = pygame.display.set_mode(screen_width, screen_height)
+        set = setting.Setting(screen_width,screen_height)
+        set.save_game()
     
     # 화면 생성
-    screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Uno Game")
 
     # 폰트 생성
@@ -124,6 +127,10 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     pygame.quit()
 if __name__=='__main__':
     main()
+
+
+
+
 
 
 
