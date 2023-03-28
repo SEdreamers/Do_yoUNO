@@ -13,7 +13,7 @@ class GameUI:
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
-        font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
+        self.font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.timer_font = pygame.font.SysFont("arial", self.screen_size[0]  // 25, True)
         self.color_blind_mode = color_blind_mode
         # Set up the game screen
