@@ -203,7 +203,7 @@ class GameUI:
             self.screen.blit(timer, (-100, -100)) # 화면 밖으로 타이머 배치
 
         # choose color when wild card
-        """ if color_box.name == 'black': # and isinstance(players[turn_num], Human)
+        if color_box.name == 'black': # and isinstance(players[turn_num], Human)
             font = pygame.font.SysFont("arial", self.screen_size[0] // 30, True)
             text_surface = font.render("CHOOSE COLOR", True, (255, 255, 255))
             self.surface.blit(text_surface, (self.surface.get_width() / 3, self.surface.get_height() / 8))
@@ -213,9 +213,9 @@ class GameUI:
             self.surface.blit(self.red_box_button, self.red_box_button_rect)          
             self.surface.blit(self.yellow_box_button, self.yellow_box_button_rect)
 
-            self.screen.blit(self.surface, (self.screen_size[0] / 6.666, self.screen_size[1] / 6.666))
+            self.screen.blit(self.surface, (self.screen_size[0] / 6, self.screen_size[1] / 6))
         else:
-            pass """
+            pass
 
         # Update the screen
         pygame.display.flip()
