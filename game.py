@@ -111,7 +111,7 @@ class Game:
         except: 
             print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
             
-
+        self.turn_num = 0
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if self.turn_num == 0: # Human turn
@@ -253,6 +253,33 @@ class Game:
                             self.top_card = entered_card
                             self.deck.append(self.top_card)
                             self.players[self.turn_num].hand.cards.remove(entered_card)
+                            if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
+                                GameUI.cur_card = len(self.players[0].hand.cards) - 1
+                                self.render()
+                        if self.top_card.color == 'black':
+                            self.render()
+                            play = True
+                            while play:
+                                for event in pygame.event.get():
+                                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                                        pos = pygame.mouse.get_pos()
+                                        print(pos)
+                                        if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                            self.top_card.color = 'blue'
+                                            self.render()
+                                            play = False
+                                        elif self.screen_size[0] / 2.41 < pos[0] < self.screen_size[0] / 2.1978 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                            self.top_card.color = 'green'
+                                            self.render()
+                                            play = False
+                                        elif self.screen_size[0] / 1.72 < pos[0] < self.screen_size[0] / 1.61 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                            self.top_card.color = 'red'
+                                            self.render()
+                                            play = False
+                                        elif self.screen_size[0] / 1.333 < pos[0] < self.screen_size[0] / 1.266 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                            self.top_card.color = 'yellow'
+                                            self.render()
+                                            play = False
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -269,8 +296,32 @@ class Game:
                             start_time = pygame.time.get_ticks()   
                             self.top_card = sprite 
                             self.deck.append(self.top_card)
-                            self.players[self.turn_num].hand.cards.remove(sprite)           
-                    
+                            self.players[self.turn_num].hand.cards.remove(sprite)
+                    if self.top_card.color == 'black':
+                        self.render()
+                        play = True
+                        while play:
+                            for event in pygame.event.get():
+                                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                                    pos = pygame.mouse.get_pos()
+                                    print(pos)
+                                    if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                        self.top_card.color = 'blue'
+                                        self.render()
+                                        play = False
+                                    elif self.screen_size[0] / 2.41 < pos[0] < self.screen_size[0] / 2.1978 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                        self.top_card.color = 'green'
+                                        self.render()
+                                        play = False
+                                    elif self.screen_size[0] / 1.72 < pos[0] < self.screen_size[0] / 1.61 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                        self.top_card.color = 'red'
+                                        self.render()
+                                        play = False
+                                    elif self.screen_size[0] / 1.333 < pos[0] < self.screen_size[0] / 1.266 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                        self.top_card.color = 'yellow'
+                                        self.render()
+                                        play = False
+
                     if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
                         if self.players[self.turn_num].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[self.turn_num].name)
@@ -366,6 +417,10 @@ class Game:
                         self.top_card = element
                         self.deck.append(self.top_card)
                         self.players[self.turn_num].hand.cards.remove(element)  ##카드 제출
+                        if self.top_card.color == 'black':
+                            colors = ['red', 'yellow', 'green', 'blue']
+                            random_color = random.choice(colors)
+                            self.top_card.color = random_color
                         break
                 if self.card_clicked == None:   
                     # time.sleep(1.5)
@@ -412,13 +467,6 @@ class Game:
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
-        # 색 없는 기술카드 동작
-        elif self.top_card.value == 'wild_draw4':
-            pass
-        elif self.top_card.value == 'wild_swap':
-            pass
-        elif self.top_card.value == 'wild':
-            pass
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
