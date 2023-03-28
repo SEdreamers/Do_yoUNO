@@ -78,7 +78,6 @@ class Setting():
             with open('setting_data.json','w') as setting_data_file: 
                 json.dump(self.data, setting_data_file)
         except: 
-            print(1)
             print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
 
 

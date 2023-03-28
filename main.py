@@ -20,7 +20,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             size = data["size"]
         screen = pygame.display.set_mode((size[0],size[1]))
         font = pygame.font.SysFont("arial", size[0] // 20, True)
-
+        
     except: 
         print("No file created yet!")
         set = setting.Setting(screen_width,screen_height)

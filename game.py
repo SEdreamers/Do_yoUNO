@@ -87,13 +87,28 @@ class Game:
 
 
 
-        # 실행중이던 게임을 딕셔너리 형태로 저장
-        self.data = {
-            "hi":1
-        }
         
         self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
+
+        # 실행중이던 게임을 딕셔너리 형태로 저장
+        self.data = {
+            "running_time": ,
+            "human_hand": ,
+            "computer_hand": , 
+             
+
+        }
+        self.save_play()
+
+    def save_play(self):
+        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
+        try: 
+            with open('game_data.json','w') as game_data_file: 
+                json.dump(self.data, game_data_file)
+        except: 
+            print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
+
 
 
     def run(self):
@@ -106,7 +121,7 @@ class Game:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
         
         try: 
-            with open('play_data.txt','w') as play_data_file: 
+            with open('play_data.json','w') as play_data_file: 
                 json.dump(self.data, play_data_file)
         except: 
             print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
@@ -227,8 +242,7 @@ class Game:
             # Calculate the interpolation ratio 
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
-                    with open('play_data.txt','w') as play_data_file: 
-                        json.dump(self.data, play_data_file)
+                    self.save_play()
                     self.running = False
                 elif event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: 
