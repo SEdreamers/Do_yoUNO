@@ -4,6 +4,7 @@ import time
 import main
 import json
 
+
 # Initialize Pygame
 class Setting():
     def __init__(self, screen_width, screen_height):
@@ -11,7 +12,7 @@ class Setting():
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.window_size = (self.screen_width, self.screen_height)
-        # Create the window
+        # Create the window        
         self.screen = pygame.display.set_mode(self.window_size)
         # Set the title of the window
     
@@ -117,7 +118,7 @@ class Setting():
                         elif menu_flag == 2:
                             self.save_game()
                             time.sleep(0.3)
-                            main.main(window_size[0], window_size[1],self.color_blind_mode)
+                            main.main(self.data["size"][0], self.data["size"][1], self.color_blind_mode)
                             
                         elif menu_flag == 3: 
                             self.save_game()
@@ -214,7 +215,7 @@ class Setting():
             elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 self.save_game()
                 time.sleep(0.3)
-                main.main(window_size[0], window_size[1],self.color_blind_mode)
+                main.main(self.data["size"][0], self.data["size"][1],self.color_blind_mode)
                 
 
             elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
