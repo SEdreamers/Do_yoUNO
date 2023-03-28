@@ -2,6 +2,8 @@
 import pygame
 import game
 import setting 
+import json
+
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
@@ -10,6 +12,15 @@ RED = (255, 0, 0)
 
 def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     pygame.init()
+
+
+    try:
+            with open('setting_data.json') as game_file:
+                data = json.load(game_file)
+                color = data['color_blind_mode']     ## 저장된 값 불러오기. 
+                size = data["size"] 
+    except: pass 
+    
     # 화면 생성
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Uno Game")
@@ -48,7 +59,8 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     play = True
     while play:
         
-        
+
+
         # 이벤트 처리
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -59,20 +71,18 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
                 elif event.key == pygame.K_DOWN:
                     menu_flag += 1
                 elif event.key == 13:
-
                     if menu_flag == 0:
-                        uno_game = game.Game(screen_width, screen_height, color_blind_mode)
+                        uno_game = game.Game(size[0],size[1], color)
                         uno_game.run()
                     elif menu_flag == 1:
-                        set = setting.Setting(screen_width, screen_height)
-                        set.run(screen_width, screen_height)
-                    elif menu_flag == 2:
-                        
+                        set = setting.Setting(size[0],size[1])
+                        set.run(size[0],size[1])
+                    elif menu_flag == 2:                        
                         play = False
             menu_flag %= 3
 
-        # 화면 그리기
 
+        # 화면 그리기
         screen.fill(BLACK)
         screen.blit(game_title, game_title_rect)
         screen.blit(single_player_text, single_player_rect)
@@ -98,13 +108,15 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         else:
             exit_text = font.render("Exit", True, WHITE)
 
+
+
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            uno_game = game.Game(screen_width, screen_height, color_blind_mode)
+            uno_game = game.Game(size[0],size[1], color)
             uno_game.run()
         elif settings_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            set = setting.Setting(screen_width, screen_height)
-            set.run(screen_width, screen_height)
+            set = setting.Setting(size[0],size[1])
+            set.run(size[0],size[1])
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
             play = False
 

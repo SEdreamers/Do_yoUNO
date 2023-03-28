@@ -65,23 +65,25 @@ class Setting():
         self.reposition(self.screen)
 
 
-        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         self.data ={
-
+        "color_blind_mode": False,
+        "size": (800,600) 
         }
+        self.save_game()
 
-    def run(self, screen_width, screen_height):
-        window_size = (screen_width, screen_height)
-        self.screen = pygame.display.set_mode(window_size)
-        
-
+    def save_game(self):
+        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         try: 
-            with open('setting_data.txt','w') as setting_data_file: 
+            with open('setting_data.json','w') as setting_data_file: 
                 json.dump(self.data, setting_data_file)
         except: 
             print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
 
 
+
+    def run(self, screen_width, screen_height):
+        window_size = (screen_width, screen_height)
+        self.screen = pygame.display.set_mode(window_size)
         
         #메뉴 상수
         menu_flag = 0
@@ -89,6 +91,7 @@ class Setting():
             pygame.init()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.save_game() 
                     self.running = False
                     
                 if event.type == pygame.KEYDOWN:
@@ -100,19 +103,24 @@ class Setting():
                         if menu_flag == 0:
                             print("Color blind mode")
                             self.color_blind_mode = True
+                            self.data['color_blind_mode'] = self.color_blind_mode
+                            
                         elif menu_flag == 1:
                             print("Default mode")
                             window_size = (800, 600)
                             screen = pygame.display.set_mode(window_size)
                             self.color_blind_mode = False 
-                            # self.gets()
+                            self.data['color_blind_mode'] = self.color_blind_mode
                             self.reposition(screen)
                             
+
                         elif menu_flag == 2:
+                            self.save_game()
                             time.sleep(0.3)
                             main.main(window_size[0], window_size[1],self.color_blind_mode)
                             
                         elif menu_flag == 3: 
+                            self.save_game()
                             self.running = False
                             
                         elif menu_flag == 4:
@@ -120,39 +128,35 @@ class Setting():
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size1")
+                            self.data["size"] = window_size
                         elif menu_flag == 5:
                             window_size = self.screen_sizes[1]
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size2")
+                            self.data["size"] = window_size
+
                         elif menu_flag == 6:
                             window_size = self.screen_sizes[2]
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size3")
+                            self.data["size"] = window_size
+
                         elif menu_flag == 7:
                             window_size = self.screen_sizes[3]
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size4") 
+                            self.data["size"] = window_size
+
                 menu_flag %= 8        
                     
                     
                     
                     
                     
-            self.screen.fill('black')
-            # 제목 또는 버튼 출력
-            self.screen.blit(self.game_title, self.game_title_rect)
-            self.screen.blit(self.blind_text_surface, self.blind_text_rect)
-            self.screen.blit(self.default_text_surface, self.default_text_rect)
-            self.screen.blit(self.back_text_surface, self.back_text_rect)
-            self.screen.blit(self.exit_text_surface, self.exit_text_rect)
-
-            self.screen.blit(self.size1_text_surface,self.size1_text_rect)
-            self.screen.blit(self.size2_text_surface,self.size2_text_rect)
-            self.screen.blit(self.size3_text_surface,self.size3_text_rect)
-            self.screen.blit(self.size4_text_surface,self.size4_text_rect)
+            
             
             mouse_pos = pygame.mouse.get_pos()
             mouse_click = pygame.mouse.get_pressed()
@@ -196,24 +200,26 @@ class Setting():
             
              # 마우스 클릭 시
             if  self.blind_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
-                # print("color_blind mode")
                 self.color_blind_mode = True
-                # self.gets() 
+                self.data['color_blind_mode'] = self.color_blind_mode
+                
 
             elif self.default_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = (800, 600)
                 screen = pygame.display.set_mode(window_size)
-
                 self.color_blind_mode = False 
-                # self.gets()
+                self.data['color_blind_mode'] = self.color_blind_mode 
                 self.reposition(screen)
                 
+                
             elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                self.save_game()
                 time.sleep(0.3)
                 main.main(window_size[0], window_size[1],self.color_blind_mode)
                 
 
             elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                self.save_game()
                 self.running = False
 
 
@@ -221,19 +227,42 @@ class Setting():
                 window_size = self.screen_sizes[0]
                 screen = pygame.display.set_mode(window_size)
                 self.reposition(screen)
+                self.data["size"] = window_size
+
             elif self.size2_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = self.screen_sizes[1]
                 screen = pygame.display.set_mode(window_size)
                 self.reposition(screen)
+                self.data["size"] = window_size
+
             elif self.size3_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = self.screen_sizes[2]
                 screen = pygame.display.set_mode(window_size)
                 self.reposition(screen)
+                self.data["size"] = window_size
+
             elif self.size4_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 window_size = self.screen_sizes[3]
                 screen = pygame.display.set_mode(window_size)
                 self.reposition(screen)
- 
+                self.data["size"] = window_size
+
+
+
+            self.screen.fill('black')
+            # 제목 또는 버튼 출력
+            self.screen.blit(self.game_title, self.game_title_rect)
+            self.screen.blit(self.blind_text_surface, self.blind_text_rect)
+            self.screen.blit(self.default_text_surface, self.default_text_rect)
+            self.screen.blit(self.back_text_surface, self.back_text_rect)
+            self.screen.blit(self.exit_text_surface, self.exit_text_rect)
+
+            self.screen.blit(self.size1_text_surface,self.size1_text_rect)
+            self.screen.blit(self.size2_text_surface,self.size2_text_rect)
+            self.screen.blit(self.size3_text_surface,self.size3_text_rect)
+            self.screen.blit(self.size4_text_surface,self.size4_text_rect)
+
+
         # Update the display
             pygame.display.update()
         # Quit Pygame
