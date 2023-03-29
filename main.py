@@ -20,14 +20,12 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             size = data["size"]
         screen = pygame.display.set_mode((size[0],size[1]))
         font = pygame.font.SysFont("arial", size[0] // 20, True)
-        
     except: 
         print("No file created yet!")
         set = setting.Setting(screen_width,screen_height)
         set.save_game()
         screen = pygame.display.set_mode((screen_width, screen_height))
         font = pygame.font.SysFont("arial", screen_width // 20, True)
-
 
     
 
@@ -123,8 +121,6 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             set.run(size[0],size[1])
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
             play = False
-
-
 
 
         # 화면 그리기

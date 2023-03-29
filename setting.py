@@ -64,27 +64,27 @@ class Setting():
         self.size4_text_rect = self.size4_text_surface.get_rect()
 
         self.reposition(self.screen)
-
-
-        self.data ={
-        "color_blind_mode": False,
-        "size": (800,600) 
-        }
-        self.save_game()
+        
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600) 
+            }
+            self.save_game()
 
     def save_game(self):
-        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
-        try: 
-            with open('setting_data.json','w') as setting_data_file: 
-                json.dump(self.data, setting_data_file)
-        except: 
-            print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
-
+        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장 
+        with open('setting_data.json','w') as setting_data_file: 
+            json.dump(self.data, setting_data_file)
+ 
 
     def run(self, screen_width, screen_height):
         window_size = (screen_width, screen_height)
         self.screen = pygame.display.set_mode(window_size)
-        
+                
         #메뉴 상수
         menu_flag = 0
         while self.running:
