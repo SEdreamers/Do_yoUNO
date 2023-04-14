@@ -3,13 +3,17 @@ import sys
 
 class StoryMap:
     def __init__(self, screen_width, screen_height):
+        self.menu_flag = 0
         # 화면 크기 설정
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         
-        # 마우스 클릭 설정
+        # 마우스 클릭 여부 설정
         self.mouse_click = False
+        
+        # 메뉴 선택 여부 설정
+        self.selected = False
         
         # 맵 배경 이미지
         self.background_image =  pygame.image.load("images/map/map.png")
@@ -17,12 +21,12 @@ class StoryMap:
         
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
-        # 장소
-        self.current_region = 0 # 현재 마우스나 키보드로 선택한 장소
-        self.cleared_regions = ['regionA', 'regionB', 'regionC'] # 클리어한 장소 리스트
+        # 지역
+        self.current_region = 0 # 현재 마우스나 키보드로 선택한 지역
+        self.cleared_regions = ['regionA', 'regionB'] # 클리어한 지역 리스트
         
-        ## 장소 이미지
-        self.regionA_image =  pygame.image.load("images/map/regionA.png")
+        ## 지역 이미지
+        self.regionA_image = pygame.image.load("images/map/regionA.png")
         self.regionA_image = pygame.transform.scale(self.regionA_image, (self.screen_width/4.4944, self.screen_height/4.0107))
         self.bw_regionA_image =  pygame.image.load("images/map/bw_regionA.png")
         self.bw_regionA_image = pygame.transform.scale(self.bw_regionA_image, (self.screen_width/4.4944, self.screen_height/4.0107))
@@ -49,24 +53,7 @@ class StoryMap:
         self.bw_regionD_image = pygame.transform.scale(self.bw_regionD_image, (self.screen_width/2.5478, self.screen_height/1.5511))
         self.regionD_rect = self.regionD_image.get_rect()
         self.bw_regionD_rect = self.regionD_image.get_rect()
-        
-        self.regionA_rect.x = self.screen_width/3.1847
-        self.regionA_rect.y = self.screen_height/6.6372
-        self.regionB_rect.x = self.screen_width/6.8027
-        self.regionB_rect.y = self.screen_height/2.5685
-        self.regionC_rect.x = self.screen_width/3.5714
-        self.regionC_rect.y = self.screen_height/1.656
-        self.regionD_rect.x = self.screen_width/1.67
-        self.regionD_rect.y = self.screen_height/31.9149
-        self.bw_regionA_rect.x = self.screen_width/3.1847
-        self.bw_regionA_rect.y = self.screen_height/6.6372
-        self.bw_regionB_rect.x = self.screen_width/6.8027
-        self.bw_regionB_rect.y = self.screen_height/2.5685
-        self.bw_regionC_rect.x = self.screen_width/3.5714
-        self.bw_regionC_rect.y = self.screen_height/1.656
-        self.bw_regionD_rect.x = self.screen_width/1.67
-        self.bw_regionD_rect.y = self.screen_height/31.9149
-        
+
         # 캐릭터 이미지
         self.dear_image = pygame.image.load("images/map/deer.png")
         self.dear_image = pygame.transform.scale(self.dear_image, (self.screen_width/8, self.screen_width/8))
@@ -83,35 +70,135 @@ class StoryMap:
         # 자물쇠 이미지
         self.lock_icon = pygame.image.load("images/map/lock.png")
         self.lock_icon = pygame.transform.scale(self.lock_icon, (self.screen_width/12, self.screen_width/12))
- 
-    
+        self.lock_rect = self.lock_icon.get_rect()
+        
+        # 검정색 반투명 이미지
+        self.black_surface = pygame.Surface((self.screen_width, self.screen_height))
+        self.black_surface.fill((0, 0, 0))
+        self.black_surface.set_alpha(170)
+        
+        # start window 이미지, 버튼 이미지
+        self.start_window_image = pygame.image.load("images/map/start_window.png")
+        self.start_window_image = pygame.transform.scale(self.start_window_image, (self.screen_width/1.5256, self.screen_height/3))
+        self.start_window_rect = self.start_window_image.get_rect()
+        
+        self.yes_btn1 = pygame.image.load("images/map/yes_btn1.png")
+        self.yes_btn1 = pygame.transform.scale(self.yes_btn1, (self.screen_width/4.1929, self.screen_height/9.8684))
+        self.yes_btn1_rect = self.yes_btn1.get_rect()
+        
+        self.no_btn1 = pygame.image.load("images/map/no_btn1.png")
+        self.no_btn1 = pygame.transform.scale(self.no_btn1, (self.screen_width/4.1929, self.screen_height/9.8684))
+        self.no_btn1_rect = self.no_btn1.get_rect()
+        
+        self.yes_btn2 = pygame.image.load("images/map/yes_btn2.png")
+        self.yes_btn2 = pygame.transform.scale(self.yes_btn2, (self.screen_width/4.1929, self.screen_height/9.8684))
+        self.yes_btn2_rect = self.yes_btn2.get_rect()
+        
+        self.no_btn2 = pygame.image.load("images/map/no_btn2.png")
+        self.no_btn2 = pygame.transform.scale(self.no_btn2, (self.screen_width/4.1929, self.screen_height/9.8684))
+        self.no_btn2_rect = self.no_btn2.get_rect()
+        
+        self.yes_btn1_rect.x = self.screen_width/4.15
+        self.yes_btn1_rect.y = self.screen_height/2
+        self.no_btn1_rect.x = self.screen_width/1.95
+        self.no_btn1_rect.y = self.screen_height/2
+        
+
+        
+    def start_window(self):
+        # 지역 마우스 선택 불가능하게 설정
+        self.regionA_rect.x = -2000
+        self.regionA_rect.y = -2000
+        self.regionB_rect.x = -2000
+        self.regionB_rect.y = -2000
+        self.regionC_rect.x = -2000
+        self.regionC_rect.y = -2000
+        self.regionD_rect.x = -2000
+        self.regionD_rect.y = -2000
+        
+        # start window
+        self.start_window_rect.centerx = self.screen_width / 2
+        self.start_window_rect.centery = self.screen_height / 2
+        self.screen.blit(self.black_surface, (0, 0))
+        self.screen.blit(self.start_window_image, self.start_window_rect)
+        self.screen.blit(self.yes_btn1, (self.screen_width/4.15, self.screen_height/1.95))
+        self.screen.blit(self.no_btn1, (self.screen_width/1.95, self.screen_height/1.95))
+        
+        # yes, no 마우스 오버, 키보드 선택
+        mouse_pos = pygame.mouse.get_pos()
+        ## yes
+        if self.yes_btn1_rect.collidepoint(mouse_pos) or self.menu_flag == 0:
+            self.menu_flag = 0
+            self.screen.blit(self.yes_btn2, (self.screen_width/4.15, self.screen_height/1.95))
+        else:
+            self.screen.blit(self.yes_btn1, (self.screen_width/4.15, self.screen_height/1.95))
+        ## no
+        if self.no_btn1_rect.collidepoint(mouse_pos) or self.menu_flag == 1:
+            self.menu_flag = 1
+            self.screen.blit(self.no_btn2, (self.screen_width/1.95, self.screen_height/1.95))
+        else:
+            self.screen.blit(self.no_btn1, (self.screen_width/1.95, self.screen_height/1.95))
+            
+        # 마우스 클릭
+        if self.yes_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
+            if self.current_region == 0:
+                print('regionA')
+                pass # 지역A 게임 로드
+            elif self.current_region == 1:
+                print('regionB')
+                pass # 지역B 게임 로드
+            elif self.current_region == 2:
+                print('regionC')
+                pass # 지역C 게임 로드
+            elif self.current_region == 3:
+                print('regionD')
+                pass # 지역D 게임 로드 
+            self.mouse_click = False ## 임시 // 추후 게임 로드 추가 시 삭제해도됨
+        elif self.no_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
+            self.selected = False
+            self.mouse_click = False
+        
+        
     def handle_events(self):
         # 키보드 이벤트 처리
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    self.current_region -= 1
-                elif event.key == pygame.K_DOWN:
-                    self.current_region += 1
-                elif event.key == 13: # enter key
-                    if self.current_region == 0:
-                        print('regionA')
-                        pass # 지역A 게임 로드
-                    elif self.current_region == 1:
-                        print('regionB')
-                        pass # 지역B 게임 로드
-                    elif self.current_region == 2:
-                        print('regionC')
-                        pass # 지역C 게임 로드
-                    elif self.current_region == 3:
-                        print('regionD')
-                        pass # 지역D 게임 로드 
+                if not self.selected: # 지역 선택
+                    if event.key == pygame.K_UP:
+                        self.current_region -= 1
+                    elif event.key == pygame.K_DOWN:
+                        self.current_region += 1
+                    elif event.key == 13: # enter
+                        self.selected = True
+                else: # yes, no 선택
+                    if event.key == pygame.K_LEFT:
+                        self.menu_flag -= 1
+                    elif event.key == pygame.K_RIGHT:
+                        self.menu_flag += 1
+                    elif event.key == 13: # enter
+                        if self.menu_flag == 0: # yes
+                            if self.current_region == 0:
+                                print('regionA')
+                                pass # 지역A 게임 로드
+                            elif self.current_region == 1:
+                                print('regionB')
+                                pass # 지역B 게임 로드
+                            elif self.current_region == 2:
+                                print('regionC')
+                                pass # 지역C 게임 로드
+                            elif self.current_region == 3:
+                                print('regionD')
+                                pass # 지역D 게임 로드
+                        elif self.menu_flag == 1: # no
+                            self.selected = False
+                
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse_click = True
                 
             self.current_region %= len(self.cleared_regions) # 클리어하거나 도전 중인 맵만 선택 가능
+            self.menu_flag %= 2
 
 
     def display(self):
@@ -119,6 +206,16 @@ class StoryMap:
         mouse_pos = pygame.mouse.get_pos()
         self.screen.blit(self.background_image, (0, 0))
         
+        if not self.selected:
+            self.regionA_rect.x = self.screen_width/3.1847
+            self.regionA_rect.y = self.screen_height/6.6372
+            self.regionB_rect.x = self.screen_width/6.8027
+            self.regionB_rect.y = self.screen_height/2.5685
+            self.regionC_rect.x = self.screen_width/3.5714
+            self.regionC_rect.y = self.screen_height/1.656
+            self.regionD_rect.x = self.screen_width/1.67
+            self.regionD_rect.y = self.screen_height/31.9149
+
         ## region 마우스 오버, 키보드 선택
          ## regionA
         if self.regionA_rect.collidepoint(mouse_pos) or self.current_region == 0:
@@ -155,20 +252,6 @@ class StoryMap:
                 self.screen.blit(self.bw_regionC_image, (self.screen_width/3.5714, self.screen_height/1.656))
                 self.screen.blit(self.regionD_image, (self.screen_width/1.67, self.screen_height/31.9149))
                 
-        ## region 클릭
-        if self.regionA_rect.collidepoint(mouse_pos) and self.mouse_click:
-            print('regionA')
-            pass # 지역A 게임 로드
-        elif self.regionB_rect.collidepoint(mouse_pos) and self.mouse_click:
-            print('regionB')
-            pass # 지역B 게임 로드
-        elif self.regionC_rect.collidepoint(mouse_pos) and self.mouse_click:
-            print('regionC')
-            pass # 지역C 게임 로드
-        elif self.regionD_rect.collidepoint(mouse_pos) and self.mouse_click:
-            print('regionD')
-            pass # 지역D 게임 로드
-        
         # 캐릭터 이미지 출력
         self.screen.blit(self.dear_image, (self.screen_width/2.3256, self.screen_height/4.1667))
         self.screen.blit(self.lion_image, (self.screen_width/11.8343, self.screen_height/1.5213))
@@ -177,11 +260,21 @@ class StoryMap:
         
         # 클리어하지 않았거나 클리어 진행 중이지 않은 맵 자물쇠 출력
         if 'regionB' not in self.cleared_regions:
-            self.screen.blit(self.lock_icon, (self.regionB_rect.centerx * 0.83, self.regionB_rect.centery * 0.95))
+            self.screen.blit(self.lock_icon, (self.screen_width/4.89, self.screen_height/1.7647))
         if 'regionC' not in self.cleared_regions:
-            self.screen.blit(self.lock_icon, (self.regionC_rect.centerx * 0.97, self.regionC_rect.centery * 0.97))
+            self.screen.blit(self.lock_icon, (self.screen_width/2.3557, self.screen_height/1.2712))
         if 'regionD' not in self.cleared_regions:
-            self.screen.blit(self.lock_icon, (self.regionD_rect.centerx * 0.95, self.regionD_rect.centery))
+            self.screen.blit(self.lock_icon, (self.screen_width/1.32, self.screen_height/2.8937))
+        
+        if self.selected:
+            self.start_window()
+                
+        ## region 클릭
+        if self.mouse_click:
+            if self.regionA_rect.collidepoint(mouse_pos) or self.regionB_rect.collidepoint(mouse_pos) or self.regionC_rect.collidepoint(mouse_pos) or self.regionD_rect.collidepoint(mouse_pos):
+                self.selected = True
+                self.mouse_click = False
+            
         pygame.display.flip()
 
     def run(self):
