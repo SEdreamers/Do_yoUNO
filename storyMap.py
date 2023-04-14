@@ -19,53 +19,53 @@ class StoryMapUI:
 
         # 장소
         self.current_location = 0 # 현재 마우스나 키보드로 선택한 장소
-        self.cleared_locations = ['location0', 'location1'] # 클리어한 장소 리스트
+        self.cleared_locations = ['locationA', 'locationB'] # 클리어한 장소 리스트
         
         ## 장소 이미지
-        self.location0_image =  pygame.image.load("images/map/location0.png")
-        self.location0_image = pygame.transform.scale(self.location0_image, (self.screen_width/4.4944, self.screen_height/4.0107))
-        self.bw_location0_image =  pygame.image.load("images/map/bw_location0.png")
-        self.bw_location0_image = pygame.transform.scale(self.bw_location0_image, (self.screen_width/4.4944, self.screen_height/4.0107))
-        self.location0_rect = self.location0_image.get_rect()
-        self.bw_location0_rect = self.location0_image.get_rect()
+        self.locationA_image =  pygame.image.load("images/map/locationA.png")
+        self.locationA_image = pygame.transform.scale(self.locationA_image, (self.screen_width/4.4944, self.screen_height/4.0107))
+        self.bw_locationA_image =  pygame.image.load("images/map/bw_locationA.png")
+        self.bw_locationA_image = pygame.transform.scale(self.bw_locationA_image, (self.screen_width/4.4944, self.screen_height/4.0107))
+        self.locationA_rect = self.locationA_image.get_rect()
+        self.bw_locationA_rect = self.locationA_image.get_rect()
 
-        self.location1_image =  pygame.image.load("images/map/location1.png")
-        self.location1_image = pygame.transform.scale(self.location1_image, (self.screen_width/5.2083, self.screen_height/2.6643))
-        self.bw_location1_image =  pygame.image.load("images/map/bw_location1.png")
-        self.bw_location1_image = pygame.transform.scale(self.bw_location1_image, (self.screen_width/5.2083, self.screen_height/2.6643))
-        self.location1_rect = self.location1_image.get_rect()
-        self.bw_location1_rect = self.location1_image.get_rect()
+        self.locationB_image =  pygame.image.load("images/map/locationB.png")
+        self.locationB_image = pygame.transform.scale(self.locationB_image, (self.screen_width/5.2083, self.screen_height/2.6643))
+        self.bw_locationB_image =  pygame.image.load("images/map/bw_locationB.png")
+        self.bw_locationB_image = pygame.transform.scale(self.bw_locationB_image, (self.screen_width/5.2083, self.screen_height/2.6643))
+        self.locationB_rect = self.locationB_image.get_rect()
+        self.bw_locationB_rect = self.locationB_image.get_rect()
         
-        self.location2_image =  pygame.image.load("images/map/location2.png")
-        self.location2_image = pygame.transform.scale(self.location2_image, (self.screen_width/2.9412, self.screen_height/2.6224))
-        self.bw_location2_image = pygame.image.load("images/map/bw_location2.png")
-        self.bw_location2_image = pygame.transform.scale(self.bw_location2_image, (self.screen_width/2.9412, self.screen_height/2.6224))
-        self.location2_rect = self.location2_image.get_rect()
-        self.bw_location2_rect = self.location2_image.get_rect()
+        self.locationC_image =  pygame.image.load("images/map/locationC.png")
+        self.locationC_image = pygame.transform.scale(self.locationC_image, (self.screen_width/2.9412, self.screen_height/2.6224))
+        self.bw_locationC_image = pygame.image.load("images/map/bw_locationC.png")
+        self.bw_locationC_image = pygame.transform.scale(self.bw_locationC_image, (self.screen_width/2.9412, self.screen_height/2.6224))
+        self.locationC_rect = self.locationC_image.get_rect()
+        self.bw_locationC_rect = self.locationC_image.get_rect()
         
-        self.location3_image = pygame.image.load("images/map/location3.png")
-        self.location3_image = pygame.transform.scale(self.location3_image, (self.screen_width/2.5478, self.screen_height/1.5511))
-        self.bw_location3_image =  pygame.image.load("images/map/bw_location3.png")
-        self.bw_location3_image = pygame.transform.scale(self.bw_location3_image, (self.screen_width/2.5478, self.screen_height/1.5511))
-        self.location3_rect = self.location3_image.get_rect()
-        self.bw_location3_rect = self.location3_image.get_rect()
+        self.locationD_image = pygame.image.load("images/map/locationD.png")
+        self.locationD_image = pygame.transform.scale(self.locationD_image, (self.screen_width/2.5478, self.screen_height/1.5511))
+        self.bw_locationD_image =  pygame.image.load("images/map/bw_locationD.png")
+        self.bw_locationD_image = pygame.transform.scale(self.bw_locationD_image, (self.screen_width/2.5478, self.screen_height/1.5511))
+        self.locationD_rect = self.locationD_image.get_rect()
+        self.bw_locationD_rect = self.locationD_image.get_rect()
         
-        self.location0_rect.x = self.screen_width/3.1847
-        self.location0_rect.y = self.screen_height/6.6372
-        self.location1_rect.x = self.screen_width/6.8027
-        self.location1_rect.y = self.screen_height/2.5685
-        self.location2_rect.x = self.screen_width/3.5714
-        self.location2_rect.y = self.screen_height/1.656
-        self.location3_rect.x = self.screen_width/1.67
-        self.location3_rect.y = self.screen_height/31.9149
-        self.bw_location0_rect.x = self.screen_width/3.1847
-        self.bw_location0_rect.y = self.screen_height/6.6372
-        self.bw_location1_rect.x = self.screen_width/6.8027
-        self.bw_location1_rect.y = self.screen_height/2.5685
-        self.bw_location2_rect.x = self.screen_width/3.5714
-        self.bw_location2_rect.y = self.screen_height/1.656
-        self.bw_location3_rect.x = self.screen_width/1.67
-        self.bw_location3_rect.y = self.screen_height/31.9149
+        self.locationA_rect.x = self.screen_width/3.1847
+        self.locationA_rect.y = self.screen_height/6.6372
+        self.locationB_rect.x = self.screen_width/6.8027
+        self.locationB_rect.y = self.screen_height/2.5685
+        self.locationC_rect.x = self.screen_width/3.5714
+        self.locationC_rect.y = self.screen_height/1.656
+        self.locationD_rect.x = self.screen_width/1.67
+        self.locationD_rect.y = self.screen_height/31.9149
+        self.bw_locationA_rect.x = self.screen_width/3.1847
+        self.bw_locationA_rect.y = self.screen_height/6.6372
+        self.bw_locationB_rect.x = self.screen_width/6.8027
+        self.bw_locationB_rect.y = self.screen_height/2.5685
+        self.bw_locationC_rect.x = self.screen_width/3.5714
+        self.bw_locationC_rect.y = self.screen_height/1.656
+        self.bw_locationD_rect.x = self.screen_width/1.67
+        self.bw_locationD_rect.y = self.screen_height/31.9149
         
         
         # 캐릭터 이미지
@@ -99,6 +99,12 @@ class StoryMapUI:
                 elif event.key == 13: # enter key
                     if self.current_location == 0:
                         pass
+                    elif self.current_location == 1:
+                        pass
+                    elif self.current_location == 2:
+                        pass
+                    elif self.current_location == 3:
+                        pass    
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse_click = True
             self.current_location %= len(self.cleared_locations) # 클리어하거나 도전 중인 맵만 선택 가능
@@ -109,40 +115,40 @@ class StoryMapUI:
         mouse_pos = pygame.mouse.get_pos()
         self.screen.blit(self.background_image, (0, 0))
         
-        # location0 선택 시
-        if self.location0_rect.collidepoint(mouse_pos) or self.current_location == 0:
+        # locationA 선택 시
+        if self.locationA_rect.collidepoint(mouse_pos) or self.current_location == 0:
             self.current_location = 0
-            self.screen.blit(self.location0_image, (self.screen_width/3.1847, self.screen_height/6.6372))
-            self.screen.blit(self.bw_location1_image, (self.screen_width/6.8027, self.screen_height/2.5685))
-            self.screen.blit(self.bw_location2_image, (self.screen_width/3.5714, self.screen_height/1.656))
-            self.screen.blit(self.bw_location3_image, (self.screen_width/1.67, self.screen_height/31.9149))
+            self.screen.blit(self.locationA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
+            self.screen.blit(self.bw_locationB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
+            self.screen.blit(self.bw_locationC_image, (self.screen_width/3.5714, self.screen_height/1.656))
+            self.screen.blit(self.bw_locationD_image, (self.screen_width/1.67, self.screen_height/31.9149))
             
-        # location1 선택 시
-        if self.location1_rect.collidepoint(mouse_pos) or self.current_location == 1:
+        # locationB 선택 시
+        if self.locationB_rect.collidepoint(mouse_pos) or self.current_location == 1:
             if len(self.cleared_locations) > 1: # 클리어하거나 도전 중인 맵만 선택 가능
                 self.current_location = 1
-                self.screen.blit(self.bw_location0_image, (self.screen_width/3.1847, self.screen_height/6.6372))
-                self.screen.blit(self.location1_image, (self.screen_width/6.8027, self.screen_height/2.5685))
-                self.screen.blit(self.bw_location2_image, (self.screen_width/3.5714, self.screen_height/1.656))
-                self.screen.blit(self.bw_location3_image, (self.screen_width/1.67, self.screen_height/31.9149))
+                self.screen.blit(self.bw_locationA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
+                self.screen.blit(self.locationB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
+                self.screen.blit(self.bw_locationC_image, (self.screen_width/3.5714, self.screen_height/1.656))
+                self.screen.blit(self.bw_locationD_image, (self.screen_width/1.67, self.screen_height/31.9149))
         
-        # location2 선택 시
-        if self.location2_rect.collidepoint(mouse_pos) or self.current_location == 2:
+        # locationC 선택 시
+        if self.locationC_rect.collidepoint(mouse_pos) or self.current_location == 2:
             if len(self.cleared_locations) > 2: # 클리어하거나 도전 중인 맵만 선택 가능
                 self.current_location = 2
-                self.screen.blit(self.bw_location0_image, (self.screen_width/3.1847, self.screen_height/6.6372))
-                self.screen.blit(self.bw_location1_image, (self.screen_width/6.8027, self.screen_height/2.5685))
-                self.screen.blit(self.location2_image, (self.screen_width/3.5714, self.screen_height/1.656))
-                self.screen.blit(self.bw_location3_image, (self.screen_width/1.67, self.screen_height/31.9149))
+                self.screen.blit(self.bw_locationA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
+                self.screen.blit(self.bw_locationB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
+                self.screen.blit(self.locationC_image, (self.screen_width/3.5714, self.screen_height/1.656))
+                self.screen.blit(self.bw_locationD_image, (self.screen_width/1.67, self.screen_height/31.9149))
         
-        # location3 선택 시
-        if self.location3_rect.collidepoint(mouse_pos) or self.current_location == 3:
+        # locationD 선택 시
+        if self.locationD_rect.collidepoint(mouse_pos) or self.current_location == 3:
             if len(self.cleared_locations) > 3: # 클리어하거나 도전 중인 맵만 선택 가능
                 self.current_location = 3
-                self.screen.blit(self.bw_location0_image, (self.screen_width/3.1847, self.screen_height/6.6372))
-                self.screen.blit(self.bw_location1_image, (self.screen_width/6.8027, self.screen_height/2.5685))
-                self.screen.blit(self.bw_location2_image, (self.screen_width/3.5714, self.screen_height/1.656))
-                self.screen.blit(self.location3_image, (self.screen_width/1.67, self.screen_height/31.9149))
+                self.screen.blit(self.bw_locationA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
+                self.screen.blit(self.bw_locationB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
+                self.screen.blit(self.bw_locationC_image, (self.screen_width/3.5714, self.screen_height/1.656))
+                self.screen.blit(self.locationD_image, (self.screen_width/1.67, self.screen_height/31.9149))
 
         
         # 캐릭터 이미지 출력
@@ -152,12 +158,12 @@ class StoryMapUI:
         self.screen.blit(self.dragon_image, (self.screen_width/1.2423, self.screen_height/2.1))
         
         # 클리어하지 않았거나 클리어 진행 중이지 않은 맵 자물쇠 출력
-        if 'location1' not in self.cleared_locations:
-            self.screen.blit(self.lock_icon, (self.location1_rect.centerx * 0.83, self.location1_rect.centery * 0.95))
-        if 'location2' not in self.cleared_locations:
-            self.screen.blit(self.lock_icon, (self.location2_rect.centerx * 0.97, self.location2_rect.centery * 0.97))
-        if 'location3' not in self.cleared_locations:
-            self.screen.blit(self.lock_icon, (self.location3_rect.centerx * 0.95, self.location3_rect.centery))
+        if 'locationB' not in self.cleared_locations:
+            self.screen.blit(self.lock_icon, (self.locationB_rect.centerx * 0.83, self.locationB_rect.centery * 0.95))
+        if 'locationC' not in self.cleared_locations:
+            self.screen.blit(self.lock_icon, (self.locationC_rect.centerx * 0.97, self.locationC_rect.centery * 0.97))
+        if 'locationD' not in self.cleared_locations:
+            self.screen.blit(self.lock_icon, (self.locationD_rect.centerx * 0.95, self.locationD_rect.centery))
         pygame.display.flip()
 
     def run(self):
