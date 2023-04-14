@@ -23,7 +23,7 @@ class StoryMap:
 
         # 지역
         self.current_region = 0 # 현재 마우스나 키보드로 선택한 지역
-        self.cleared_regions = ['regionA', 'regionB'] # 클리어한 지역 리스트
+        self.unlocked_regions = ['regionA', 'regionB'] # 잠금해제 지역 리스트
         
         ## 지역 이미지
         self.regionA_image = pygame.image.load("images/map/regionA.png")
@@ -197,7 +197,7 @@ class StoryMap:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse_click = True
                 
-            self.current_region %= len(self.cleared_regions) # 클리어하거나 도전 중인 맵만 선택 가능
+            self.current_region %= len(self.unlocked_regions) # 잠금해제 지역만 선택 가능
             self.menu_flag %= 2
 
 
@@ -227,7 +227,7 @@ class StoryMap:
             
          ## regionB
         if self.regionB_rect.collidepoint(mouse_pos) or self.current_region == 1:
-            if len(self.cleared_regions) > 1: # 클리어하거나 도전 중인 맵만 선택 가능
+            if len(self.unlocked_regions) > 1: # 잠금해제 지역만 선택 가능
                 self.current_region = 1
                 self.screen.blit(self.bw_regionA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
                 self.screen.blit(self.regionB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
@@ -236,7 +236,7 @@ class StoryMap:
         
          ## regionC
         if self.regionC_rect.collidepoint(mouse_pos) or self.current_region == 2:
-            if len(self.cleared_regions) > 2: # 클리어하거나 도전 중인 맵만 선택 가능
+            if len(self.unlocked_regions) > 2: # 잠금해제 지역만 선택 가능
                 self.current_region = 2
                 self.screen.blit(self.bw_regionA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
                 self.screen.blit(self.bw_regionB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
@@ -245,7 +245,7 @@ class StoryMap:
         
          ## regionD
         if self.regionD_rect.collidepoint(mouse_pos) or self.current_region == 3:
-            if len(self.cleared_regions) > 3: # 클리어하거나 도전 중인 맵만 선택 가능
+            if len(self.unlocked_regions) > 3: # 잠금해제 지역만 선택 가능
                 self.current_region = 3
                 self.screen.blit(self.bw_regionA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
                 self.screen.blit(self.bw_regionB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
@@ -258,12 +258,12 @@ class StoryMap:
         self.screen.blit(self.snake_image, (self.screen_width/2, self.screen_height/1.2285))
         self.screen.blit(self.dragon_image, (self.screen_width/1.2423, self.screen_height/2.1))
         
-        # 클리어하지 않았거나 클리어 진행 중이지 않은 맵 자물쇠 출력
-        if 'regionB' not in self.cleared_regions:
+        # 잠겨있는 맵 자물쇠 출력
+        if 'regionB' not in self.unlocked_regions:
             self.screen.blit(self.lock_icon, (self.screen_width/4.89, self.screen_height/1.7647))
-        if 'regionC' not in self.cleared_regions:
+        if 'regionC' not in self.unlocked_regions:
             self.screen.blit(self.lock_icon, (self.screen_width/2.3557, self.screen_height/1.2712))
-        if 'regionD' not in self.cleared_regions:
+        if 'regionD' not in self.unlocked_regions:
             self.screen.blit(self.lock_icon, (self.screen_width/1.32, self.screen_height/2.8937))
         
         if self.selected:
