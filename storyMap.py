@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-class StoryMapUI:
+class StoryMap:
     def __init__(self, screen_width, screen_height):
         # 화면 크기 설정
         self.screen_width = screen_width
@@ -19,7 +19,7 @@ class StoryMapUI:
 
         # 장소
         self.current_region = 0 # 현재 마우스나 키보드로 선택한 장소
-        self.cleared_regions = ['regionA', 'regionB'] # 클리어한 장소 리스트
+        self.cleared_regions = ['regionA', 'regionB', 'regionC'] # 클리어한 장소 리스트
         
         ## 장소 이미지
         self.regionA_image =  pygame.image.load("images/map/regionA.png")
@@ -67,7 +67,6 @@ class StoryMapUI:
         self.bw_regionD_rect.x = self.screen_width/1.67
         self.bw_regionD_rect.y = self.screen_height/31.9149
         
-        
         # 캐릭터 이미지
         self.dear_image = pygame.image.load("images/map/deer.png")
         self.dear_image = pygame.transform.scale(self.dear_image, (self.screen_width/8, self.screen_width/8))
@@ -84,7 +83,7 @@ class StoryMapUI:
         # 자물쇠 이미지
         self.lock_icon = pygame.image.load("images/map/lock.png")
         self.lock_icon = pygame.transform.scale(self.lock_icon, (self.screen_width/12, self.screen_width/12))
-    
+ 
     
     def handle_events(self):
         # 키보드 이벤트 처리
@@ -98,15 +97,20 @@ class StoryMapUI:
                     self.current_region += 1
                 elif event.key == 13: # enter key
                     if self.current_region == 0:
-                        pass # 
+                        print('regionA')
+                        pass # 지역A 게임 로드
                     elif self.current_region == 1:
-                        pass
+                        print('regionB')
+                        pass # 지역B 게임 로드
                     elif self.current_region == 2:
-                        pass
+                        print('regionC')
+                        pass # 지역C 게임 로드
                     elif self.current_region == 3:
-                        pass    
+                        print('regionD')
+                        pass # 지역D 게임 로드 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse_click = True
+                
             self.current_region %= len(self.cleared_regions) # 클리어하거나 도전 중인 맵만 선택 가능
 
 
@@ -115,7 +119,8 @@ class StoryMapUI:
         mouse_pos = pygame.mouse.get_pos()
         self.screen.blit(self.background_image, (0, 0))
         
-        # regionA 선택 시
+        ## region 마우스 오버, 키보드 선택
+         ## regionA
         if self.regionA_rect.collidepoint(mouse_pos) or self.current_region == 0:
             self.current_region = 0
             self.screen.blit(self.regionA_image, (self.screen_width/3.1847, self.screen_height/6.6372))
@@ -123,7 +128,7 @@ class StoryMapUI:
             self.screen.blit(self.bw_regionC_image, (self.screen_width/3.5714, self.screen_height/1.656))
             self.screen.blit(self.bw_regionD_image, (self.screen_width/1.67, self.screen_height/31.9149))
             
-        # regionB 선택 시
+         ## regionB
         if self.regionB_rect.collidepoint(mouse_pos) or self.current_region == 1:
             if len(self.cleared_regions) > 1: # 클리어하거나 도전 중인 맵만 선택 가능
                 self.current_region = 1
@@ -132,7 +137,7 @@ class StoryMapUI:
                 self.screen.blit(self.bw_regionC_image, (self.screen_width/3.5714, self.screen_height/1.656))
                 self.screen.blit(self.bw_regionD_image, (self.screen_width/1.67, self.screen_height/31.9149))
         
-        # regionC 선택 시
+         ## regionC
         if self.regionC_rect.collidepoint(mouse_pos) or self.current_region == 2:
             if len(self.cleared_regions) > 2: # 클리어하거나 도전 중인 맵만 선택 가능
                 self.current_region = 2
@@ -141,7 +146,7 @@ class StoryMapUI:
                 self.screen.blit(self.regionC_image, (self.screen_width/3.5714, self.screen_height/1.656))
                 self.screen.blit(self.bw_regionD_image, (self.screen_width/1.67, self.screen_height/31.9149))
         
-        # regionD 선택 시
+         ## regionD
         if self.regionD_rect.collidepoint(mouse_pos) or self.current_region == 3:
             if len(self.cleared_regions) > 3: # 클리어하거나 도전 중인 맵만 선택 가능
                 self.current_region = 3
@@ -149,7 +154,20 @@ class StoryMapUI:
                 self.screen.blit(self.bw_regionB_image, (self.screen_width/6.8027, self.screen_height/2.5685))
                 self.screen.blit(self.bw_regionC_image, (self.screen_width/3.5714, self.screen_height/1.656))
                 self.screen.blit(self.regionD_image, (self.screen_width/1.67, self.screen_height/31.9149))
-
+                
+        ## region 클릭
+        if self.regionA_rect.collidepoint(mouse_pos) and self.mouse_click:
+            print('regionA')
+            pass # 지역A 게임 로드
+        elif self.regionB_rect.collidepoint(mouse_pos) and self.mouse_click:
+            print('regionB')
+            pass # 지역B 게임 로드
+        elif self.regionC_rect.collidepoint(mouse_pos) and self.mouse_click:
+            print('regionC')
+            pass # 지역C 게임 로드
+        elif self.regionD_rect.collidepoint(mouse_pos) and self.mouse_click:
+            print('regionD')
+            pass # 지역D 게임 로드
         
         # 캐릭터 이미지 출력
         self.screen.blit(self.dear_image, (self.screen_width/2.3256, self.screen_height/4.1667))
