@@ -59,8 +59,6 @@ class GameUI:
         self.BOX_WIDTH = self.screen_size[0] / 25
         self.BOX_HEIGHT = self.screen_size[0] / 25
 
-        button_width = self.screen_size[0] / 12.5
-        button_height = self.screen_size[0] / 25
         '''
         # create a UNO button
        
@@ -75,6 +73,34 @@ class GameUI:
         # create a direction icon
         self.direction_icon = pygame.image.load("images/direction.png")
         self.direction_icon = pygame.transform.scale(self.direction_icon, (self.screen_size[0] // 25, self.screen_size[0] // 25 * 4))
+
+        # create buttons colorbox
+        self.surface = pygame.Surface((self.screen_size[0] / 1.5, self.screen_size[1] / 1.5))
+
+        self.blue_box = colorBox.ColorBox('blue', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
+        self.green_box = colorBox.ColorBox('green', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
+        self.red_box = colorBox.ColorBox('red', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)    
+        self.yellow_box = colorBox.ColorBox('yellow', self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
+
+        self.blue_box_button = self.blue_box.image
+        self.blue_box_button_rect = self.blue_box_button.get_rect()
+        self.blue_box_button_rect.x = self.surface.get_width() / 8
+        self.blue_box_button_rect.y = self.surface.get_height() / 2
+
+        self.green_box_button = self.green_box.image
+        self.green_box_button_rect = self.green_box_button.get_rect()
+        self.green_box_button_rect.x = self.surface.get_width() * 3 / 8
+        self.green_box_button_rect.y = self.surface.get_height() / 2
+
+        self.red_box_button = self.red_box.image
+        self.red_box_button_rect = self.red_box_button.get_rect()
+        self.red_box_button_rect.x = self.surface.get_width() * 5 / 8
+        self.red_box_button_rect.y = self.surface.get_height() / 2
+
+        self.yellow_box_button = self.yellow_box.image
+        self.yellow_box_button_rect = self.yellow_box_button.get_rect()
+        self.yellow_box_button_rect.x = self.surface.get_width() * 7 / 8
+        self.yellow_box_button_rect.y = self.surface.get_height() / 2
 
         '''
         # add text to the button
@@ -134,6 +160,7 @@ class GameUI:
             color_box = colorBox.ColorBox(top_card.color, self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
         # Draw the card that player has
         players[0].draw()
+        players[0].draw_one(self.cur_card)
 
         # Draw the box showing color of the card
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))
@@ -174,6 +201,21 @@ class GameUI:
             self.screen.blit(timer, (self.screen_size[0] * 0.63, self.screen_size[1] * 0.02))
         else: # 컴퓨터 플레이어일 때 
             self.screen.blit(timer, (-100, -100)) # 화면 밖으로 타이머 배치
+
+        # choose color when wild card
+        if color_box.name == 'black': # and isinstance(players[turn_num], Human)
+            font = pygame.font.SysFont("arial", self.screen_size[0] // 30, True)
+            text_surface = font.render("CHOOSE COLOR", True, (255, 255, 255))
+            self.surface.blit(text_surface, (self.surface.get_width() / 3, self.surface.get_height() / 8))
+
+            self.surface.blit(self.blue_box_button, self.blue_box_button_rect) 
+            self.surface.blit(self.green_box_button, self.green_box_button_rect) 
+            self.surface.blit(self.red_box_button, self.red_box_button_rect)          
+            self.surface.blit(self.yellow_box_button, self.yellow_box_button_rect)
+
+            self.screen.blit(self.surface, (self.screen_size[0] / 6, self.screen_size[1] / 6))
+        else:
+            pass
 
         # Update the screen
         pygame.display.flip()
