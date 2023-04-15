@@ -1,5 +1,6 @@
 import pygame
 import main
+import hand 
 from deck import Deck
 from human import Human
 from computer import Computer
@@ -23,9 +24,6 @@ class Game:
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
 
-
-        ##innersetting.py의 Setting class
-        self.set = innersetting.Setting(self.screen_width, self.screen_height)
 
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -85,21 +83,46 @@ class Game:
         # Game 너비, 높이 기본 배경 설정
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn)
         
+        
+        
+        ##innersetting.py의 Setting class
+        self.set = innersetting.Setting(self.screen_width, self.screen_height, self.color_blind_mode,self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
+        
 
 
 
-        # 실행중이던 게임을 딕셔너리 형태로 저장
-        self.data = {
-            "hi":1
-        }
         
         self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
 
 
+
+
+
+
+        # 실행중이던 게임을 딕셔너리 형태로 저장
+        self.data = {
+            # "running_time": ,
+            "human_hand": list(map(str,self.players[0].hand.cards)),  
+            ##사람 손에 있는 카드  ## self.players[0].hand.cards 리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다. 
+            "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
+            "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
+            # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
+            # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
+        }
+        self.save_play()
+        # self.data["human_hand"] 
+        
+        
+
+    def save_play(self):
+        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
+        with open('game_data.json','w') as game_data_file: 
+            json.dump(self.data, game_data_file)    
+
+
     def run(self):
         pygame.init()
-
         if self.skip: # 시작 카드가 skip 카드인 경우
             self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
             self.skip = False
@@ -107,10 +130,11 @@ class Game:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
         
         try: 
-            with open('play_data.txt','w') as play_data_file: 
+            with open('game_data.json','w') as play_data_file: 
                 json.dump(self.data, play_data_file)
         except: 
-            print("No file created yet!")     ## 처음으로 게임 시작하게 될 경우, 하다가 나가버리면 자동으로 play_data.txt 가 생성되고 후에 불러올 수 있음. 
+            print("No file created yet!")    
+            
             
         self.turn_num = 0
         while self.running:
@@ -140,16 +164,17 @@ class Game:
                                 self.players[self.turn_num].hand.cards.append(self.deck.pop())
                         except:
                             self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                
+
                 self.update()
             '''
             # 카드 개수와 종류 출력하는 test
             for i in range(len(self.players)):
-                print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ') # 플레이어 번호(가지고 있는 카드 장수):
+                print(str(i) + '(' + str(len(self.players[i].hand.cards)), end='): ')   # 플레이어 번호(가지고 있는 카드 장수):
                 print(self.players[i].hand.cards)
             '''
             self.render()
             
+
             # 게임 오버 판별
             if self.players[self.turn_num].hand.is_empty():
                 game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
@@ -167,6 +192,9 @@ class Game:
                 if self.turn_num < 0:
                     self.turn_num = len(self.players) - 1
         pygame.quit()
+
+
+
 
     # function is responsible for handling user input and events
     def handle_events(self):
@@ -233,8 +261,7 @@ class Game:
                 else:
                     GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
-                    with open('play_data.txt','w') as play_data_file: 
-                        json.dump(self.data, play_data_file)
+                    self.save_play()
                     self.running = False
                 # keyboard handling
                 elif event.type == pygame.KEYDOWN: 
@@ -455,7 +482,7 @@ class Game:
             # print(self.random_delay)
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
-                    with open('play_data.txt','w') as play_data_file: 
+                    with open('game_data.json','w') as play_data_file: 
                         json.dump(self.data, play_data_file)
                     self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
