@@ -157,6 +157,8 @@ class StoryMap:
         elif self.no_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
             self.selected = False
             self.mouse_click = False
+            
+        self.mouse_click = False
         
         
     def handle_events(self):
@@ -271,10 +273,19 @@ class StoryMap:
                 
         ## region 클릭
         if self.mouse_click:
-            if self.regionA_rect.collidepoint(mouse_pos) or self.regionB_rect.collidepoint(mouse_pos) or self.regionC_rect.collidepoint(mouse_pos) or self.regionD_rect.collidepoint(mouse_pos):
+            if self.regionA_rect.collidepoint(mouse_pos) and len(self.unlocked_regions):
                 self.selected = True
                 self.mouse_click = False
-            
+            if self.regionB_rect.collidepoint(mouse_pos) and len(self.unlocked_regions) > 1:
+                self.selected = True
+                self.mouse_click = False
+            if self.regionC_rect.collidepoint(mouse_pos) and len(self.unlocked_regions) > 2:
+                self.selected = True
+                self.mouse_click = False
+            if self.regionD_rect.collidepoint(mouse_pos) and len(self.unlocked_regions) > 3:
+                self.selected = True
+                self.mouse_click = False
+        self.mouse_click = False
         pygame.display.flip()
 
     def run(self):
