@@ -24,7 +24,7 @@ class Human(Player):
 
     def draw_one(self, cur_card):
         if not self.color_blind_mode:                
-            self.screen.blit(self.hand.cards[cur_card].default_image, self.hand.cards[cur_card].rect)
+             self.screen.blit(self.hand.cards[cur_card].default_image, self.hand.cards[cur_card].rect)
         else:              
             self.screen.blit(self.hand.cards[cur_card].blind_image, self.hand.cards[cur_card].rect)
                 
