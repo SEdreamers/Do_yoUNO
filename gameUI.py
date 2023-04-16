@@ -2,6 +2,7 @@ from turtle import color
 import pygame
 import colorBox
 from human import Human
+import time
 
 class GameUI:
 
@@ -101,6 +102,12 @@ class GameUI:
         self.yellow_box_button_rect = self.yellow_box_button.get_rect()
         self.yellow_box_button_rect.x = self.surface.get_width() * 7 / 8
         self.yellow_box_button_rect.y = self.surface.get_height() / 2
+        
+        
+        self.one_image = pygame.image.load("images/one.png")
+        self.one_image = pygame.transform.scale(self.one_image, (self.screen_size[0]/3, self.screen_size[0]/6.54))
+        self.one_rect = self.one_image.get_rect()
+        self.one_rect.center = (self.screen_size[0]/2, self.screen_size[1]/2)
 
         '''
         # add text to the button
@@ -111,7 +118,7 @@ class GameUI:
         '''
 
 
-    def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time):
+    def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time, is_clicked_uno):
         # card 위치 설정(player card)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
@@ -216,6 +223,11 @@ class GameUI:
             self.screen.blit(self.surface, (self.screen_size[0] / 6, self.screen_size[1] / 6))
         else:
             pass
+        
+        
+        if is_clicked_uno:
+            self.screen.blit(self.one_image, self.one_rect)
+                            
 
         # Update the screen
         pygame.display.flip()
