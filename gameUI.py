@@ -10,6 +10,8 @@ class GameUI:
     exit_flag = 0
     color_flag = 0
 
+    backcard_uno_flag = 0
+
     def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
          # Color
         BLACK = (0, 0, 0)
@@ -188,8 +190,13 @@ class GameUI:
                 players[turn_num].skip_draw(int(players[turn_num].name[8]))
 
         # draw current card selection
-        pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
+        if not self.backcard_uno_flag:
+            pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
         
+        if self.backcard_uno_flag == 1:
+            pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.2, self.screen_size[1] * 0.2, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
+        elif self.backcard_uno_flag == 2:
+            pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27, self.screen_size[0] / 12.5, self.screen_size[0] * 0.054), 5)
         
         # draw the timer
         elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
