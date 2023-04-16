@@ -1,4 +1,5 @@
 import pygame
+import main
 import hand 
 from deck import Deck
 from human import Human
@@ -232,7 +233,7 @@ class Game:
         while self.running:
             count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time) # 타이머 시간 업데이트
             
-            if count_down == 0: # 제한 시간 내에 카드를 내지 못한 경우
+            if count_down <= 0: # 제한 시간 내에 카드를 내지 못한 경우
                 start_time = pygame.time.get_ticks()
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
@@ -254,62 +255,113 @@ class Game:
             if game_paused == True: pass
             # Calculate the interpolation ratio 
             for event in pygame.event.get(): 
+                pos = pygame.mouse.get_pos()
+                if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
+                    GameUI.exit_flag = 1
+                else:
+                    GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
                     self.save_play()
                     self.running = False
+                # keyboard handling
                 elif event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
                         game_paused = True
                         self.set.run(self.screen_width, self.screen_height)
-                    elif event.key == pygame.K_LEFT:
-                        GameUI.cur_card -= 1
-                        if GameUI.cur_card < 0:
-                            GameUI.cur_card = 0
-                        self.render()
-                    elif event.key == pygame.K_RIGHT:
-                        GameUI.cur_card += 1
-                        if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
-                            GameUI.cur_card = len(self.players[0].hand.cards) - 1
-                        self.render()
-                    elif event.key == 13: ## press entered
-                        entered_card = self.players[0].hand.cards[GameUI.cur_card]
-                        if entered_card.can_play_on(self.top_card):
-                            self.card_clicked = entered_card
-                            start_time = pygame.time.get_ticks()
-                            self.top_card = entered_card
-                            self.deck.append(self.top_card)
-                            self.players[self.turn_num].hand.cards.remove(entered_card)
+                    elif event.key == pygame.K_q:
+                        self.running = False
+                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
+                    if not GameUI.backcard_uno_flag:
+                        if event.key == pygame.K_LEFT:
+                            GameUI.cur_card -= 1
+                            if GameUI.cur_card < 0:
+                                GameUI.cur_card = 0
+                            self.render()
+                        elif event.key == pygame.K_RIGHT:
+                            GameUI.cur_card += 1
                             if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
                                 GameUI.cur_card = len(self.players[0].hand.cards) - 1
-                                self.render()
-                        if self.top_card.color == 'black':
                             self.render()
-                            play = True
-                            while play:
-                                for event in pygame.event.get():
-                                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                                        pos = pygame.mouse.get_pos()
-                                        print(pos)
-                                        if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
-                                            self.top_card.color = 'blue'
-                                            self.render()
-                                            play = False
-                                        elif self.screen_size[0] / 2.41 < pos[0] < self.screen_size[0] / 2.1978 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
-                                            self.top_card.color = 'green'
-                                            self.render()
-                                            play = False
-                                        elif self.screen_size[0] / 1.72 < pos[0] < self.screen_size[0] / 1.61 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
-                                            self.top_card.color = 'red'
-                                            self.render()
-                                            play = False
-                                        elif self.screen_size[0] / 1.333 < pos[0] < self.screen_size[0] / 1.266 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
-                                            self.top_card.color = 'yellow'
-                                            self.render()
-                                            play = False
-                    
+                        elif event.key == 13: ## press entered
+                            entered_card = self.players[0].hand.cards[GameUI.cur_card]
+                            if entered_card.can_play_on(self.top_card):
+                                self.card_clicked = entered_card
+                                start_time = pygame.time.get_ticks()
+                                self.top_card = entered_card
+                                self.deck.append(self.top_card)
+                                self.players[self.turn_num].hand.cards.remove(entered_card)
+                                if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
+                                    GameUI.cur_card = len(self.players[0].hand.cards) - 1
+                                    self.render()
+                            if self.top_card.color == 'black':
+                                self.render()
+                                play = True
+                                while play:
+                                    for event in pygame.event.get():
+                                        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                                            pos = pygame.mouse.get_pos()
+                                            print(pos)
+                                            if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                                self.top_card.color = 'blue'
+                                                self.render()
+                                                play = False
+                                            elif self.screen_size[0] / 2.41 < pos[0] < self.screen_size[0] / 2.1978 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                                self.top_card.color = 'green'
+                                                self.render()
+                                                play = False
+                                            elif self.screen_size[0] / 1.72 < pos[0] < self.screen_size[0] / 1.61 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                                self.top_card.color = 'red'
+                                                self.render()
+                                                play = False
+                                            elif self.screen_size[0] / 1.333 < pos[0] < self.screen_size[0] / 1.266 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
+                                                self.top_card.color = 'yellow'
+                                                self.render()
+                                                play = False
+                                        elif event.type == pygame.KEYDOWN:
+                                            if event.key == pygame.K_RIGHT:
+                                                GameUI.color_flag += 1
+                                                GameUI.color_flag %= 4
+                                                self.render()
+                                            elif event.key == pygame.K_LEFT:
+                                                GameUI.color_flag -= 1
+                                                GameUI.color_flag %= 4
+                                                self.render()
+                                            elif event.key == 13:
+                                                if GameUI.color_flag == 0:
+                                                    self.top_card.color = 'blue'
+                                                elif GameUI.color_flag == 1:
+                                                    self.top_card.color = 'green'
+                                                elif GameUI.color_flag == 2:
+                                                    self.top_card.color = 'red'
+                                                elif GameUI.color_flag == 3:
+                                                    self.top_card.color = 'yellow'
+                                                self.render()
+                                                play == False
+                                                return False
+                    if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                        if GameUI.backcard_uno_flag:
+                            GameUI.backcard_uno_flag = 0
+                        else:
+                            GameUI.backcard_uno_flag = 1
+                        self.render()
+                    elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                        if GameUI.backcard_uno_flag == 1:
+                            GameUI.backcard_uno_flag = 2
+                        elif GameUI.backcard_uno_flag == 2:
+                            GameUI.backcard_uno_flag = 1
+                        self.render()
+                    if event.key == 13 and GameUI.backcard_uno_flag == 1:
+                        self.card_clicked = self.back_card
+                        start_time = pygame.time.get_ticks()
+                        self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                    elif event.key == 13 and GameUI.backcard_uno_flag == 2: #uno 버튼 눌렀을 때
+                        pass
+                
+                # mouse handling    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
+                    print(pos)
                     if self.back_card.rect.collidepoint(pos):
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
@@ -328,6 +380,16 @@ class Game:
                         self.render()
                         play = True
                         while play:
+                            for event in pygame.event.get():
+                                    if event.type == pygame.QUIT:
+                                        self.save_play()
+                                        play = False
+                                        self.running = False
+                            if count_down <= 0: # 제한 시간 내에 카드를 내지 못한 경우
+                                start_time = pygame.time.get_ticks()
+                                self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
+                                self.card_clicked = self.back_card
+                                play = False
                             for event in pygame.event.get():
                                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                                     pos = pygame.mouse.get_pos()
@@ -348,11 +410,36 @@ class Game:
                                         self.top_card.color = 'yellow'
                                         self.render()
                                         play = False
+                                elif event.type == pygame.KEYDOWN:
+                                    if event.key == pygame.K_RIGHT:
+                                        GameUI.color_flag += 1
+                                        GameUI.color_flag %= 4
+                                        self.render()
+                                    elif event.key == pygame.K_LEFT:
+                                        GameUI.color_flag -= 1
+                                        GameUI.color_flag %= 4
+                                        self.render()
+                                    elif event.key == 13:
+                                        if GameUI.color_flag == 0:
+                                            self.top_card.color = 'blue'
+                                        elif GameUI.color_flag == 1:
+                                            self.top_card.color = 'green'
+                                        elif GameUI.color_flag == 2:
+                                            self.top_card.color = 'red'
+                                        elif GameUI.color_flag == 3:
+                                            self.top_card.color = 'yellow'
+                                        self.render()
+                                        play == False
+                                        return False
 
                     if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
                         if self.players[self.turn_num].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[self.turn_num].name)
                         # print(clicked_uno)
+                    # exit 버튼이 클릭 된 경우
+                    if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
+                        self.running = False
+                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
                             
                             
             if self.card_clicked is not None:
