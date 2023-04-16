@@ -122,6 +122,20 @@ class Game:
 
     def run(self):
         pygame.init()
+        
+        pygame.mixer.init()
+        pygame.mixer.music.load('unogame.mp3')
+        pygame.mixer.music.play(-1,3)    ## 무한번 반복, 음악의 3초 지점부터 재생
+        pygame.mixer.music.set_volume(0.1)
+        
+        # pygame.mixer.music.play()
+        # pygame.mixer.music.stop()
+        # pygame.mixer.music.fadeout()
+        
+        
+        
+        
+               
         if self.skip: # 시작 카드가 skip 카드인 경우
             self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
             self.skip = False
@@ -261,6 +275,7 @@ class Game:
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
                         game_paused = True
+                        # pygame.mixer.music.pause()    ##잠시 음악 중단 - 넣을 필요 없음(setting들어가서 볼륨 얼마나 조절되는지 확인하기 위해;)
                         self.set.run(self.screen_width, self.screen_height)
                     elif event.key == pygame.K_LEFT:
                         GameUI.cur_card -= 1
@@ -331,6 +346,7 @@ class Game:
                             for event in pygame.event.get():
                                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                                     pos = pygame.mouse.get_pos()
+                                    
                                     print(pos)
                                     if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
                                         self.top_card.color = 'blue'
@@ -350,6 +366,10 @@ class Game:
                                         play = False
 
                     if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
+                        
+                        # click = pygame.mixer.Sound('soundeffect-click.mp3')      ##클릭 효과음   - human turn일 때는 uno버튼이 아닌 빈공간 그 어떤 곳을 클릭해도 효과음 실행. 
+                        # click.play()
+                        
                         if self.players[self.turn_num].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[self.turn_num].name)
                         # print(clicked_uno)
@@ -368,6 +388,10 @@ class Game:
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
                         clock.tick(fps)
+                        
+                        click = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
+                        click.play()
+                        
                         if ratio == 1:
                             running = False
                             return True 
@@ -381,6 +405,10 @@ class Game:
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
                         clock.tick(fps)
+                        
+                        click = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
+                        click.play()
+                        
                         if ratio == 1: 
                             running = False
                             return False
