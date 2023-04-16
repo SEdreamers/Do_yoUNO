@@ -20,6 +20,8 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             color = data['color_blind_mode']     ## 저장된 값 불러오기. 
             size = data["size"]
         screen = pygame.display.set_mode((size[0],size[1]))
+        screen_width = size[0]
+        screen_height = size[1]
         font = pygame.font.SysFont("arial", size[0] // 20, True)
     except: 
         print("No file created yet!")
@@ -84,15 +86,15 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
                     menu_flag += 1
                 elif event.key == 13:
                     if menu_flag == 0:
-                        uno_game = game.Game(size[0],size[1], color)
+                        uno_game = game.Game(screen_width, screen_height, color_blind_mode)
                         uno_game.run()
                     elif menu_flag == 1:
-                        story_mode = storyMap.StoryMap(size[0], size[1])
+                        story_mode = storyMap.StoryMap(screen_width, screen_height)
                         story_mode.run()
                     elif menu_flag == 2:
-                        set = setting.Setting(size[0],size[1])
-                        set.run(size[0],size[1])
-                    elif menu_flag == 3:                        
+                        set = setting.Setting(screen_width, screen_height)
+                        set.run(screen_width, screen_height)
+                    elif menu_flag == 3:
                         play = False
             menu_flag %= 4
 
@@ -128,7 +130,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
 
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            uno_game = game.Game(size[0],size[1], color)
+            uno_game = game.Game(screen_width, screen_height, color_blind_mode)
             uno_game.run()
         elif story_mode_rect.collidepoint(mouse_pos) and mouse_click[0]:
             story_mode = storyMap.StoryMap(size[0], size[1])

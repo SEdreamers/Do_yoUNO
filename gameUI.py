@@ -7,13 +7,17 @@ class GameUI:
 
     # for keyboard selection
     cur_card = 0
+    exit_flag = 0
+    color_flag = 0
+
+    backcard_uno_flag = 0
 
     def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
          # Color
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
-        font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
+        self.font = pygame.font.SysFont("arial", self.screen_size[0] // 30, True)
         self.timer_font = pygame.font.SysFont("arial", self.screen_size[0]  // 25, True)
         self.color_blind_mode = color_blind_mode
         # Set up the game screen
@@ -185,8 +189,14 @@ class GameUI:
             else: # turn을 skip 당한 플레이어가 Computer일 경우
                 players[turn_num].skip_draw(int(players[turn_num].name[8]))
 
-        pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
+        # draw current card selection
+        if not self.backcard_uno_flag:
+            pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
         
+        if self.backcard_uno_flag == 1:
+            pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.2, self.screen_size[1] * 0.2, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
+        elif self.backcard_uno_flag == 2:
+            pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27, self.screen_size[0] / 12.5, self.screen_size[0] * 0.054), 5)
         
         # draw the timer
         elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
@@ -216,6 +226,23 @@ class GameUI:
             self.screen.blit(self.surface, (self.screen_size[0] / 6, self.screen_size[1] / 6))
         else:
             pass
+
+        self.exit_menu = self.font.render("Exit", True, 'black')
+        if GameUI.exit_flag == 1:
+            self.exit_menu = self.font.render("Exit", True, 'red')
+        self.exit_menu_rect = self.exit_menu.get_rect()
+        self.exit_menu_rect.x = self.screen_size[0] / 80
+        self.exit_menu_rect.y = self.screen_size[1] / 60
+        self.screen.blit(self.exit_menu, self.exit_menu_rect)
+
+        if color_box.name == 'black' and GameUI.color_flag == 0:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 4, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
+        elif color_box.name == 'black' and GameUI.color_flag == 1:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 2.408, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
+        elif color_box.name == 'black' and GameUI.color_flag == 2:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 1.716, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
+        elif color_box.name == 'black' and GameUI.color_flag == 3:
+            pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 1.335, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
 
         # Update the screen
         pygame.display.flip()
