@@ -19,12 +19,11 @@ class Hand:
                     card = self.deck.cards.pop(0)
                 if card:
                     self.cards.append(card)
-        elif region == "B":
-            pass
-        elif region == "C":
-            pass
         elif region == "D":
-            pass
+            for _ in range(5):      ## 처음 주어지는 카드 수
+                card = self.deck.pop()
+                if card:
+                    self.cards.append(card)
         elif region == "E":
             for _ in range(5):      ## 처음 주어지는 카드 수
                 card = self.deck.pop()

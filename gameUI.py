@@ -197,7 +197,7 @@ class GameUI:
             if isinstance(players[turn_num], Human): # turn을 skip 당한 플레이어가 Human일 경우
                 players[turn_num].skip_draw()
             else: # turn을 skip 당한 플레이어가 Computer일 경우
-                players[turn_num].skip_draw(int(players[turn_num].name[8]))
+                players[turn_num].skip_draw(turn_num - 1)
 
         # draw current card selection
         if not self.backcard_uno_flag:

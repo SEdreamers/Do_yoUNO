@@ -64,7 +64,7 @@ class GameState:
 
 
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode, region = "A"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, region = "E"):
         pygame.init()
         self.screen_width = screen_width
         self.screen_height = screen_height
