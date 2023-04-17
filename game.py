@@ -403,6 +403,7 @@ class Game:
                                 self.top_card = entered_card
                                 self.deck.append(self.top_card)
                                 self.players[self.turn_num].hand.cards.remove(entered_card)
+                                self.update()
                                 if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
                                     GameUI.cur_card = len(self.players[0].hand.cards) - 1
                                     self.render()
