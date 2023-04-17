@@ -71,7 +71,7 @@ class Game:
         self.screen_size = (self.screen_width, self.screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
-
+        self.region = region
 
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -618,43 +618,45 @@ class Game:
                     if element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                         # time.sleep(1.5)
                         self.card_clicked = element
-                        if self.combo > 0:
-                            self.combo -= 1
-                        if element.value == "reverse":
-                            for j in range(i + 1, len(hand_card_list)):
-                                if hand_card_list[j].value == "reverse":
-                                    index = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
-                                    # reverse 2개 있을 시 맨 앞으로 오도록 하기
-                                    self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
-                                    self.combo = 2
-                                    self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
-                                    time.sleep(1.5)
-                        player_num = len(self.players)
-                        if element.value == "skip": # 1개만 있어도 combo 가능
-                            if player_num == 2:
-                                self.combo = 1
-                                self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
-                                time.sleep(1.5)
-                            elif player_num == 3 or player_num == 6: # 3개 있어야 combo 가능
+                        if self.region == "A": # A일 때 컴퓨터 플레이어는 콤보 사용 가능
+                            if self.combo > 0:
+                                self.combo -= 1
+                            if element.value == "reverse":
                                 for j in range(i + 1, len(hand_card_list)):
-                                    if hand_card_list[j].value == "skip":
-                                        for k in range(j + 1, len(hand_card_list)):
-                                            if hand_card_list[k].value == "skip":
-                                                index = self.players[self.turn_num].hand.cards.index(hand_card_list[k])
-                                                index2 = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
-                                                self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
-                                                self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[0] + self.players[self.turn_num].hand.cards[index2:] + self.players[self.turn_num].hand.cards[1:index2]
-                                                self.combo = 3
-                                                self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
-                                                time.sleep(1.5)
-                            elif player_num == 4: # 2개 있어야 combo 가능
-                                for j in range(i + 1, len(hand_card_list)):
-                                    if hand_card_list[j].value == "skip":
+                                    if hand_card_list[j].value == "reverse":
                                         index = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
+                                        # reverse 2개 있을 시 맨 앞으로 오도록 하기
                                         self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
                                         self.combo = 2
                                         self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
                                         time.sleep(1.5)
+                            player_num = len(self.players)
+                            if element.value == "skip": # 1개만 있어도 combo 가능
+                                if player_num == 2:
+                                    self.combo = 1
+                                    self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                                    time.sleep(1.5)
+                                elif player_num == 3 or player_num == 6: # 3개 있어야 combo 가능
+                                    for j in range(i + 1, len(hand_card_list)):
+                                        if hand_card_list[j].value == "skip":
+                                            for k in range(j + 1, len(hand_card_list)):
+                                                if hand_card_list[k].value == "skip":
+                                                    index = self.players[self.turn_num].hand.cards.index(hand_card_list[k])
+                                                    index2 = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
+                                                    self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
+                                                    self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[0] + self.players[self.turn_num].hand.cards[index2:] + self.players[self.turn_num].hand.cards[1:index2]
+                                                    self.combo = 3
+                                                    self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                                                    time.sleep(1.5)
+                                elif player_num == 4: # 2개 있어야 combo 가능
+                                    for j in range(i + 1, len(hand_card_list)):
+                                        if hand_card_list[j].value == "skip":
+                                            index = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
+                                            self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
+                                            self.combo = 2
+                                            self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                                            time.sleep(1.5)
+                                            
                         start_time = pygame.time.get_ticks()
                         self.top_card = element
                         self.deck.append(self.top_card)
