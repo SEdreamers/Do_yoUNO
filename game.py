@@ -568,6 +568,14 @@ class Game:
                         main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
 
                    
+            
+
+            global svol
+            with open('setting_data.json') as game_file:
+                    data = json.load(game_file)
+                    tvol = data["Total_Volume"]
+                    bvol = data["Background_Volume"]
+                    svol = data["Sideeffect_Volume"]
 
             if self.card_clicked is not None:
                 running = True
@@ -583,13 +591,7 @@ class Game:
                         pygame.display.flip()
                         clock.tick(fps)
                         
-                        global svol
                         
-                        with open('setting_data.json') as game_file:
-                                data = json.load(game_file)
-                                tvol = data["Total_Volume"]
-                                bvol = data["Background_Volume"]
-                                svol = data["Sideeffect_Volume"]
 
 
                         self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
