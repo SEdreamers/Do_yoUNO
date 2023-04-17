@@ -1,7 +1,8 @@
 import pygame
 from player import Player
 import computer 
-
+import json
+import game
 
 class Lobby():
     def __init__(self, screen_width, screen_height, color_blind_mode):
@@ -32,18 +33,81 @@ class Lobby():
     def displayPlayer(self, players):
         ## Draw the background image
         self.screen.blit(self.computer_background_image, (self.screen_size[0] - self.computer_width, 0))
-        ## Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
         
+        
+
+        ##?? 이거 되나? 
+        ## Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
+        computer_x = self.screen_size[0] - self.computer_width
+        computer_y = 0
+        self.screen.blit(self.computer_image, (computer_x, computer_y + 5 * self.computer_height))
+
+
         
         # for i in range(1, len(players)):
         #     players[i].draw(i - 1)
+        
+
+        with open('setting_data.json') as game_file:
+            data = json.load(game_file)
+            color = data['color_blind_mode']     ## 저장된 값 불러오기. 
+            size = data["size"]
+
+
+
+        ## Player 수 입력받기
+        font = pygame.font.SysFont("arial", size[0] // 40, True) 
+        player_numbers = ""
+        
+        c1name = ""
+        c2name = ""
+        c3name = ""
+        c4name = ""
+        c5name = ""
+
+        input_active = True     # 사용자 이름 입력 상태 여부
+        blink_timer = 0         # 깜빡이는 커서 타이머
+        cursor_visible = True   # 커서 가시성 상태
+
 
         while self.running:
             pygame.init()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if input_active:  # 사용자 이름 입력 상태일 때만 입력 받기
+                        if event.key == pygame.K_BACKSPACE:
+                            player_numbers = player_numbers[:-1]  # 백스페이스 키 입력 처리
+                        elif event.key == pygame.K_RETURN:
+                            input_active = False  # 엔터 키 입력 처리 후 사용자 이름 입력 상태 해제
+                        else: player_numbers += event.unicode  # 다른 키 입력 처리
+                        
 
+
+
+            # 깜빡이는 커서 타이머 업데이트
+            blink_timer += pygame.time.get_ticks() / 2 
+            if blink_timer >= 500:  # 0.5초마다 커서 가시성 상태 변경
+                cursor_visible = not cursor_visible
+                blink_timer = 0
+
+            # 화면에 이름과 커서 출력
+            self.screen.fill((0,0,0))    ##검은색 바탕
+            if input_active:
+                text_surface = font.render("Enter Player Numbers(1~5): " + player_numbers, True, (255,255,255))
+                self.screen.blit(text_surface, (100, 100))  # 화면에 텍스트 출력
+                if cursor_visible:  # 커서 가시성에 따라 커서 출력
+                    pygame.draw.rect(self.screen, (255, 0, 0), (100 + text_surface.get_width(), 100, 2, text_surface.get_height()))
+            else:
+                text_surface = font.render("Wrong! Choose Again!" + player_numbers, True, (255,255,255))
+                self.screen.blit(text_surface, (100, 100))  # 화면에 텍스트 출력
+
+                # computer_name = computer.Computer()
+
+
+                uno_game = game.Game(size[0],size[1], color,int(player_numbers))  
+                uno_game.run()
 
         # Update the display
             pygame.display.update()

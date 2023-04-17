@@ -58,20 +58,15 @@ class GameState:
 
 
 
-
-
-
-
-
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode, region = "E"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "E"):
         pygame.init()
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.screen_size = (self.screen_width, self.screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
-        self.region = region
+        self.numberofPlayers = numberofPlayers
 
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -107,10 +102,10 @@ class Game:
         
         # add computers(player 숫자 받아서 설정)
         computers = []
-        self.numberofPlayers = 5      ## player 수 
-        for i in range(self.numberofPlayers):
+        for i in range(self.numberofPlayers):     ## player 수 
             computers.append(Computer(self.screen, self.deck, i, region))
         self.players.extend(computers)
+        
         
         # 사람은 가중치 없이 뽑아야 함
         self.deck.shuffle()
@@ -154,9 +149,9 @@ class Game:
         
         
         
-        
+        self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
         ##innersetting.py의 Setting class
-        self.set = innersetting.Setting(self.screen_width, self.screen_height, self.color_blind_mode,self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
+        self.set = innersetting.Setting(self.screen_width, self.screen_height, self.color_blind_mode,self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time,self.move)
         
 
 
@@ -173,15 +168,15 @@ class Game:
         # 실행중이던 게임을 딕셔너리 형태로 저장
         self.data = {
             # "running_time": ,
-            "human_hand": list(map(str,self.players[0].hand.cards)),  
-            ##사람 손에 있는 카드  ## self.players[0].hand.cards 리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다. 
-            "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
-            "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
+            # "human_hand": list(map(str,self.players[0].hand.cards)),  
+            # ##사람 손에 있는 카드  ## self.players[0].hand.cards 리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다. 
+            # "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
+            # "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
             # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
             # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
         }
         self.save_play()
-        # self.data["human_hand"] 
+        
         
         
 
@@ -189,19 +184,32 @@ class Game:
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         with open('game_data.json','w') as game_data_file: 
             json.dump(self.data, game_data_file)    
-
+    
 
     def run(self):
         pygame.init()
+    
         
+
+                            
+        with open('setting_data.json') as game_file:
+                            data = json.load(game_file)
+                            tvol = data["Total_Volume"]
+                            bvol = data["Background_Volume"]
+                            svol = data["Sideeffect_Volume"]
+
+
+        pygame.mixer.music.set_volume(tvol)
         pygame.mixer.init()
         pygame.mixer.music.load('unogame.mp3')
         pygame.mixer.music.play(-1,3)    ## 무한번 반복, 음악의 3초 지점부터 재생
-        pygame.mixer.music.set_volume(0.1)
         
-        # pygame.mixer.music.play()
-        # pygame.mixer.music.stop()
-        # pygame.mixer.music.fadeout()
+
+
+
+        ## pygame.mixer.music.play()
+        ## pygame.mixer.music.stop()
+        ## pygame.mixer.music.fadeout()
         
         
         
@@ -218,8 +226,12 @@ class Game:
                 json.dump(self.data, play_data_file)
         except: 
             print("No file created yet!")    
+    
+
+
+
             
-            
+
         self.turn_num = 0
         while self.running:
             # Human turn인지 Computer turn인지 구분
@@ -345,7 +357,25 @@ class Game:
                         print("Pause!")
                         game_paused = True
                         # pygame.mixer.music.pause()    ##잠시 음악 중단 - 넣을 필요 없음(setting들어가서 볼륨 얼마나 조절되는지 확인하기 위해;)
+                        
+
+
+                        
+
+                        # font = pygame.font.SysFont("arial", self.screen_width // 40, True)
+                        # surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
+                        # text_surface = font.render("Setting", True, (255, 0, 0))
+                        # surface.fill((255, 255, 255))
+                        # surface.blit(text_surface, (surface.get_width() / 3, surface.get_height() / 8))
+                        # self.screen.blit(surface, (size[0] / 6, size[1] / 6))
+                        # pygame.display.update()
+                        # pygame.time.delay(15000)
+
+
                         self.set.run(self.screen_width, self.screen_height)
+
+
+                        
                     elif event.key == pygame.K_q:
                         self.running = False
                         main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
@@ -513,8 +543,6 @@ class Game:
 
                     if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
                         
-                        # click = pygame.mixer.Sound('soundeffect-click.mp3')      ##클릭 효과음   - human turn일 때는 uno버튼이 아닌 빈공간 그 어떤 곳을 클릭해도 효과음 실행. 
-                        # click.play()
                         
                         if self.players[self.turn_num].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[self.turn_num].name)
@@ -526,7 +554,8 @@ class Game:
                         self.running = False
                         main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
 
-                            
+                   
+
             if self.card_clicked is not None:
                 running = True
                 while running:
@@ -541,8 +570,18 @@ class Game:
                         pygame.display.flip()
                         clock.tick(fps)
                         
-                        click = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
-                        click.play()
+                        global svol
+                        
+                        with open('setting_data.json') as game_file:
+                                data = json.load(game_file)
+                                tvol = data["Total_Volume"]
+                                bvol = data["Background_Volume"]
+                                svol = data["Sideeffect_Volume"]
+
+
+                        self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
+                        self.move.set_volume(svol)
+                        self.move.play()
                         
                         if ratio == 1:
                             running = False
@@ -558,9 +597,13 @@ class Game:
                         pygame.display.flip()
                         clock.tick(fps)
                         
-                        click = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
-                        click.play()
+
+                        self.move.set_volume(svol)
+                        self.move = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
+                        self.move.play()
                         
+
+
                         if ratio == 1: 
                             running = False
                             return False
