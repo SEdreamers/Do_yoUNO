@@ -55,7 +55,9 @@ class Card(pygame.sprite.Sprite):
                 
         # value만큼 카드 강제 부여
         for _ in range(value):
-                players[turn_num].hand.cards.append(deck.pop())
+            if len(deck.cards) <= 1:
+                break
+            players[turn_num].hand.cards.append(deck.pop())
 
     def choose_color(self, screen, color_blind_mode):
         pass

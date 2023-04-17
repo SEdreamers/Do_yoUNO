@@ -25,7 +25,7 @@ class Deck:
                 self.cards.append(card)
 
         for value in colorless_values:
-            for _ in range(4):
+            for _ in range(3):
                 card = Card(value, "black", self.screen_size[0], self.screen_size[1])
                 self.cards.append(card)
         self.list = self.cards.copy()

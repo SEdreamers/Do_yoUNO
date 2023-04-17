@@ -59,7 +59,7 @@ class GameState:
 
 
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "E"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "B"):
         pygame.init()
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -463,9 +463,12 @@ class Game:
                             GameUI.backcard_uno_flag = 1
                         self.render()
                     if event.key == 13 and GameUI.backcard_uno_flag == 1:
-                        self.card_clicked = self.back_card
-                        start_time = pygame.time.get_ticks()
-                        self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                        if len(self.deck.cards) <= 0:
+                            return False
+                        else:
+                            self.card_clicked = self.back_card
+                            start_time = pygame.time.get_ticks()
+                            self.players[self.turn_num].hand.cards.append(self.deck.pop())
                     elif event.key == 13 and GameUI.backcard_uno_flag == 2: #uno 버튼 눌렀을 때
                         if len(self.players[self.turn_num].hand.cards) == 2:
                             if self.players[self.turn_num].name not in self.clicked_uno:
@@ -479,6 +482,8 @@ class Game:
                     pos = pygame.mouse.get_pos()
                     print(pos)
                     if self.back_card.rect.collidepoint(pos):
+                        if len(self.deck.cards) <= 0:
+                            return False
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
@@ -741,6 +746,8 @@ class Game:
                         break
                 if self.card_clicked == None:   
                     # time.sleep(1.5)
+                    if len(self.deck.cards) <= 0:
+                            return
                     self.card_clicked = self.back_card
                     start_time = pygame.time.get_ticks()
                     self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
