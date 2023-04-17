@@ -90,6 +90,7 @@ class Game:
         
         # create the uno button
         self.uno_btn = pygame.image.load("images/uno_btn.png")
+        self.uno_btn = pygame.transform.scale(self.uno_btn, (self.screen_size[0] / 12.5, self.screen_size[0] * 0.054))
         self.uno_rect = self.uno_btn.get_rect()
         self.uno_rect.x = self.screen_size[0] * 0.55
         self.uno_rect.y = self.screen_size[1] * 0.27
@@ -500,7 +501,7 @@ class Game:
                                         play == False
                                         return False
 
-                    if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
+                    if self.uno_rect.collidepoint(pos): # uno 버튼이 클릭된 경우
                         
                         # click = pygame.mixer.Sound('soundeffect-click.mp3')      ##클릭 효과음   - human turn일 때는 uno버튼이 아닌 빈공간 그 어떤 곳을 클릭해도 효과음 실행. 
                         # click.play()
