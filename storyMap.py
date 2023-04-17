@@ -2,7 +2,7 @@ import pygame
 import sys
 import game
 import regionB
-#import regionC
+import regionC
 import json
 
 class StoryMap:
@@ -42,7 +42,7 @@ class StoryMap:
                 json.dump(data, story_mode_data_file)
             self.unlocked_regions = ["regionA"]
         
-        self.unlocked_regions = ["regionA", "regionB"]
+        self.unlocked_regions = ["regionA", "regionB", "regionC"]
         ## 지역 이미지
         self.regionA_image = pygame.image.load("images/map/regionA.png")
         self.regionA_image = pygame.transform.scale(self.regionA_image, (self.screen_width/4.4944, self.screen_height/4.0107))
@@ -169,7 +169,8 @@ class StoryMap:
                 gameB.run()
             elif self.current_region == 2:
                 print('regionC')
-                pass # 지역C 게임 로드
+                gameC = regionC.Game(self.size[0], self.size[1], self.color, 2, "C")
+                gameC.run()
             elif self.current_region == 3:
                 print('regionD')
                 pass # 지역D 게임 로드 
@@ -211,7 +212,8 @@ class StoryMap:
                                 gameB.run()
                             elif self.current_region == 2:
                                 print('regionC')
-                                pass # 지역C 게임 로드
+                                gameC = regionC.Game(self.size[0], self.size[1], self.color, 2, "C")
+                                gameC.run()
                             elif self.current_region == 3:
                                 print('regionD')
                                 pass # 지역D 게임 로드
