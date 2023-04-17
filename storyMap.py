@@ -159,7 +159,7 @@ class StoryMap:
         if self.yes_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
             if self.current_region == 0:
                 print('regionA')
-                gameA = game.Game(self.size[0], self.size[1], self.color, "A")
+                gameA = game.Game(self.size[0], self.size[1], self.color, 1, "A")
                 gameA.run()
             elif self.current_region == 1:
                 print('regionB')
