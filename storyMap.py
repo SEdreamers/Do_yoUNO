@@ -2,8 +2,11 @@ import pygame
 import sys
 import game
 import json
+
 class StoryMap:
     def __init__(self, screen_width, screen_height):
+        
+        
         self.menu_flag = 0
         # 화면 크기 설정
         self.screen_width = screen_width
@@ -24,7 +27,19 @@ class StoryMap:
 
         # 지역
         self.current_region = 0 # 현재 마우스나 키보드로 선택한 지역
-        self.unlocked_regions = ['regionA', 'regionB'] # 잠금해제 지역 리스트
+        try:
+            with open('story_mode_data.json') as story_mode_data_file:
+                data = json.load(story_mode_data_file)
+                unlocked_regions = data['unlocked_regions'] # 저장된 값 불러오기
+                self.unlocked_regions = unlocked_regions # 잠금해제 지역 리스트
+        except: 
+            data = {
+                "unlocked_regions": ["regionA"]
+            }
+            with open('story_mode_data.json','w') as story_mode_data_file: 
+                json.dump(data, story_mode_data_file)
+            self.unlocked_regions = ["regionA"]
+        
         
         ## 지역 이미지
         self.regionA_image = pygame.image.load("images/map/regionA.png")
