@@ -99,7 +99,8 @@ class Game:
         
         # add computers(player 숫자 받아서 설정)
         computers = []
-        for i in range(2):
+        self.numberofPlayers = 5      ## player 수 
+        for i in range(self.numberofPlayers):
             computers.append(Computer(self.screen, self.deck, i, region))
         self.players.extend(computers)
         

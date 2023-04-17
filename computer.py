@@ -33,7 +33,10 @@ class Computer(Player):
         self.c2name_rect = self.c2name.get_rect()
         self.c3name = font.render("computer3",True,'GREEN')      ## 이름 받는 부분
         self.c3name_rect = self.c3name.get_rect()
-        
+        self.c4name = font.render("computer4",True,'GREEN')      ## 이름 받는 부분
+        self.c4name_rect = self.c4name.get_rect()
+        self.c5name = font.render("computer5",True,'GREEN')      ## 이름 받는 부분
+        self.c5name_rect = self.c4name.get_rect()
 
 
     # card 그리기 추가하기
@@ -58,7 +61,12 @@ class Computer(Player):
         elif i == 2: 
             self.c3name_rect.x, self.c3name_rect.y = computer_x, i * self.computer_height
             self.screen.blit(self.c3name,self.c3name_rect)
-
+        elif i == 3: 
+            self.c4name_rect.x, self.c4name_rect.y = computer_x, i * self.computer_height
+            self.screen.blit(self.c4name,self.c4name_rect)
+        elif i == 4: 
+            self.c5name_rect.x, self.c5name_rect.y = computer_x, i * self.computer_height
+            self.screen.blit(self.c5name,self.c5name_rect)
 
 
         

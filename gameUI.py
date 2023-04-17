@@ -134,10 +134,12 @@ class GameUI:
         self.screen.blit(self.player_background_image, (0, self.screen_size[1] * 0.6))
         self.screen.blit(self.computer_background_image, (self.screen_size[0] - self.computer_width, 0))
 
+
         # Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
         for i in range(1, len(players)):
-            players[i].draw(i - 1)
+            players[i].draw(i-1)
         
+
         # draw turn indicator
         if turn_num == 0:
             image_rect = self.player_background_image.get_rect()

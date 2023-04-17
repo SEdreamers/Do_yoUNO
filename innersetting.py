@@ -26,63 +26,62 @@ class Setting():
         
         # Create the window        
         self.screen = pygame.display.set_mode(self.window_size)
-        # Set the title of the window
     
         self.running = True
 
-        pygame.init()
-        # Set the font for the buttons
-        self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
-        self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
-        self.vol_font = pygame.font.SysFont("arial", self.screen_width // 60, True)
+        # pygame.init()
+        # # Set the font for the buttons
+        # self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
+        # self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
+        # self.vol_font = pygame.font.SysFont("arial", self.screen_width // 60, True)
         
         
-        # Set the button sizes
-        self.screen_sizes = [(400, 300), (600, 450), (800, 600), (1000, 750)]
+        # # Set the button sizes
+        # self.screen_sizes = [(400, 300), (600, 450), (800, 600), (1000, 750)]
 
         
-        ## create the button code 있던 부분 -> reposition으로 옮김.
+        # ## create the button code 있던 부분 -> reposition으로 옮김.
         
 
 
         
-        # 슬라이더의 초기값과 상태 설정
-        self.slider1_value = 0.3
-        self.slider1_dragging = False
-        # 슬라이더 색상 설정
-        self.slider1_bg_color = 'red'
-        self.slider1_bar_color = 'red'
-        self.slider1_handle_color = (255,255,255)
+        # # 슬라이더의 초기값과 상태 설정
+        # self.slider1_value = 0.3
+        # self.slider1_dragging = False
+        # # 슬라이더 색상 설정
+        # self.slider1_bg_color = 'red'
+        # self.slider1_bar_color = 'red'
+        # self.slider1_handle_color = (255,255,255)
         
 
-        # 슬라이더의 초기값과 상태 설정
-        self.slider2_value = 0.3
-        self.slider2_dragging = False
-        # 슬라이더 색상 설정
-        self.slider2_bg_color = 'red'
-        self.slider2_bar_color = 'red'
-        self.slider2_handle_color = (255,255,255)
+        # # 슬라이더의 초기값과 상태 설정
+        # self.slider2_value = 0.3
+        # self.slider2_dragging = False
+        # # 슬라이더 색상 설정
+        # self.slider2_bg_color = 'red'
+        # self.slider2_bar_color = 'red'
+        # self.slider2_handle_color = (255,255,255)
        
 
-        # 슬라이더의 초기값과 상태 설정
-        self.slider3_value = 0.3
-        self.slider3_dragging = False
-        # 슬라이더 색상 설정
-        self.slider3_bg_color = 'red'
-        self.slider3_bar_color = 'red'
-        self.slider3_handle_color = (255,255,255)
+        # # 슬라이더의 초기값과 상태 설정
+        # self.slider3_value = 0.3
+        # self.slider3_dragging = False
+        # # 슬라이더 색상 설정
+        # self.slider3_bg_color = 'red'
+        # self.slider3_bar_color = 'red'
+        # self.slider3_handle_color = (255,255,255)
 
 
-        self.reposition(self.screen)
+        # self.reposition(self.screen)
                 
                 
 
 
-        self.data ={
-        "color_blind_mode": False,
-        "size": (800,600) 
-        }
-        self.save_game()
+        # self.data ={
+        # "color_blind_mode": False,
+        # "size": (800,600) 
+        # }
+        # self.save_game()
 
     def save_game(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
