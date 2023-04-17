@@ -159,7 +159,8 @@ class StoryMap:
         if self.yes_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
             if self.current_region == 0:
                 print('regionA')
-                pass # 지역A 게임 로드
+                gameA = game.Game(self.size[0], self.size[1], self.color, "A")
+                gameA.run()
             elif self.current_region == 1:
                 print('regionB')
                 pass # 지역B 게임 로드
@@ -199,7 +200,8 @@ class StoryMap:
                         if self.menu_flag == 0: # yes
                             if self.current_region == 0:
                                 print('regionA')
-                                pass # 지역A 게임 로드
+                                gameA = game.Game(self.size[0], self.size[1], self.color, "A")
+                                gameA.run()
                             elif self.current_region == 1:
                                 print('regionB')
                                 pass # 지역B 게임 로드
@@ -289,15 +291,14 @@ class StoryMap:
 
         with open('setting_data.json') as game_file:
             data = json.load(game_file)
-            color = data['color_blind_mode']     ## 저장된 값 불러오기. 
-            size = data["size"]
+            self.color = data['color_blind_mode']     ## 저장된 값 불러오기. 
+            self.size = data["size"]
         ## region 클릭
         if self.mouse_click:
             if self.regionA_rect.collidepoint(mouse_pos) and len(self.unlocked_regions):
                 self.selected = True
                 self.mouse_click = False
-                gameA = game.Game(size[0], size[1], color, "A")
-                gameA.run()
+
             if self.regionB_rect.collidepoint(mouse_pos) and len(self.unlocked_regions) > 1:
                 self.selected = True
                 self.mouse_click = False
