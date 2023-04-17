@@ -78,6 +78,7 @@ class Game:
        
         # combo
         self.combo = 0
+        self.region = region
         # Load the image
         self.combo_image = pygame.image.load('images/combo.jpg')
         self.combo_image = pygame.transform.scale(self.combo_image, (self.screen_size[0] / 3.333, self.screen_size[0] / 3.333))
@@ -691,7 +692,7 @@ class Game:
                     if element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                         # time.sleep(1.5)
                         self.card_clicked = element
-                        """ if self.region == "A": # A일 때 컴퓨터 플레이어는 콤보 사용 가능
+                        if self.region == "A": # A일 때 컴퓨터 플레이어는 콤보 사용 가능
                             if self.combo > 0:
                                 self.combo -= 1
                             if element.value == "reverse":
@@ -728,7 +729,7 @@ class Game:
                                             self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
                                             self.combo = 2
                                             self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
-                                            time.sleep(1.5) """
+                                            time.sleep(1.5)
                                             
                         start_time = pygame.time.get_ticks()
                         self.top_card = element
