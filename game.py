@@ -423,7 +423,10 @@ class Game:
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
                     elif event.key == 13 and GameUI.backcard_uno_flag == 2: #uno 버튼 눌렀을 때
-                        pass
+                        if self.players[self.turn_num].name not in self.clicked_uno:
+                            self.clicked_uno.append(self.players[self.turn_num].name)
+                            self.is_clicked_uno = True
+                            self.render()
                 
                 # mouse handling    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -597,7 +600,7 @@ class Game:
                     self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    if self.uno_btn.get_rect().collidepoint(pos): # uno 버튼이 클릭된 경우
+                    if self.uno_rect.collidepoint(pos): # uno 버튼이 클릭된 경우
                         if self.players[0].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[0].name)
 
