@@ -2,6 +2,7 @@ import pygame
 from player import Player
 from gameUI import GameUI
 from card import Card
+import time
 
 class Computer(Player):
     def __init__(self, screen, deck, i, region):
@@ -79,6 +80,5 @@ class Computer(Player):
         self.skip_rect.centerx = skip_x
         self.skip_rect.centery = skip_y
         self.screen.blit(self.skip_icon, self.skip_rect)
-        
         
         

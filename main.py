@@ -116,6 +116,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         else:
             story_mode_text = font.render("Story Mode", True, WHITE)
             
+            
         if settings_rect.collidepoint(mouse_pos) or menu_flag == 2:
             settings_text = font.render("Settings", True, RED)
         else:

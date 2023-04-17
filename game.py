@@ -71,7 +71,7 @@ class Game:
         self.screen_size = (self.screen_width, self.screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
-
+        self.region = region
 
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -81,6 +81,14 @@ class Game:
 
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
        
+        # combo
+        self.combo = 0
+        # Load the image
+        self.combo_image = pygame.image.load('images/combo.jpg')
+        self.combo_image = pygame.transform.scale(self.combo_image, (self.screen_size[0] / 3.333, self.screen_size[0] / 3.333))
+        self.combo_rect = self.combo_image.get_rect()
+        self.combo_rect.x = self.screen_size[0] * 0.55
+        self.combo_rect.y = self.screen_size[1] * 0.27
         # # Set up the Deck
         # self.deck = Deck(self.screen_size[0], self.screen_size[1])
         # self.deck.shuffle()
@@ -251,17 +259,19 @@ class Game:
                 while True:
                     game_over.display() # 게임 오버 화면 불러오기
                     pygame.display.flip()
-                    
+
             self.clicked_uno_player = None
-            # turn 전환
-            if not self.reverse:
-                self.turn_num += 1
-                if self.turn_num >= len(self.players):
-                    self.turn_num = 0
-            else:
-                self.turn_num -= 1
-                if self.turn_num < 0:
-                    self.turn_num = len(self.players) - 1
+            # combo true일 때는 turn 안 넘기기
+            if self.combo == 0:           
+                # turn 전환
+                if not self.reverse:
+                    self.turn_num += 1
+                    if self.turn_num >= len(self.players):
+                        self.turn_num = 0
+                else:
+                    self.turn_num -= 1
+                    if self.turn_num < 0:
+                        self.turn_num = len(self.players) - 1
         pygame.quit()
 
 
@@ -631,10 +641,49 @@ class Game:
     
             
             if elapsed_time > 3:
-                for element in hand_card_list:  
+                for i, element in enumerate(hand_card_list):  
                     if element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                         # time.sleep(1.5)
                         self.card_clicked = element
+                        if self.region == "A": # A일 때 컴퓨터 플레이어는 콤보 사용 가능
+                            if self.combo > 0:
+                                self.combo -= 1
+                            if element.value == "reverse":
+                                for j in range(i + 1, len(hand_card_list)):
+                                    if hand_card_list[j].value == "reverse":
+                                        index = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
+                                        # reverse 2개 있을 시 맨 앞으로 오도록 하기
+                                        self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
+                                        self.combo = 2
+                                        self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                                        time.sleep(1.5)
+                            player_num = len(self.players)
+                            if element.value == "skip": # 1개만 있어도 combo 가능
+                                if player_num == 2:
+                                    self.combo = 1
+                                    self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                                    time.sleep(1.5)
+                                elif player_num == 3 or player_num == 6: # 3개 있어야 combo 가능
+                                    for j in range(i + 1, len(hand_card_list)):
+                                        if hand_card_list[j].value == "skip":
+                                            for k in range(j + 1, len(hand_card_list)):
+                                                if hand_card_list[k].value == "skip":
+                                                    index = self.players[self.turn_num].hand.cards.index(hand_card_list[k])
+                                                    index2 = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
+                                                    self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
+                                                    self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[0] + self.players[self.turn_num].hand.cards[index2:] + self.players[self.turn_num].hand.cards[1:index2]
+                                                    self.combo = 3
+                                                    self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                                                    time.sleep(1.5)
+                                elif player_num == 4: # 2개 있어야 combo 가능
+                                    for j in range(i + 1, len(hand_card_list)):
+                                        if hand_card_list[j].value == "skip":
+                                            index = self.players[self.turn_num].hand.cards.index(hand_card_list[j])
+                                            self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
+                                            self.combo = 2
+                                            self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                                            time.sleep(1.5)
+                                            
                         start_time = pygame.time.get_ticks()
                         self.top_card = element
                         self.deck.append(self.top_card)
