@@ -9,13 +9,21 @@ class Deck:
         self.load_cards()
     
     def load_cards(self):
-        values = [str(i) for i in range(0, 10)] + ["skip", "reverse", "draw2", "draw4"]
+        values = [str(i) for i in range(0, 10)]
+        # skil card가 뒤쪽에 오도록 추가
+        skill_values = ["skip", "reverse", "draw2", "draw4"]
         colorless_values = ["wild", "wild_draw4", "wild_swap"]
         colors = ["red", "green", "blue", "yellow"]
         for color in colors:
             for value in values:
                 card = Card(value, color, self.screen_size[0], self.screen_size[1])
                 self.cards.append(card)
+                
+        for color in colors:
+            for value in skill_values:
+                card = Card(value, color, self.screen_size[0], self.screen_size[1])
+                self.cards.append(card)
+
         for value in colorless_values:
             for _ in range(4):
                 card = Card(value, "black", self.screen_size[0], self.screen_size[1])

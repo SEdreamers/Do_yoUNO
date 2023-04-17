@@ -4,8 +4,8 @@ from gameUI import GameUI
 from card import Card
 
 class Computer(Player):
-    def __init__(self, screen, deck, i):
-        super().__init__("Computer" + str(i), screen, deck)
+    def __init__(self, screen, deck, i, region):
+        super().__init__("Computer" + str(i), screen, deck, region)
         self.screen = screen
         self.screen_size = (screen.get_width(), screen.get_height())
         # Get the dimensions of the computer's image
