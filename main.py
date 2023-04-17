@@ -65,8 +65,6 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     play = True
     while play:
         
-
-
         # 이벤트 처리
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -86,10 +84,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
                     elif menu_flag == 2:                        
                         play = False
             menu_flag %= 3
-
-
         
-
         # 마우스 이벤트 처리
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()
@@ -108,9 +103,6 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             exit_text = font.render("Exit", True, RED)
         else:
             exit_text = font.render("Exit", True, WHITE)
-
-
-
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
             uno_game = game.Game(size[0],size[1], color)
@@ -120,8 +112,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             set = setting.Setting(size[0],size[1])
             set.run(size[0],size[1])
         elif exit_rect.collidepoint(mouse_pos) and mouse_click[0]:
-            play = False
-
+             play = False
 
         # 화면 그리기
         screen.fill(BLACK)
@@ -134,6 +125,8 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     pygame.quit()
 if __name__=='__main__':
     main()
+
+
 
 
 

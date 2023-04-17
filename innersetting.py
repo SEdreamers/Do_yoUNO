@@ -34,53 +34,48 @@ class Setting():
         # Set the font for the buttons
         self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
         self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
+        self.vol_font = pygame.font.SysFont("arial", self.screen_width // 60, True)
+        
         
         # Set the button sizes
         self.screen_sizes = [(400, 300), (600, 450), (800, 600), (1000, 750)]
 
-        ##게임제목
-        self.game_title = self.font.render("Settings", True, 'white')
-        self.game_title_rect = self.game_title.get_rect()
-    
-        # Create the buttons
-        self.blind_text_surface = self.font.render("Color Blind Mode",True, 'white')
-        self.blind_text_rect = self.blind_text_surface.get_rect()
-    
-        # Create the buttons
-        self.default_text_surface = self.font.render("Default Setting",True, 'white')
-        self.default_text_rect = self.default_text_surface.get_rect()
         
-        # Create the buttons
-        self.back_text_surface = self.font.render("Go Back",True, 'white')
-        self.back_text_rect = self.back_text_surface.get_rect()
+        ## create the button code 있던 부분 -> reposition으로 옮김.
         
-        # Create the Exit buttons
-        self.exit_text_surface = self.font.render("Exit",True, 'white')
-        self.exit_text_rect = self.exit_text_surface.get_rect()
 
-        # Create the buttons
-        self.size1_text_surface = self.screen_sizes_font.render("size1",True, 'white')
-        self.size1_text_rect = self.size1_text_surface.get_rect()       
+
         
-        # Create the buttons
-        self.size2_text_surface = self.screen_sizes_font.render("size2",True, 'white')
-        self.size2_text_rect = self.size2_text_surface.get_rect()       
+        # 슬라이더의 초기값과 상태 설정
+        self.slider1_value = 0.3
+        self.slider1_dragging = False
+        # 슬라이더 색상 설정
+        self.slider1_bg_color = 'red'
+        self.slider1_bar_color = 'red'
+        self.slider1_handle_color = (255,255,255)
         
-        # Create the buttons
-        self.size3_text_surface = self.screen_sizes_font.render("size3",True, 'white')
-        self.size3_text_rect = self.size3_text_surface.get_rect()        
-        
-        # Create the buttons
-        self.size4_text_surface = self.screen_sizes_font.render("size4",True, 'white')
-        self.size4_text_rect = self.size4_text_surface.get_rect()
+
+        # 슬라이더의 초기값과 상태 설정
+        self.slider2_value = 0.3
+        self.slider2_dragging = False
+        # 슬라이더 색상 설정
+        self.slider2_bg_color = 'red'
+        self.slider2_bar_color = 'red'
+        self.slider2_handle_color = (255,255,255)
+       
+
+        # 슬라이더의 초기값과 상태 설정
+        self.slider3_value = 0.3
+        self.slider3_dragging = False
+        # 슬라이더 색상 설정
+        self.slider3_bg_color = 'red'
+        self.slider3_bar_color = 'red'
+        self.slider3_handle_color = (255,255,255)
+
 
         self.reposition(self.screen)
-
-        # create the uno button
-        self.uno_btn = pygame.image.load("images/uno_btn.png")
-
-
-
+                
+                
 
 
         self.data ={
@@ -108,6 +103,29 @@ class Setting():
                     self.save_game() 
                     self.running = False
                     
+                    
+                    
+                elif event.type == pygame.MOUSEMOTION:
+                    # 마우스 이동 이벤트 처리
+                    if self.slider1_dragging:
+                        # 슬라이더를 드래그하고 있는 경우 슬라이더 값을 업데이트
+                        mouse_x, _ = event.pos
+                        self.slider1_value = max(0, min(1, (mouse_x - self.slider1_x) / self.slider1_width))
+                        pygame.mixer.music.set_volume(self.slider1_value)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # 마우스 클릭 이벤트 처리
+                    if event.button == 1 and self.slider1_rect.collidepoint(event.pos):
+                        # 슬라이더를 클릭한 경우 슬라이더 드래그 상태로 변경
+                        self.slider1_dragging = True
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    # 마우스 클릭 해제 이벤트 처리
+                    if event.button == 1 and self.slider1_dragging:
+                        # 슬라이더를 드래그하고 있던 경우 슬라이더 드래그 상태 해제
+                        self.slider1_dragging = False
+                    
+                    
+
+                    
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         menu_flag -= 1
@@ -133,7 +151,7 @@ class Setting():
                             time.sleep(0.3)
                             self.GameUI = gameUI.GameUI(self.screen_width, self.screen_height, self.color_blind_mode, self.uno_btn)
                             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
-                            play = game.Game(window_size[0], window_size[1],self.color_blind_mode)
+                            play = game.Game(window_size[0], window_size[1],self.color_blind_mode,self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
                             play.run()
                             
 
@@ -281,6 +299,47 @@ class Setting():
             self.screen.blit(self.size3_text_surface,self.size3_text_rect)
             self.screen.blit(self.size4_text_surface,self.size4_text_rect)
 
+            self.screen.blit(self.tvol, self.tvol_rect)
+            self.screen.blit(self.backvol,self.backvol_rect)
+            self.screen.blit(self.sidevol,self.sidevol_rect)
+       
+            
+            
+            
+
+
+            
+            
+            
+            # 슬라이더 배경 그리기
+            pygame.draw.rect(self.screen, self.slider1_bg_color, self.slider1_rect)
+            # # 슬라이더 바 그리기
+            pygame.draw.rect(self.screen, self.slider1_bar_color, self.slider1_rect)
+            # 슬라이더 핸들 그리기             
+            pygame.draw.rect(self.screen, self.slider1_handle_color, pygame.Rect(self.slider1_x + self.slider1_value * self.slider1_width - 5, self.slider1_y, 10, self.slider1_height))
+
+
+            # 슬라이더 배경 그리기
+            pygame.draw.rect(self.screen, self.slider2_bg_color, self.slider2_rect)
+            # # 슬라이더 바 그리기
+            pygame.draw.rect(self.screen, self.slider2_bar_color, self.slider2_rect)
+            # 슬라이더 핸들 그리기             
+            pygame.draw.rect(self.screen, self.slider2_handle_color, pygame.Rect(self.slider2_x + self.slider2_value * self.slider2_width - 5, self.slider2_y, 10, self.slider2_height))
+
+
+
+            # 슬라이더 배경 그리기
+            pygame.draw.rect(self.screen, self.slider3_bg_color, self.slider3_rect)
+            # # 슬라이더 바 그리기
+            pygame.draw.rect(self.screen, self.slider3_bar_color, self.slider3_rect)
+            # 슬라이더 핸들 그리기             
+            pygame.draw.rect(self.screen, self.slider3_handle_color, pygame.Rect(self.slider3_x + self.slider3_value * self.slider3_width - 5, self.slider3_y, 10, self.slider3_height))
+
+
+
+
+
+
 
         # Update the display
             pygame.display.update()
@@ -291,6 +350,7 @@ class Setting():
     def reposition(self, screen):
         self.font = pygame.font.SysFont("arial", screen.get_size()[0]//20, True)
         self.screen_sizes_font = pygame.font.SysFont("arial", screen.get_size()[0]//40, True)
+        self.vol_font = pygame.font.SysFont("arial", screen.get_size()[0]//40, True)
 
         self.game_title = self.font.render("Settings", True, 'white')
         self.game_title_rect = self.game_title.get_rect()
@@ -343,6 +403,62 @@ class Setting():
         self.size4_text_rect.centerx = screen.get_rect().centerx
         self.size4_text_rect.x = screen.get_size()[0] / 1.25
         self.size4_text_rect.y = screen.get_size()[1] / 4
+
+        
+        self.tvol = self.vol_font.render("※ Total volume", True, 'white')
+        self.tvol_rect = self.tvol.get_rect()
+        self.tvol_rect.x = screen.get_size()[0]  / 20
+        self.tvol_rect.y = screen.get_size()[1] / 2.2
+        
+        self.backvol = self.vol_font.render("※ Background Volume",True,'white')
+        self.backvol_rect = self.backvol.get_rect()
+        self.backvol_rect.x = screen.get_size()[0] / 20
+        self.backvol_rect.y = screen.get_size()[1] / 1.6
+
+        self.sidevol = self.vol_font.render("※ SideEffect Volume",True,'white')
+        self.sidevol_rect = self.sidevol.get_rect()
+        self.sidevol_rect.x = screen.get_size()[0] / 20
+        self.sidevol_rect.y = screen.get_size()[1] / 1.22
+
+
+
+       
+       # 슬라이더1의 크기 설정
+        self.slider1_width = self.screen.get_size()[0] / 9
+        self.slider1_height = self.screen.get_size()[1] / 80
+        # 슬라이더 위치
+        self.slider1_x = self.screen.get_size()[0] / 20
+        self.slider1_y = self.screen.get_size()[1] / 1.8
+        # 슬라이더 생성
+        self.slider1_rect = pygame.Rect(self.slider1_x, self.slider1_y, self.slider1_width, self.slider1_height)
+
+
+
+
+        # 슬라이더2의 크기 설정
+        self.slider2_width = self.screen.get_size()[0] / 9
+        self.slider2_height = self.screen.get_size()[1] / 80
+        # 슬라이더 위치
+        self.slider2_x = self.screen.get_size()[0] / 20
+        self.slider2_y = self.screen.get_size()[1] / 1.4
+        # 슬라이더 생성
+        self.slider2_rect = pygame.Rect(self.slider2_x, self.slider2_y, self.slider2_width, self.slider2_height)
+
+        
+    
+
+        # 슬라이더3의 크기 설정
+        self.slider3_width = self.screen.get_size()[0] / 9
+        self.slider3_height = self.screen.get_size()[1] / 80
+        # 슬라이더 위치
+        self.slider3_x = self.screen.get_size()[0] / 20
+        self.slider3_y = self.screen.get_size()[1] / 1.1
+        # 슬라이더 생성
+        self.slider3_rect = pygame.Rect(self.slider3_x, self.slider3_y, self.slider3_width, self.slider3_height)
+        
+
+
+    # def slider_value():
 
 
 
