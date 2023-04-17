@@ -106,7 +106,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         if single_player_rect.collidepoint(mouse_pos) or menu_flag == 0:
             single_player_text = font.render("Play Game", True, RED)
         else:
-            single_player_text = font.render("Single Player", True, WHITE)
+            single_player_text = font.render("Play Game", True, WHITE)
             
         if story_mode_rect.collidepoint(mouse_pos) or menu_flag == 1:
             story_mode_text = font.render("Story Mode", True, RED)
@@ -124,12 +124,19 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
             
+            
+            
+            
+            
             lobby_surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
             text_surface = font.render("Game Lobby", True, (255, 0, 0))
             lobby_surface.fill(255,255,255)
             lobby_surface.blit(text_surface, (lobby_surface.get_width() / 3, lobby_surface.get_height() / 8))
             screen.blit(lobby_surface, (size[0] / 6, size[1] / 6))
-        
+            
+            
+            
+
 
             uno_game = game.Game(size[0],size[1], color)
             uno_game.run()
@@ -144,8 +151,6 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             play = False
 
         # 화면 그리기
-
-
         screen.fill(BLACK)
         screen.blit(game_title, game_title_rect)
         screen.blit(single_player_text, single_player_rect)

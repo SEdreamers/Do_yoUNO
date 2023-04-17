@@ -1,1 +1,1 @@
-{"human_hand": ["red 8", "red 9", "yellow 6", "black wild_draw4", "blue 2"], "computer1_hand": ["yellow reverse", "blue draw2", "red 7", "green 9", "red draw2"], "computer2_hand": ["yellow 2", "green draw4", "green skip", "black wild", "green 1"]}
+{"human_hand": ["red skip", "black wild_swap", "yellow 3", "yellow draw4", "red draw4"], "computer1_hand": ["yellow skip", "green 2", "red 3", "red 4", "black wild_swap"], "computer2_hand": ["blue 4", "yellow reverse", "blue 9", "yellow 2", "blue 1"]}
