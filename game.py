@@ -584,17 +584,19 @@ class Game:
         self.computer_pos = [computer_x+ (self.card_len + 1)* computer_height*0.1, computer_y+ self.turn_num * computer_height]
         back_to_com = math.dist(self.back_card_pos, self.computer_pos) / move_speed
         com_to_deck = math.dist(self.computer_pos_temp, self.top_card_pos) / move_speed
+        
+        hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
+        
+        can_play = False
+        for element in hand_card_list:  
+            if element.can_play_on(self.top_card):
+                can_play = True
+                break
+                
             
         while self.running:
             elapsed_time = (pygame.time.get_ticks() - start_time2) / 1000
             
-            if len(self.players[self.turn_num].hand.cards) == 2: # 현재 컴퓨터 플레이어의 카드가 2장 남았을 때 각 컴퓨터 플레이어는 랜덤하게 설정된 시간에 따라 clicked_uno에 append됨
-                for idx, t in enumerate(self.random_delay):
-                    if int(elapsed_time) == t and self.players[idx+1].name not in self.clicked_uno:
-                        self.clicked_uno.append(self.players[idx+1].name)
-                        if self.turn_num == idx+1:
-                            self.is_clicked_uno = True
-                            self.render()
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
                     with open('game_data.json','w') as play_data_file: 
@@ -606,7 +608,15 @@ class Game:
                         if self.players[0].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[0].name)
 
-            hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
+            
+            if len(self.players[self.turn_num].hand.cards) == 2: # 현재 컴퓨터 플레이어의 카드가 2장 남았을 때 각 컴퓨터 플레이어는 랜덤하게 설정된 시간에 따라 clicked_uno에 append됨
+                if can_play:
+                    for idx, t in enumerate(self.random_delay):
+                        if int(elapsed_time) == t and self.players[idx+1].name not in self.clicked_uno:
+                            self.clicked_uno.append(self.players[idx+1].name)
+                            if self.turn_num == idx+1:
+                                self.is_clicked_uno = True
+                                self.render()
             
             if elapsed_time > 3:
                 for element in hand_card_list:  
