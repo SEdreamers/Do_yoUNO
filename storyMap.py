@@ -5,8 +5,6 @@ import json
 
 class StoryMap:
     def __init__(self, screen_width, screen_height):
-        
-        
         self.menu_flag = 0
         # 화면 크기 설정
         self.screen_width = screen_width
@@ -204,13 +202,15 @@ class StoryMap:
                                 gameA.run()
                             elif self.current_region == 1:
                                 print('regionB')
-                                pass # 지역B 게임 로드
+                                gameB = game.Game(self.size[0], self.size[1], self.color, "B")
+                                gameB.run()
                             elif self.current_region == 2:
-                                print('regionC')
-                                pass # 지역C 게임 로드
+                                gameC = game.Game(self.size[0], self.size[1], self.color, "C")
+                                gameC.run()
                             elif self.current_region == 3:
                                 print('regionD')
-                                pass # 지역D 게임 로드
+                                gameD = game.Game(self.size[0], self.size[1], self.color, "D")
+                                gameD.run()
                         elif self.menu_flag == 1: # no
                             self.selected = False
                 
