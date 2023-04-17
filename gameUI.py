@@ -15,6 +15,7 @@ class GameUI:
 
     def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
          # Color
+        GameUI.cur_card = 0
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
@@ -174,11 +175,11 @@ class GameUI:
             color_box = colorBox.ColorBox(top_card.color, self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
         # Draw the card that player has
         players[0].draw()
-        if self.cur_card >= len(players[0].hand.cards):
-            self.cur_card -= 1
-            players[0].draw_one(self.cur_card)
+        if GameUI.cur_card >= len(players[0].hand.cards):
+            GameUI.cur_card -= 1
+            players[0].draw_one(GameUI.cur_card)
         else:
-            players[0].draw_one(self.cur_card)
+            players[0].draw_one(GameUI.cur_card)
 
         # Draw the box showing color of the card
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))
@@ -204,7 +205,7 @@ class GameUI:
                 players[turn_num].skip_draw(turn_num - 1)
         # draw current card selection
         if not self.backcard_uno_flag:
-            pygame.draw.rect(self.screen, 'red', (self.deck_x + self.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
+            pygame.draw.rect(self.screen, 'red', (self.deck_x + GameUI.cur_card * (self.card_width + self.deck_spacing), self.deck_y, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
         
         if self.backcard_uno_flag == 1:
             pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.2, self.screen_size[1] * 0.2, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
