@@ -171,7 +171,8 @@ class GameUI:
             color_box = colorBox.ColorBox(top_card.color, self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
         # Draw the card that player has
         players[0].draw()
-        players[0].draw_one(self.cur_card)
+        if not (self.cur_card == len(players[0].hand.cards)):
+            players[0].draw_one(self.cur_card)
 
         # Draw the box showing color of the card
         self.screen.blit(color_box.image, (self.screen_size[0] * 0.55, self.screen_size[1] * 0.2))

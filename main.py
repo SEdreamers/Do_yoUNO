@@ -128,11 +128,11 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             
             
             
-            lobby_surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
+            """ lobby_surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
             text_surface = font.render("Game Lobby", True, (255, 0, 0))
             lobby_surface.fill(255,255,255)
             lobby_surface.blit(text_surface, (lobby_surface.get_width() / 3, lobby_surface.get_height() / 8))
-            screen.blit(lobby_surface, (size[0] / 6, size[1] / 6))
+            screen.blit(lobby_surface, (size[0] / 6, size[1] / 6)) """
             
             
             

@@ -12,7 +12,7 @@ class Deck:
         values = [str(i) for i in range(0, 10)]
         # skil card가 뒤쪽에 오도록 추가
         skill_values = ["skip", "reverse", "draw2", "draw4"]
-        colorless_values = ["wild", "wild_draw4", "wild_swap"]
+        colorless_values = ["wild", "wild_draw2", "wild_draw4"]
         colors = ["red", "green", "blue", "yellow"]
         for color in colors:
             for value in values:
