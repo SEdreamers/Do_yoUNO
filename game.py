@@ -423,10 +423,11 @@ class Game:
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
                     elif event.key == 13 and GameUI.backcard_uno_flag == 2: #uno 버튼 눌렀을 때
-                        if self.players[self.turn_num].name not in self.clicked_uno:
-                            self.clicked_uno.append(self.players[self.turn_num].name)
-                            self.is_clicked_uno = True
-                            self.render()
+                        if len(self.players[self.turn_num].hand.cards) == 2:
+                            if self.players[self.turn_num].name not in self.clicked_uno:
+                                self.clicked_uno.append(self.players[self.turn_num].name)
+                                self.is_clicked_uno = True
+                                self.render()
                 
                 # mouse handling    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -509,10 +510,11 @@ class Game:
                         # click = pygame.mixer.Sound('soundeffect-click.mp3')      ##클릭 효과음   - human turn일 때는 uno버튼이 아닌 빈공간 그 어떤 곳을 클릭해도 효과음 실행. 
                         # click.play()
                         
-                        if self.players[self.turn_num].name not in self.clicked_uno:
-                            self.clicked_uno.append(self.players[self.turn_num].name)
-                            self.is_clicked_uno = True
-                            self.render()
+                        if len(self.players[self.turn_num].hand.cards) == 2:
+                            if self.players[self.turn_num].name not in self.clicked_uno:
+                                self.clicked_uno.append(self.players[self.turn_num].name)
+                                self.is_clicked_uno = True
+                                self.render()
                         # print(clicked_uno)
                     # exit 버튼이 클릭 된 경우
                     if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
