@@ -58,9 +58,15 @@ class Card(pygame.sprite.Sprite):
             if len(deck.cards) <= 1:
                 break
             players[turn_num].hand.cards.append(deck.pop())
-
-    def choose_color(self, screen, color_blind_mode):
-        pass
+    
+    def reinit(self, value, color, screen_width, screen_height):
+        super().__init__()
+        self.value = value
+        self.color = color
+        self.screen_size = (screen_width, screen_height)
+        self.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{color}_{value}.png"), (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
+        self.blind_image = pygame.transform.smoothscale(pygame.image.load(f"cards/color_blind_mode/{color}_{value}.png"), (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
+        self.rect = self.default_image.get_rect()
 
     
     def __repr__(self):
