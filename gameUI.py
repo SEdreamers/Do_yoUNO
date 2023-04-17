@@ -207,6 +207,9 @@ class GameUI:
             pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.2, self.screen_size[1] * 0.2, self.screen_size[0] / 12.5, self.screen_size[0] / 8.333), 5)
         elif self.backcard_uno_flag == 2:
             pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27, self.screen_size[0] / 12.5, self.screen_size[0] * 0.054), 5)
+            
+        if is_clicked_uno:
+            self.screen.blit(self.one_image, self.one_rect)
         
         # draw the timer
         elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
@@ -237,9 +240,7 @@ class GameUI:
         else:
             pass
         
-        
-        if is_clicked_uno:
-            self.screen.blit(self.one_image, self.one_rect)
+    
                             
 
         self.exit_menu = self.font.render("Exit", True, 'black')
