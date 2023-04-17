@@ -173,7 +173,10 @@ class GameUI:
             color_box = colorBox.ColorBox(top_card.color, self.BOX_WIDTH, self.BOX_HEIGHT, self.color_blind_mode)
         # Draw the card that player has
         players[0].draw()
-        if not (self.cur_card == len(players[0].hand.cards)):
+        if self.cur_card >= len(players[0].hand.cards):
+            self.cur_card -= 1
+            players[0].draw_one(self.cur_card)
+        else:
             players[0].draw_one(self.cur_card)
 
         # Draw the box showing color of the card
