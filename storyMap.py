@@ -291,14 +291,13 @@ class StoryMap:
             data = json.load(game_file)
             color = data['color_blind_mode']     ## 저장된 값 불러오기. 
             size = data["size"]
-        screen = pygame.display.set_mode((size[0],size[1]))
-        font = pygame.font.SysFont("arial", size[0] // 20, True) 
         ## region 클릭
         if self.mouse_click:
             if self.regionA_rect.collidepoint(mouse_pos) and len(self.unlocked_regions):
                 self.selected = True
                 self.mouse_click = False
-                game.Game(size[0], size[1], color, "A")
+                gameA = game.Game(size[0], size[1], color, "A")
+                gameA.run()
             if self.regionB_rect.collidepoint(mouse_pos) and len(self.unlocked_regions) > 1:
                 self.selected = True
                 self.mouse_click = False
