@@ -2,8 +2,8 @@ from player import Player
 import pygame
 
 class Human(Player):
-    def __init__(self, screen, deck, color_blind_mode):
-        super().__init__("Human", screen, deck)
+    def __init__(self, screen, deck, color_blind_mode, region):
+        super().__init__("Human", screen, deck, region)
         self.screen = screen
         self.screen_size = (self.screen.get_width(), self.screen.get_height())
         self.color_blind_mode = color_blind_mode
@@ -24,7 +24,7 @@ class Human(Player):
 
     def draw_one(self, cur_card):
         if not self.color_blind_mode:                
-            self.screen.blit(self.hand.cards[cur_card].default_image, self.hand.cards[cur_card].rect)
+             self.screen.blit(self.hand.cards[cur_card].default_image, self.hand.cards[cur_card].rect)
         else:              
             self.screen.blit(self.hand.cards[cur_card].blind_image, self.hand.cards[cur_card].rect)
                 

@@ -64,7 +64,7 @@ class GameState:
 
 
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode):
+    def __init__(self, screen_width, screen_height, color_blind_mode, region = "A"):
         pygame.init()
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -79,9 +79,11 @@ class Game:
         background_image = pygame.transform.scale(background_image, self.screen_size)     
         self.running = True
 
-        # Set up the Deck
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
-        self.deck.shuffle()
+       
+        # # Set up the Deck
+        # self.deck = Deck(self.screen_size[0], self.screen_size[1])
+        # self.deck.shuffle()
 
         # Draw the Deck image on the screen(back)
         self.back_card = Card(0, "back", self.screen_width, self.screen_height)
@@ -94,16 +96,18 @@ class Game:
          
         # players 저장
         self.players = []
-        # human player 만들기!
-        human = Human(self.screen, self.deck, self.color_blind_mode)
-        self.players.append(human)
+        
         # add computers(player 숫자 받아서 설정)
-
         computers = []
         for i in range(2):
-            computers.append(Computer(self.screen, self.deck, i))
+            computers.append(Computer(self.screen, self.deck, i, region))
         self.players.extend(computers)
-
+        
+        # 사람은 가중치 없이 뽑아야 함
+        self.deck.shuffle()
+        # human player 만들기!
+        human = Human(self.screen, self.deck, self.color_blind_mode, region)
+        self.players.insert(0, human)
         # turn, reverse, skip, start time 세팅
         self.turn_num = 0
         self.reverse = False
@@ -663,8 +667,6 @@ class Game:
         if len(self.players[self.turn_num].hand.cards) == 2: # 현재 플레이어의 카드가 2장 남은 경우
             for _ in range(len(self.players)-1): # 컴퓨터 플레이어 수만큼 1~3초 사이 난수 리스트에 append
                 self.random_delay.append(random.randrange(1,4))
-
-
 
 
 
