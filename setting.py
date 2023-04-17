@@ -1,136 +1,100 @@
-## 미리 정해진 4개 크기로 화면 구현 -> 비율변화 구현
+## # 이벤트 처리, # 마우스 클릭 시 에 추가해야 화면전환 또는 설정변경. 
 import pygame
-import shelve 
-from gameScreen import gameScrean
+import time
+import main
+import json
+
+
 # Initialize Pygame
 class Setting():
-    def start_setting(screen_width, screen_height):
-        # Set the default size of the window
-        window_size = (screen_width, screen_height)
-        # Create the window
-        screen = pygame.display.set_mode(window_size)
+    def __init__(self, screen_width, screen_height):
+         # Set the default size of the window
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.window_size = (self.screen_width, self.screen_height)
+        # Create the window        
+        self.screen = pygame.display.set_mode(self.window_size)
         # Set the title of the window
-        pygame.display.set_caption("Resizable window")
-        SAVE_DATA = shelve.open("Save Data")
     
+        self.running = True
+        self.color_blind_mode = False 
 
         pygame.init()
         # Set the font for the buttons
-        set_font = pygame.font.SysFont("arial", 40,True, True)
-        # Set the text color
-        text_color = 'black'
-        # Set the button colors
-        button_color = 'yellow'
-        button_highlight_color = 'gray'
-        # Set the button labels
-        blind_label = "Color Blind Mode"
-        default_label = "  Default Setting"
-        back_label = "   Go Back"
-
-
-        button_labels = ["size1", "size2", "size3", "size4"]
-        button_labels_2 = ["+", "-", "<", ">"]
+        self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
+        self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
+        
         # Set the button sizes
-        button_sizes = [(800, 600), (1024, 768), (1280, 720), (1920, 1080)]
+        self.screen_sizes = [(400, 300), (600, 450), (800, 600), (1000, 750)]
 
-
+        ##게임제목
+        self.game_title = self.font.render("Settings", True, 'white')
+        self.game_title_rect = self.game_title.get_rect()
+    
+        # Create the buttons
+        self.blind_text_surface = self.font.render("Color Blind Mode",True, 'white')
+        self.blind_text_rect = self.blind_text_surface.get_rect()
+    
+        # Create the buttons
+        self.default_text_surface = self.font.render("Default Setting",True, 'white')
+        self.default_text_rect = self.default_text_surface.get_rect()
+        
+        # Create the buttons
+        self.back_text_surface = self.font.render("Go Back",True, 'white')
+        self.back_text_rect = self.back_text_surface.get_rect()
+        
+        # Create the Exit buttons
+        self.exit_text_surface = self.font.render("Exit",True, 'white')
+        self.exit_text_rect = self.exit_text_surface.get_rect()
 
         # Create the buttons
-        blind_text_surface = set_font.render(blind_label,True, text_color)
-        blind_text_rect = blind_text_surface.get_rect()
-        color_blind = pygame.Rect(600,380,240,30)
-        blind_text_rect.center = color_blind.center
-
-
+        self.size1_text_surface = self.screen_sizes_font.render("size1",True, 'white')
+        self.size1_text_rect = self.size1_text_surface.get_rect()       
+        
         # Create the buttons
-        default_text_surface = set_font.render(default_label,True, text_color)
-        default_text_rect = default_text_surface.get_rect()
-        default = pygame.Rect(600,500,240,30)
-        default_text_rect.center = default.center
+        self.size2_text_surface = self.screen_sizes_font.render("size2",True, 'white')
+        self.size2_text_rect = self.size2_text_surface.get_rect()       
+        
+        # Create the buttons
+        self.size3_text_surface = self.screen_sizes_font.render("size3",True, 'white')
+        self.size3_text_rect = self.size3_text_surface.get_rect()        
+        
+        # Create the buttons
+        self.size4_text_surface = self.screen_sizes_font.render("size4",True, 'white')
+        self.size4_text_rect = self.size4_text_surface.get_rect()
 
+        self.reposition(self.screen)
+        
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600) 
+            }
+            self.save_game()
 
-        back_text_surface = set_font.render(back_label,True, text_color)
-        back_text_rect = back_text_surface.get_rect()
-        back = pygame.Rect(600,600,240,30)
-        back_text_rect.center = back.center
+    def save_game(self):
+        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장 
+        with open('setting_data.json','w') as setting_data_file: 
+            json.dump(self.data, setting_data_file)
+ 
 
-
-        buttons = []
-        for i, label in enumerate(button_labels):
-            text_surface = set_font.render(label, True, text_color)
-            text_rect = text_surface.get_rect()
-            button_rect = pygame.Rect(40 + i * 100, 50, 80, 20)
-            text_rect.center = button_rect.center
-            buttons.append((button_rect, text_surface, button_sizes[i]))
-
-        buttons2 = []
-        for i, label in enumerate(button_labels_2):
-            text_surface_2 = set_font.render(label, True, text_color)
-            text_rect_2 = text_surface_2.get_rect()
-            button_rect_2 = pygame.Rect(40 + (i+4) * 100, 50, 10, 20)
-            text_rect_2.center = button_rect_2.center
-            buttons2.append((button_rect_2, text_surface_2))
-
-
+    def run(self, screen_width, screen_height):
+        window_size = (screen_width, screen_height)
+        self.screen = pygame.display.set_mode(window_size)
+                
         #메뉴 상수
         menu_flag = 0
-
-
-        # Game loop
-        running = True
-        while running:
-            # Handle events
-            ## ["size1", "size2", "size3", "size4"]
-            # Clear the screen
-                
-
-
-            screen.fill('yellow')
+        while self.running:
+            pygame.init()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
-
-                
-
-
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    # Check if a button was clicked
+                    self.save_game() 
+                    self.running = False
                     
-                    if color_blind.collidepoint(event.pos):
-                        print("color_blind mode")
-
-
-                    if default.collidepoint(event.pos):
-                        window_size = (1440, 744)
-                        screen = pygame.display.set_mode(window_size)
-                        print("Default Setting")
-
-                    if back.collidepoint(event.pos):
-                        print("Go Back")
-
-
-                    for i, (button_rect, _, size) in enumerate(buttons):
-                        if button_rect.collidepoint(event.pos):
-                            window_size = size
-                            screen = pygame.display.set_mode(window_size)
-
-                    for i, (button_rect_2, _) in enumerate(buttons2):
-                        if button_rect_2.collidepoint(event.pos):
-                            if i == 0:
-                                window_size = (window_size[0] + 100, window_size[1] + 100)
-                                screen = pygame.display.set_mode(window_size)
-                            elif i == 1:
-                                window_size = (window_size[0] - 100, window_size[1] - 100)
-                                screen = pygame.display.set_mode(window_size)
-                            elif i == 2:
-                                window_size = (window_size[0] - 100, window_size[1])
-                                screen = pygame.display.set_mode(window_size)
-                            elif i == 3:
-                                window_size = (window_size[0] + 100, window_size[1])
-                                screen = pygame.display.set_mode(window_size)
-
-
-                elif event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         menu_flag -= 1
                     elif event.key == pygame.K_DOWN:
@@ -138,56 +102,230 @@ class Setting():
                     elif event.key == 13:
                         if menu_flag == 0:
                             print("Color blind mode")
+                            self.color_blind_mode = True
+                            self.data['color_blind_mode'] = self.color_blind_mode
+                            
                         elif menu_flag == 1:
                             print("Default mode")
+                            window_size = (800, 600)
+                            screen = pygame.display.set_mode(window_size)
+                            self.color_blind_mode = False 
+                            self.data['color_blind_mode'] = self.color_blind_mode
+                            self.reposition(screen)
+                            
+
                         elif menu_flag == 2:
-                            print("Go Back")
-                menu_flag %= 3
+                            self.save_game()
+                            time.sleep(0.3)
+                            main.main(self.data["size"][0], self.data["size"][1], self.color_blind_mode)
+                            
+                        elif menu_flag == 3: 
+                            self.save_game()
+                            self.running = False
+                            
+                        elif menu_flag == 4:
+                            window_size = self.screen_sizes[0]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size1")
+                            self.data["size"] = window_size
+                        elif menu_flag == 5:
+                            window_size = self.screen_sizes[1]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size2")
+                            self.data["size"] = window_size
 
-            # Draw the buttons
-            if color_blind.collidepoint(pygame.mouse.get_pos()):
-                pygame.draw.rect(screen, button_highlight_color, color_blind)
-            else:
-                pygame.draw.rect(screen, button_color, color_blind)
-            screen.blit(blind_text_surface, color_blind)
+                        elif menu_flag == 6:
+                            window_size = self.screen_sizes[2]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size3")
+                            self.data["size"] = window_size
+
+                        elif menu_flag == 7:
+                            window_size = self.screen_sizes[3]
+                            screen = pygame.display.set_mode(window_size)
+                            self.reposition(screen)
+                            print("size4") 
+                            self.data["size"] = window_size
+                menu_flag %= 8        
+                    
+                    
+                    
+                    
+                    
+            
+            
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = pygame.mouse.get_pressed()
+
+            ## 색깔 변화. 
+            if self.blind_text_rect.collidepoint(mouse_pos) or menu_flag == 0:
+                self.blind_text_surface = self.font.render("Color Blind Mode", True, "red")
+            else: self.blind_text_surface = self.font.render("Color Blind Mode", True, "white")
+
+            if self.default_text_rect.collidepoint(mouse_pos) or menu_flag == 1:
+                self.default_text_surface = self.font.render("Default Setting", True, "red")
+            else: self.default_text_surface = self.font.render("Default Setting", True, "white")
+
+            if self.back_text_rect.collidepoint(mouse_pos) or menu_flag == 2:
+                self.back_text_surface = self.font.render("Go Back", True, "red")
+            else: self.back_text_surface = self.font.render("Go Back", True, "white")
+
+            if self.exit_text_rect.collidepoint(mouse_pos) or menu_flag == 3:
+                self.exit_text_surface = self.font.render("Exit", True, "red")
+            else: self.exit_text_surface = self.font.render("Exit", True, "white")
 
 
 
-        # Draw the buttons
-            if default.collidepoint(pygame.mouse.get_pos()):
-                pygame.draw.rect(screen, button_highlight_color, default)
-            else:
-                pygame.draw.rect(screen, button_color,default)
-            screen.blit(default_text_surface, default)
+
+            if self.size1_text_rect.collidepoint(mouse_pos) or menu_flag == 4:
+                self.size1_text_surface = self.screen_sizes_font.render("size1", True, "red")
+            else: self.size1_text_surface = self.screen_sizes_font.render("size1", True, "white")
+
+            if self.size2_text_rect.collidepoint(mouse_pos) or menu_flag == 5:
+                self.size2_text_surface = self.screen_sizes_font.render("size2", True, "red")
+            else: self.size2_text_surface = self.screen_sizes_font.render("size2", True, "white")
+            
+            if self.size3_text_rect.collidepoint(mouse_pos) or menu_flag == 6:
+                self.size3_text_surface = self.screen_sizes_font.render("size3", True, "red")
+            else: self.size3_text_surface = self.screen_sizes_font.render("size3", True, "white")
+            
+            if self.size4_text_rect.collidepoint(mouse_pos) or menu_flag == 7:
+                self.size4_text_surface = self.screen_sizes_font.render("size4", True, "red")
+            else: self.size4_text_surface = self.screen_sizes_font.render("size4", True, "white")
+
+            
+             # 마우스 클릭 시
+            if  self.blind_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                self.color_blind_mode = True
+                self.data['color_blind_mode'] = self.color_blind_mode
+                
+
+            elif self.default_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                window_size = (800, 600)
+                screen = pygame.display.set_mode(window_size)
+                self.color_blind_mode = False 
+                self.data['color_blind_mode'] = self.color_blind_mode 
+                self.reposition(screen)
+                
+                
+            elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                self.save_game()
+                time.sleep(0.3)
+                main.main(self.data["size"][0], self.data["size"][1],self.color_blind_mode)
+                
+
+            elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                self.save_game()
+                self.running = False
 
 
-            if back.collidepoint(pygame.mouse.get_pos()):
-                pygame.draw.rect(screen, button_highlight_color, back)
-            else:
-                pygame.draw.rect(screen, button_color,back)
-            screen.blit(back_text_surface, back)
+            elif self.size1_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                window_size = self.screen_sizes[0]
+                screen = pygame.display.set_mode(window_size)
+                self.reposition(screen)
+                self.data["size"] = window_size
+
+            elif self.size2_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                window_size = self.screen_sizes[1]
+                screen = pygame.display.set_mode(window_size)
+                self.reposition(screen)
+                self.data["size"] = window_size
+
+            elif self.size3_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                window_size = self.screen_sizes[2]
+                screen = pygame.display.set_mode(window_size)
+                self.reposition(screen)
+                self.data["size"] = window_size
+
+            elif self.size4_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                window_size = self.screen_sizes[3]
+                screen = pygame.display.set_mode(window_size)
+                self.reposition(screen)
+                self.data["size"] = window_size
 
 
-            # Draw the buttons
-            for i, (button_rect, text_surface, _) in enumerate(buttons):
-                if button_rect.collidepoint(pygame.mouse.get_pos()):
-                    pygame.draw.rect(screen, button_highlight_color, button_rect)
-                else:
-                    pygame.draw.rect(screen, button_color, button_rect)
-                screen.blit(text_surface, button_rect)
+
+            self.screen.fill('black')
+            # 제목 또는 버튼 출력
+            self.screen.blit(self.game_title, self.game_title_rect)
+            self.screen.blit(self.blind_text_surface, self.blind_text_rect)
+            self.screen.blit(self.default_text_surface, self.default_text_rect)
+            self.screen.blit(self.back_text_surface, self.back_text_rect)
+            self.screen.blit(self.exit_text_surface, self.exit_text_rect)
+
+            self.screen.blit(self.size1_text_surface,self.size1_text_rect)
+            self.screen.blit(self.size2_text_surface,self.size2_text_rect)
+            self.screen.blit(self.size3_text_surface,self.size3_text_rect)
+            self.screen.blit(self.size4_text_surface,self.size4_text_rect)
 
 
-            # Draw the buttons
-            for i, (button_rect_2, text_surface_2) in enumerate(buttons2):
-                if button_rect_2.collidepoint(pygame.mouse.get_pos()):
-                    pygame.draw.rect(screen, button_highlight_color, button_rect_2)
-                else:
-                    pygame.draw.rect(screen, button_color, button_rect_2)
-                screen.blit(text_surface_2, button_rect_2)
-
-
-            # Update the display
+        # Update the display
             pygame.display.update()
         # Quit Pygame
-        pygame.quit() 
+        pygame.quit()
+            
 
+    def reposition(self, screen):
+        self.font = pygame.font.SysFont("arial", screen.get_size()[0]//20, True)
+        self.screen_sizes_font = pygame.font.SysFont("arial", screen.get_size()[0]//40, True)
+
+        self.game_title = self.font.render("Settings", True, 'white')
+        self.game_title_rect = self.game_title.get_rect()
+        self.game_title_rect.centerx = screen.get_rect().centerx
+        self.game_title_rect.y = screen.get_size()[1] / 12
+
+        self.blind_text_surface = self.font.render("Color Blind Mode",True, 'white')
+        self.blind_text_rect = self.blind_text_surface.get_rect()
+        self.blind_text_rect.centerx = screen.get_rect().centerx
+        self.blind_text_rect.y = screen.get_size()[1] / 2.4
+
+        self.default_text_surface = self.font.render("Default Setting",True, 'white')
+        self.default_text_rect = self.default_text_surface.get_rect()
+        self.default_text_rect.centerx = screen.get_rect().centerx
+        self.default_text_rect.y = screen.get_size()[1] / 1.714
+
+        self.back_text_surface = self.font.render("Go Back",True, 'white')
+        self.back_text_rect = self.back_text_surface.get_rect()
+        self.back_text_rect.centerx = screen.get_rect().centerx
+        self.back_text_rect.y = screen.get_size()[1] / 1.333
+
+        self.exit_text_surface = self.font.render("Exit",True, 'white')
+        self.exit_text_rect = self.back_text_surface.get_rect()
+        self.exit_text_rect.centerx = screen.get_rect().centerx
+        self.exit_text_rect.x = screen.get_size()[0] / 2.222
+        self.exit_text_rect.y = screen.get_size()[1] / 1.111
+
+
+
+        self.size1_text_surface = self.screen_sizes_font.render("size1",True, 'white')
+        self.size1_text_rect = self.size1_text_surface.get_rect() 
+        self.size1_text_rect.centerx = screen.get_rect().centerx
+        self.size1_text_rect.x = screen.get_size()[0] / 5
+        self.size1_text_rect.y = screen.get_size()[1] / 4
+
+        self.size2_text_surface = self.screen_sizes_font.render("size2",True, 'white')
+        self.size2_text_rect = self.size2_text_surface.get_rect() 
+        self.size2_text_rect.centerx = screen.get_rect().centerx
+        self.size2_text_rect.x = screen.get_size()[0] / 2.5
+        self.size2_text_rect.y = screen.get_size()[1] / 4
+
+        self.size3_text_surface = self.screen_sizes_font.render("size3",True, 'white')
+        self.size3_text_rect = self.size3_text_surface.get_rect()  
+        self.size3_text_rect.centerx = screen.get_rect().centerx
+        self.size3_text_rect.x = screen.get_size()[0] / 1.6666
+        self.size3_text_rect.y = screen.get_size()[1] / 4
+
+        self.size4_text_surface = self.screen_sizes_font.render("size4",True, 'white')
+        self.size4_text_rect = self.size4_text_surface.get_rect()
+        self.size4_text_rect.centerx = screen.get_rect().centerx
+        self.size4_text_rect.x = screen.get_size()[0] / 1.25
+        self.size4_text_rect.y = screen.get_size()[1] / 4
+
+
+
+
+    # def gets(self):
+    #     return self.color_blind_mode 
