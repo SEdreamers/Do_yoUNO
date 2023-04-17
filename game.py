@@ -81,6 +81,14 @@ class Game:
 
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
        
+        # combo
+        self.combo = 0
+        # Load the image
+        self.combo_image = pygame.image.load('images/combo.jpg')
+        self.combo_image = pygame.transform.scale(self.combo_image, (self.screen_size[0] / 3.333, self.screen_size[0] / 3.333))
+        self.combo_rect = self.combo_image.get_rect()
+        self.combo_rect.x = self.screen_size[0] * 0.55
+        self.combo_rect.y = self.screen_size[1] * 0.27
         # # Set up the Deck
         # self.deck = Deck(self.screen_size[0], self.screen_size[1])
         # self.deck.shuffle()
@@ -251,16 +259,19 @@ class Game:
                     game_over.display() # 게임 오버 화면 불러오기
                     pygame.display.flip()
                     
+
             self.is_clicked_uno = False
-            # turn 전환
-            if not self.reverse:
-                self.turn_num += 1
-                if self.turn_num >= len(self.players):
-                    self.turn_num = 0
-            else:
-                self.turn_num -= 1
-                if self.turn_num < 0:
-                    self.turn_num = len(self.players) - 1
+            # combo true일 때는 turn 안 넘기기
+            if self.combo == 0:           
+                # turn 전환
+                if not self.reverse:
+                    self.turn_num += 1
+                    if self.turn_num >= len(self.players):
+                        self.turn_num = 0
+                else:
+                    self.turn_num -= 1
+                    if self.turn_num < 0:
+                        self.turn_num = len(self.players) - 1
         pygame.quit()
 
 
@@ -607,6 +618,18 @@ class Game:
                     if element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                         # time.sleep(1.5)
                         self.card_clicked = element
+                        if self.combo > 0:
+                            self.combo -= 1
+                        if element.value == "reverse":
+                            for element2 in hand_card_list:
+                                if element2.value == "reverse" and not element == element2:
+                                    index = self.players[self.turn_num].hand.cards.index(element2)
+                                    # reverse 2개 있을 시 맨 앞으로 오도록 하기
+                                    self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
+                                    self.combo = 2
+                                    self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
+                        player_num = len(self.players)
+                        
                         start_time = pygame.time.get_ticks()
                         self.top_card = element
                         self.deck.append(self.top_card)
