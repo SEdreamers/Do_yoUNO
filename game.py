@@ -134,8 +134,12 @@ class Game:
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num-1, int(self.top_card.value[4]), self.reverse)
-        else: ## 추후 나머지 기술 카드 동작 처리 추가 
-            pass 
+        elif self.top_card.color == 'black':
+            colors = ['red', 'yellow', 'green', 'blue']
+            random_color = random.choice(colors)
+            self.top_card.color = random_color
+            if self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4':
+                self.top_card.draw_action(self.deck, self.players, self.turn_num-1, int(self.top_card.value[9]), self.reverse)
 
         # Game 너비, 높이 기본 배경 설정
         self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn)
@@ -657,6 +661,8 @@ class Game:
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
+        elif self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4':
+            self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[9]), self.reverse)
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):

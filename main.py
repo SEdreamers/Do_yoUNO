@@ -127,11 +127,9 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
             
-
-
-            # lobby_surface = lobby.Lobby(size[0],size[1], color)
-            # lobby_surface.displayPlayer(3)
-
+            
+            
+            
 
 
             uno_game = game.Game(size[0],size[1], color)
