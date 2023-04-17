@@ -24,35 +24,36 @@ class GameState:
         self.score = score
         self.level = level
 
-# 게임의 초기 상태
-initial_state = GameState(0, 1)
 
+
+
+# # 게임의 초기 상태
+# initial_state = GameState(0, 1)
 
 # self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time
 
+# # 게임의 상태를 저장하는 함수
+# def save_game_state(state, filename):
+#     with open(filename, 'wb') as file:
+#         pickle.dump(state, file)
 
-# 게임의 상태를 저장하는 함수
-def save_game_state(state, filename):
-    with open(filename, 'wb') as file:
-        pickle.dump(state, file)
+# # 게임의 상태를 불러오는 함수
+# def load_game_state(filename):
+#     with open(filename, 'rb') as file:
+#         state = pickle.load(file)
+#     return state
 
-# 게임의 상태를 불러오는 함수
-def load_game_state(filename):
-    with open(filename, 'rb') as file:
-        state = pickle.load(file)
-    return state
+# # 게임의 상태를 저장할 파일명
+# save_filename = 'game_state.pickle'
 
-# 게임의 상태를 저장할 파일명
-save_filename = 'game_state.pickle'
+# # 게임의 상태를 저장
+# save_game_state(initial_state, save_filename)
 
-# 게임의 상태를 저장
-save_game_state(initial_state, save_filename)
+# # 게임의 상태를 불러옴
+# loaded_state = load_game_state(save_filename)
 
-# 게임의 상태를 불러옴
-loaded_state = load_game_state(save_filename)
-
-# 불러온 상태 출력
-print("Loaded State - Score: {}, Level: {}".format(loaded_state.score, loaded_state.level))
+# # 불러온 상태 출력
+# print("Loaded State - Score: {}, Level: {}".format(loaded_state.score, loaded_state.level))
 
 
 
