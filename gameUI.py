@@ -19,6 +19,7 @@ class GameUI:
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
         self.font = pygame.font.SysFont("arial", self.screen_size[0] // 30, True)
+        self.font2 = pygame.font.Font("font/MADE_TOMMY.otf", self.screen_size[0] //20)
         self.timer_font = pygame.font.SysFont("arial", self.screen_size[0]  // 25, True)
         self.color_blind_mode = color_blind_mode
         # Set up the game screen
@@ -109,7 +110,7 @@ class GameUI:
         
         
         self.one_image = pygame.image.load("images/one.png")
-        self.one_image = pygame.transform.scale(self.one_image, (self.screen_size[0]/3, self.screen_size[0]/6.54))
+        self.one_image = pygame.transform.scale(self.one_image, (self.screen_size[0]/3, self.screen_size[0]/5.7))
         self.one_rect = self.one_image.get_rect()
         self.one_rect.center = (self.screen_size[0]/2, self.screen_size[1]/2)
 
@@ -122,7 +123,7 @@ class GameUI:
         '''
 
 
-    def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time, is_clicked_uno):
+    def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time, clicked_uno_player):
         # card 위치 설정(player card)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
@@ -208,8 +209,15 @@ class GameUI:
         elif self.backcard_uno_flag == 2:
             pygame.draw.rect(self.screen, 'red', (self.screen_size[0] * 0.55, self.screen_size[1] * 0.27, self.screen_size[0] / 12.5, self.screen_size[0] * 0.054), 5)
             
-        if is_clicked_uno:
+       
+        
+        if clicked_uno_player is not None:
             self.screen.blit(self.one_image, self.one_rect)
+            self.player_name = self.font2.render(f"{clicked_uno_player}", True, (62,53,16))
+            self.player_name_rect = self.player_name.get_rect()
+            self.player_name_rect.centerx = self.screen_size[0] / 2
+            self.player_name_rect.centery = self.one_rect.centery - self.screen_size[1] / 17
+            self.screen.blit(self.player_name, self.player_name_rect)
         
         # draw the timer
         elapsed_time = (pygame.time.get_ticks() - start_time) / 1000

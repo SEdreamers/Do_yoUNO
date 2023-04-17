@@ -100,9 +100,9 @@ class Game:
         
         # add computers(player 숫자 받아서 설정)
         computers = []
-        self.numberofPlayers = 5      ## player 수 
+        self.numberofPlayers = 2      ## player 수 
         for i in range(self.numberofPlayers):
-            computers.append(Computer(self.screen, self.deck, i, region))
+            computers.append(Computer(self.screen, self.deck, i+1, region))
         self.players.extend(computers)
         
         # 사람은 가중치 없이 뽑아야 함
@@ -118,7 +118,7 @@ class Game:
         
         self.clicked_uno = []
         self.random_delay = []
-        self.is_clicked_uno = False
+        self.clicked_uno_player = None
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
         self.lst = self.firstDeck.showlist()
@@ -201,10 +201,10 @@ class Game:
         
                
         if self.skip: # 시작 카드가 skip 카드인 경우
-            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.is_clicked_uno)
+            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
             self.skip = False
         else:
-            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.is_clicked_uno)
+            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
         
         try: 
             with open('game_data.json','w') as play_data_file: 
@@ -243,7 +243,7 @@ class Game:
 
                 self.update()
             self.render()
-            
+            print(self.clicked_uno)
 
             # 게임 오버 판별
             if self.players[self.turn_num].hand.is_empty():
@@ -252,7 +252,7 @@ class Game:
                     game_over.display() # 게임 오버 화면 불러오기
                     pygame.display.flip()
                     
-            self.is_clicked_uno = False
+            self.clicked_uno_player = None
             # turn 전환
             if not self.reverse:
                 self.turn_num += 1
@@ -302,7 +302,7 @@ class Game:
         self.clicked_uno = []
         fps = 500
         while self.running:
-            count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.is_clicked_uno) # 타이머 시간 업데이트
+            count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player) # 타이머 시간 업데이트
             
             if count_down <= 0: # 제한 시간 내에 카드를 내지 못한 경우
                 start_time = pygame.time.get_ticks()
@@ -317,6 +317,9 @@ class Game:
                 for idx, t in enumerate(self.random_delay):
                     if int(elapsed_time) == t and self.players[idx+1].name not in self.clicked_uno:
                         self.clicked_uno.append(self.players[idx+1].name)
+                        if len(self.clicked_uno) == 1: # uno버튼을 첫번째로 누른 플레이어가 현재 플레이어면
+                            self.clicked_uno_player = self.players[idx+1].name
+                            self.render()
             
             if game_paused == True: pass
             # Calculate the interpolation ratio 
@@ -426,8 +429,9 @@ class Game:
                         if len(self.players[self.turn_num].hand.cards) == 2:
                             if self.players[self.turn_num].name not in self.clicked_uno:
                                 self.clicked_uno.append(self.players[self.turn_num].name)
-                                self.is_clicked_uno = True
-                                self.render()
+                                if len(self.clicked_uno) == 1: # uno버튼을 첫번째로 누른 플레이어가 현재 플레이어면
+                                    self.clicked_uno_player = self.players[self.turn_num].name
+                                    self.render()
                 
                 # mouse handling    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -512,9 +516,12 @@ class Game:
                         
                         if len(self.players[self.turn_num].hand.cards) == 2:
                             if self.players[self.turn_num].name not in self.clicked_uno:
+                                
                                 self.clicked_uno.append(self.players[self.turn_num].name)
-                                self.is_clicked_uno = True
-                                self.render()
+                                
+                                if len(self.clicked_uno) == 1: # uno버튼을 첫번째로 누른 플레이어가 현재 플레이어면
+                                    self.clicked_uno_player = self.players[self.turn_num].name
+                                    self.render()
                         # print(clicked_uno)
                     # exit 버튼이 클릭 된 경우
                     if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
@@ -562,7 +569,7 @@ class Game:
                     
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.is_clicked_uno) # 타이머 안뜨게 화면 업데이트
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player) # 타이머 안뜨게 화면 업데이트
         
         self.set_random_delay()
         start_time2 = pygame.time.get_ticks()
@@ -605,8 +612,12 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.uno_rect.collidepoint(pos): # uno 버튼이 클릭된 경우
-                        if self.players[0].name not in self.clicked_uno:
-                            self.clicked_uno.append(self.players[0].name)
+                        if len(self.players[self.turn_num].hand.cards) == 2: 
+                            if self.players[0].name not in self.clicked_uno:
+                                self.clicked_uno.append(self.players[0].name)
+                                if len(self.clicked_uno) == 1: # uno버튼을 첫번째로 누른 플레이어인 인간 플레이어인 경우
+                                        self.clicked_uno_player = self.players[0].name
+                                        self.render()
 
             
             if len(self.players[self.turn_num].hand.cards) == 2: # 현재 컴퓨터 플레이어의 카드가 2장 남았을 때 각 컴퓨터 플레이어는 랜덤하게 설정된 시간에 따라 clicked_uno에 append됨
@@ -614,9 +625,10 @@ class Game:
                     for idx, t in enumerate(self.random_delay):
                         if int(elapsed_time) == t and self.players[idx+1].name not in self.clicked_uno:
                             self.clicked_uno.append(self.players[idx+1].name)
-                            if self.turn_num == idx+1:
-                                self.is_clicked_uno = True
-                                self.render()
+                            if len(self.clicked_uno) == 1: # uno버튼을 첫번째로 누른 플레이어일 경우
+                                    self.clicked_uno_player = self.players[idx+1].name
+                                    self.render()
+    
             
             if elapsed_time > 3:
                 for element in hand_card_list:  
@@ -682,7 +694,7 @@ class Game:
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.is_clicked_uno)
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
         self.skip = False
 
     def set_random_delay(self):
