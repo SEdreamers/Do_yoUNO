@@ -203,7 +203,7 @@ class StoryMap:
                         if self.menu_flag == 0: # yes
                             if self.current_region == 0:
                                 print('regionA')
-                                gameA = game.Game(self.size[0], self.size[1], self.color, 1, "A")
+                                gameA = game.Game(self.size[0], self.size[1], self.color, 1,"A")
                                 gameA.run()
                             elif self.current_region == 1:
                                 print('regionB')

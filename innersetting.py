@@ -80,7 +80,7 @@ class Setting():
         self.data ={
         "color_blind_mode": False,
         "size": (800,600),
-        "Total_Volume": 0.4,
+        "Total_Volume": 0.3,
         "Background_Volume": 0.3,
         "Sideeffect_Volume": 0.3
         }
@@ -119,8 +119,9 @@ class Setting():
                     if self.slider1_dragging:
                         # 슬라이더를 드래그하고 있는 경우 슬라이더 값을 업데이트
                         mouse_x, _ = event.pos
-                        self.slider1_value = max(0, min(1, (mouse_x - self.slider1_x) / self.slider1_width))
-                        
+                        self.slider1_value = max(0, min(1, (mouse_x - self.slider2_x) / self.slider2_width))
+                        self.slider2_value = max(0, min(1, (mouse_x - self.slider2_x) / self.slider2_width))
+                        self.slider3_value = max(0, min(1, (mouse_x - self.slider3_x) / self.slider3_width))
                         pygame.mixer.music.set_volume(self.slider1_value)
                         self.data["Total_Volume"] = self.slider1_value 
                         self.save_game()
