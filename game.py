@@ -68,7 +68,7 @@ class Game:
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
         self.numberofPlayers = numberofPlayers
-
+        
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
         background_image = pygame.image.load("images/green.jpg")
@@ -274,9 +274,28 @@ class Game:
             # 게임 오버 판별
             if self.players[self.turn_num].hand.is_empty():
                 game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
+                
+                if self.turn_num == 0:
+                    try:
+                        with open('story_mode_data.json') as story_mode_data_file:
+                            data = json.load(story_mode_data_file)
+                            unlocked_regions = data['unlocked_regions'] # 저장된 값 불러오기
+                            rg = f"region{chr(ord(self.region)+1)}"
+                            if rg not in unlocked_regions:
+                                unlocked_regions.append(rg)
+                                data = {
+                                    "unlocked_regions": unlocked_regions
+                                }
+                        with open('story_mode_data.json','w') as story_mode_data_file: 
+                            json.dump(data, story_mode_data_file)
+                    except: 
+                        pass
+                
                 while True:
                     game_over.display() # 게임 오버 화면 불러오기
                     pygame.display.flip()
+                    
+                
 
             self.clicked_uno_player = None
             # combo true일 때는 turn 안 넘기기
