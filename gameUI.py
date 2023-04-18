@@ -13,9 +13,10 @@ class GameUI:
 
     backcard_uno_flag = 0
 
-    def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn):
+    def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn, region = "E"):
          # Color
         GameUI.cur_card = 0
+        self.region = region
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
         self.screen_size = (screen_width, screen_height)
@@ -226,7 +227,14 @@ class GameUI:
         
         # draw the timer
         elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
-        remaining_time =int(16 - elapsed_time)
+        
+        if self.region == "D":
+            max_time = 6    
+            remaining_time =int(max_time - elapsed_time)
+        else:
+            max_time = 16
+            remaining_time =int(max_time - elapsed_time)
+        
         if remaining_time > 9:
             timer = self.timer_font.render(str(remaining_time), True, pygame.Color('black'))
         elif remaining_time > 3:
@@ -276,4 +284,4 @@ class GameUI:
         # Update the screen
         pygame.display.flip()
         
-        return 16 - int(elapsed_time) # 남은 시간 return
+        return max_time - int(elapsed_time) # 남은 시간 return
