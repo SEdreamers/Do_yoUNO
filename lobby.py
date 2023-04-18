@@ -49,6 +49,8 @@ class Lobby():
             size = self.data["size"]
 
 
+
+
         ## Player 수 입력받기  
         font = pygame.font.SysFont("arial", size[0] // 40, True) 
         self.data["me"] = "me"

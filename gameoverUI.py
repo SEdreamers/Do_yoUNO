@@ -7,6 +7,27 @@ BLACK = (0, 0, 0)
 
 class GameOverUI:
     def __init__(self, screen_width, screen_height, winner, color_blind_mode):
+
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5'
+            }
+
+
         self.menu_flag = 0
         try:
             with open('setting_data.json') as game_file:

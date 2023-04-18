@@ -615,8 +615,8 @@ class Game:
                         clock.tick(fps)
                         
 
-                        self.move.set_volume(svol)
                         self.move = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
+                        self.move.set_volume(svol)
                         self.move.play()
                         
 

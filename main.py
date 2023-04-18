@@ -156,7 +156,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         screen.blit(settings_text, settings_rect)
         screen.blit(exit_text, exit_rect)
         
-
+        
         
         
 
