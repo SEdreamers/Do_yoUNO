@@ -38,7 +38,7 @@ class StoryMap:
             }
             with open('story_mode_data.json','w') as story_mode_data_file: 
                 json.dump(data, story_mode_data_file)
-        self.unlocked_regions = ["regionA", "regionB", "regionC", "regionD"]
+        self.unlocked_regions = ["regionA"]
     
         ## 지역 이미지
         self.regionA_image = pygame.image.load("images/map/regionA.png")
