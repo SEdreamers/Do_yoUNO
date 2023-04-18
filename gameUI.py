@@ -141,7 +141,6 @@ class GameUI:
         # Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
         for i in range(1, len(players)):
             players[i].draw(i-1)
-        
 
         # draw turn indicator
         if turn_num == 0:
@@ -225,6 +224,24 @@ class GameUI:
             self.player_name_rect.centery = self.one_rect.centery - self.screen_size[1] / 17
             self.screen.blit(self.player_name, self.player_name_rect)
         
+        # display length
+        font = pygame.font.SysFont("arial", self.screen_size[0] // 24, True)
+        h_length = str(len(players[0].hand.cards))
+        h_text = font.render(h_length, True, (0, 0, 0))
+        h_text_rect = h_text.get_rect()
+        h_text_rect.x = self.screen_size[0] - self.computer_width - self.screen_size[0] // 24
+        h_text_rect.y = self.screen_size[1] - self.screen_size[0] // 24
+        self.screen.blit(h_text, h_text_rect)
+        print(h_length)
+        for i in range(len(players)):
+            length = str(len(players[i].hand.cards))
+            print(length)
+            text = font.render(length, True, (0, 0, 0))
+            text_rect = text.get_rect()
+            text_rect.x = self.screen_size[0] - self.screen_size[0] // 24
+            text_rect.y = i * (self.computer_height) - self.screen_size[0] // 24
+            self.screen.blit(text, text_rect)
+
         # draw the timer
         elapsed_time = (pygame.time.get_ticks() - start_time) / 1000
         
