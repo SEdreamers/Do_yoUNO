@@ -71,7 +71,17 @@ class Setting():
         except: 
             self.data ={
             "color_blind_mode": False,
-            "size": (800,600) 
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5'
             }
             self.save_game()
 

@@ -3,10 +3,32 @@ from player import Player
 from gameUI import GameUI
 from card import Card
 import time
+import json
 
 class Computer(Player):
     def __init__(self, screen, deck, i, region):
         super().__init__("Computer" + str(i), screen, deck, region)
+
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5'
+            }
+
+
         self.screen = screen
         self.screen_size = (screen.get_width(), screen.get_height())
         # Get the dimensions of the computer's image
@@ -28,19 +50,19 @@ class Computer(Player):
 
         font = pygame.font.SysFont("arial", self.screen_size[0]//40, True)
         # create computer name 
-        self.c1name = font.render("computer1",True,'GREEN')      ## 이름 받는 부분
+        self.c1name = font.render(self.data["c1name"],True,'GREEN')      ## 이름 받는 부분
         self.c1name_rect = self.c1name.get_rect()
 
-        self.c2name = font.render("computer2",True,'GREEN')      ## 이름 받는 부분
+        self.c2name = font.render(self.data["c2name"],True,'GREEN')      ## 이름 받는 부분
         self.c2name_rect = self.c2name.get_rect()
 
-        self.c3name = font.render("computer3",True,'GREEN')      ## 이름 받는 부분
+        self.c3name = font.render(self.data["c3name"],True,'GREEN')      ## 이름 받는 부분
         self.c3name_rect = self.c3name.get_rect()
 
-        self.c4name = font.render("computer4",True,'GREEN')      ## 이름 받는 부분
+        self.c4name = font.render(self.data["c4name"],True,'GREEN')      ## 이름 받는 부분
         self.c4name_rect = self.c4name.get_rect()
         
-        self.c5name = font.render("computer5",True,'GREEN')      ## 이름 받는 부분
+        self.c5name = font.render(self.data["c5name"],True,'GREEN')      ## 이름 받는 부분
         self.c5name_rect = self.c4name.get_rect()
 
 
