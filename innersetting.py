@@ -8,7 +8,7 @@ import gameUI
 
 # Initialize Pygame
 class Setting():
-    def __init__(self, screen_width, screen_height, color_blind_mode,  players, turn_num, top_card, back_card, reverse, skip, start_time):
+    def __init__(self, screen_width, screen_height, color_blind_mode,  players, turn_num, top_card, back_card, reverse, skip, start_time,move_effect):
          # Set the default size of the window
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -22,66 +22,69 @@ class Setting():
         self.reverse = reverse
         self.skip = skip
         self.start_time = start_time
-        
+        self.move_effect = move_effect 
         
         # Create the window        
         self.screen = pygame.display.set_mode(self.window_size)
     
         self.running = True
 
-        # pygame.init()
-        # # Set the font for the buttons
-        # self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
-        # self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
-        # self.vol_font = pygame.font.SysFont("arial", self.screen_width // 60, True)
+        pygame.init()
+        # Set the font for the buttons
+        self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
+        self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
+        self.vol_font = pygame.font.SysFont("arial", self.screen_width // 60, True)
         
         
-        # # Set the button sizes
-        # self.screen_sizes = [(400, 300), (600, 450), (800, 600), (1000, 750)]
+        # Set the button sizes
+        self.screen_sizes = [(400, 300), (600, 450), (800, 600), (1000, 750)]
 
         
-        # ## create the button code 있던 부분 -> reposition으로 옮김.
+        ## create the button code 있던 부분 -> reposition으로 옮김.
         
 
 
         
-        # # 슬라이더의 초기값과 상태 설정
-        # self.slider1_value = 0.3
-        # self.slider1_dragging = False
-        # # 슬라이더 색상 설정
-        # self.slider1_bg_color = 'red'
-        # self.slider1_bar_color = 'red'
-        # self.slider1_handle_color = (255,255,255)
+        # 슬라이더의 초기값과 상태 설정
+        self.slider1_value = 0.3
+        self.slider1_dragging = False
+        # 슬라이더 색상 설정
+        self.slider1_bg_color = 'red'
+        self.slider1_bar_color = 'red'
+        self.slider1_handle_color = (255,255,255)
         
 
-        # # 슬라이더의 초기값과 상태 설정
-        # self.slider2_value = 0.3
-        # self.slider2_dragging = False
-        # # 슬라이더 색상 설정
-        # self.slider2_bg_color = 'red'
-        # self.slider2_bar_color = 'red'
-        # self.slider2_handle_color = (255,255,255)
+        # 슬라이더의 초기값과 상태 설정
+        self.slider2_value = 0.3
+        self.slider2_dragging = False
+        # 슬라이더 색상 설정
+        self.slider2_bg_color = 'red'
+        self.slider2_bar_color = 'red'
+        self.slider2_handle_color = (255,255,255)
        
 
-        # # 슬라이더의 초기값과 상태 설정
-        # self.slider3_value = 0.3
-        # self.slider3_dragging = False
-        # # 슬라이더 색상 설정
-        # self.slider3_bg_color = 'red'
-        # self.slider3_bar_color = 'red'
-        # self.slider3_handle_color = (255,255,255)
+        # 슬라이더의 초기값과 상태 설정
+        self.slider3_value = 0.3
+        self.slider3_dragging = False
+        # 슬라이더 색상 설정
+        self.slider3_bg_color = 'red'
+        self.slider3_bar_color = 'red'
+        self.slider3_handle_color = (255,255,255)
 
 
-        # self.reposition(self.screen)
+        self.reposition(self.screen)
                 
                 
 
 
-        # self.data ={
-        # "color_blind_mode": False,
-        # "size": (800,600) 
-        # }
-        # self.save_game()
+        self.data ={
+        "color_blind_mode": False,
+        "size": (800,600),
+        "Total_Volume": 0.3,
+        "Background_Volume": 0.3,
+        "Sideeffect_Volume": 0.3
+        }
+        self.save_game()
 
     def save_game(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
@@ -103,26 +106,77 @@ class Setting():
                     self.running = False
                     
                     
+
+                ######-----------------------------------------------------------------------------------------------------------------------------------------------------------------    
                     
+                ## 1) Total Volume 조절  &  2) Background Volume   & ## 3) Sideeffect Volume 
+                
+
+
+  
                 elif event.type == pygame.MOUSEMOTION:
                     # 마우스 이동 이벤트 처리
                     if self.slider1_dragging:
                         # 슬라이더를 드래그하고 있는 경우 슬라이더 값을 업데이트
                         mouse_x, _ = event.pos
-                        self.slider1_value = max(0, min(1, (mouse_x - self.slider1_x) / self.slider1_width))
+                        self.slider1_value = max(0, min(1, (mouse_x - self.slider2_x) / self.slider2_width))
+                        self.slider2_value = max(0, min(1, (mouse_x - self.slider2_x) / self.slider2_width))
+                        self.slider3_value = max(0, min(1, (mouse_x - self.slider3_x) / self.slider3_width))
                         pygame.mixer.music.set_volume(self.slider1_value)
+                        self.data["Total_Volume"] = self.slider1_value 
+                        self.save_game()
+
+
+                    # 마우스 이동 이벤트 처리
+                    elif self.slider2_dragging:
+                        # 슬라이더를 드래그하고 있는 경우 슬라이더 값을 업데이트
+                        mouse_x, _ = event.pos
+                        self.slider2_value = max(0, min(1, (mouse_x - self.slider2_x) / self.slider2_width))
+                        pygame.mixer.music.set_volume(self.slider2_value)
+                        self.data["Background_Volume"] = self.slider2_value 
+                        self.save_game()
+
+
+
+                    # 마우스 이동 이벤트 처리
+                    elif self.slider3_dragging:
+                        # 슬라이더를 드래그하고 있는 경우 슬라이더 값을 업데이트
+                        mouse_x, _ = event.pos
+                        self.slider3_value = max(0, min(1, (mouse_x - self.slider3_x) / self.slider3_width))
+                        self.move_effect.set_volume(self.slider3_value)
+                        self.data["Sideeffect_Volume"] = self.slider3_value 
+                        self.save_game()
+                        
+                    
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     # 마우스 클릭 이벤트 처리
                     if event.button == 1 and self.slider1_rect.collidepoint(event.pos):
                         # 슬라이더를 클릭한 경우 슬라이더 드래그 상태로 변경
                         self.slider1_dragging = True
+                    # 마우스 클릭 이벤트 처리
+                    elif event.button == 1 and self.slider2_rect.collidepoint(event.pos):
+                        # 슬라이더를 클릭한 경우 슬라이더 드래그 상태로 변경
+                        self.slider2_dragging = True
+                    # 마우스 클릭 이벤트 처리
+                    elif event.button == 1 and self.slider3_rect.collidepoint(event.pos):
+                        # 슬라이더를 클릭한 경우 슬라이더 드래그 상태로 변경
+                        self.slider3_dragging = True
                 elif event.type == pygame.MOUSEBUTTONUP:
                     # 마우스 클릭 해제 이벤트 처리
                     if event.button == 1 and self.slider1_dragging:
                         # 슬라이더를 드래그하고 있던 경우 슬라이더 드래그 상태 해제
                         self.slider1_dragging = False
-                    
-                    
+                    # 마우스 클릭 해제 이벤트 처리
+                    elif event.button == 1 and self.slider2_dragging:
+                        # 슬라이더를 드래그하고 있던 경우 슬라이더 드래그 상태 해제
+                        self.slider2_dragging = False
+                    # 마우스 클릭 해제 이벤트 처리
+                    elif event.button == 1 and self.slider3_dragging:
+                        # 슬라이더를 드래그하고 있던 경우 슬라이더 드래그 상태 해제
+                        self.slider3_dragging = False
+
+
+                ######----------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
                     
                 if event.type == pygame.KEYDOWN:
@@ -146,13 +200,10 @@ class Setting():
                             
 
                         elif menu_flag == 2:
-                            self.save_game()
                             time.sleep(0.3)
-                            self.GameUI = gameUI.GameUI(self.screen_width, self.screen_height, self.color_blind_mode, self.uno_btn)
-                            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
-                            play = game.Game(window_size[0], window_size[1],self.color_blind_mode,self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
+                            play = game.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)
+                            self.save_game()
                             play.run()
-                            
 
                             
                         elif menu_flag == 3: 
@@ -248,9 +299,9 @@ class Setting():
                 
                 
             elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
-                self.save_game()
                 time.sleep(0.3)
-                play = game.Game(window_size[0], window_size[1],self.color_blind_mode)
+                play = game.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)
+                self.save_game()
                 play.run()
                 
 
@@ -404,7 +455,7 @@ class Setting():
         self.size4_text_rect.y = screen.get_size()[1] / 4
 
         
-        self.tvol = self.vol_font.render("※ Total volume", True, 'white')
+        self.tvol = self.vol_font.render("※ Total Volume", True, 'white')
         self.tvol_rect = self.tvol.get_rect()
         self.tvol_rect.x = screen.get_size()[0]  / 20
         self.tvol_rect.y = screen.get_size()[1] / 2.2

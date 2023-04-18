@@ -30,12 +30,16 @@ class Computer(Player):
         # create computer name 
         self.c1name = font.render("computer1",True,'GREEN')      ## 이름 받는 부분
         self.c1name_rect = self.c1name.get_rect()
+
         self.c2name = font.render("computer2",True,'GREEN')      ## 이름 받는 부분
         self.c2name_rect = self.c2name.get_rect()
+
         self.c3name = font.render("computer3",True,'GREEN')      ## 이름 받는 부분
         self.c3name_rect = self.c3name.get_rect()
+
         self.c4name = font.render("computer4",True,'GREEN')      ## 이름 받는 부분
         self.c4name_rect = self.c4name.get_rect()
+        
         self.c5name = font.render("computer5",True,'GREEN')      ## 이름 받는 부분
         self.c5name_rect = self.c4name.get_rect()
 

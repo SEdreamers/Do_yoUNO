@@ -59,7 +59,7 @@ class GameState:
 
 
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "E"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "C"):
         pygame.init()
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -78,7 +78,6 @@ class Game:
        
         # combo
         self.combo = 0
-        self.region = region
         # Load the image
         self.combo_image = pygame.image.load('images/combo.jpg')
         self.combo_image = pygame.transform.scale(self.combo_image, (self.screen_size[0] / 3.333, self.screen_size[0] / 3.333))
@@ -98,6 +97,8 @@ class Game:
         self.uno_rect = self.uno_btn.get_rect()
         self.uno_rect.x = self.screen_size[0] * 0.55
         self.uno_rect.y = self.screen_size[1] * 0.27
+
+        self.turn_count = 1
          
         # players 저장
         self.players = []
@@ -276,16 +277,19 @@ class Game:
 
             self.clicked_uno_player = None
             # combo true일 때는 turn 안 넘기기
-            if self.combo == 0:           
+            #if self.combo == 0:           
                 # turn 전환
-                if not self.reverse:
-                    self.turn_num += 1
-                    if self.turn_num >= len(self.players):
-                        self.turn_num = 0
-                else:
-                    self.turn_num -= 1
-                    if self.turn_num < 0:
-                        self.turn_num = len(self.players) - 1
+            if not self.reverse:
+                self.turn_num += 1
+                if self.turn_num >= len(self.players):
+                    self.turn_num = 0
+            else:
+                self.turn_num -= 1
+                if self.turn_num < 0:
+                    self.turn_num = len(self.players) - 1
+            self.turn_count += 1
+            if self.turn_count % 5 == 0:
+                self.change_card_color()
         pygame.quit()
 
 
@@ -403,7 +407,6 @@ class Game:
                                 self.top_card = entered_card
                                 self.deck.append(self.top_card)
                                 self.players[self.turn_num].hand.cards.remove(entered_card)
-                                self.update()
                                 if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
                                     GameUI.cur_card = len(self.players[0].hand.cards) - 1
                                     self.render()
@@ -465,9 +468,12 @@ class Game:
                             GameUI.backcard_uno_flag = 1
                         self.render()
                     if event.key == 13 and GameUI.backcard_uno_flag == 1:
-                        self.card_clicked = self.back_card
-                        start_time = pygame.time.get_ticks()
-                        self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                        if len(self.deck.cards) <= 0:
+                            return False
+                        else:
+                            self.card_clicked = self.back_card
+                            start_time = pygame.time.get_ticks()
+                            self.players[self.turn_num].hand.cards.append(self.deck.pop())
                     elif event.key == 13 and GameUI.backcard_uno_flag == 2: #uno 버튼 눌렀을 때
                         if len(self.players[self.turn_num].hand.cards) == 2:
                             if self.players[self.turn_num].name not in self.clicked_uno:
@@ -481,6 +487,8 @@ class Game:
                     pos = pygame.mouse.get_pos()
                     print(pos)
                     if self.back_card.rect.collidepoint(pos):
+                        if len(self.deck.cards) <= 0:
+                            return False
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
@@ -693,7 +701,7 @@ class Game:
                     if element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                         # time.sleep(1.5)
                         self.card_clicked = element
-                        if self.region == "A": # A일 때 컴퓨터 플레이어는 콤보 사용 가능
+                        """ if self.region == "A": # A일 때 컴퓨터 플레이어는 콤보 사용 가능
                             if self.combo > 0:
                                 self.combo -= 1
                             if element.value == "reverse":
@@ -730,7 +738,7 @@ class Game:
                                             self.players[self.turn_num].hand.cards = self.players[self.turn_num].hand.cards[index:] + self.players[self.turn_num].hand.cards[:index]
                                             self.combo = 2
                                             self.screen.blit(self.combo_image, (self.screen_size[0]/2, self.screen_size[1]/2))
-                                            time.sleep(1.5)
+                                            time.sleep(1.5) """
                                             
                         start_time = pygame.time.get_ticks()
                         self.top_card = element
@@ -743,6 +751,8 @@ class Game:
                         break
                 if self.card_clicked == None:   
                     # time.sleep(1.5)
+                    if len(self.deck.cards) <= 0:
+                            return
                     self.card_clicked = self.back_card
                     start_time = pygame.time.get_ticks()
                     self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
@@ -799,6 +809,16 @@ class Game:
         if len(self.players[self.turn_num].hand.cards) == 2: # 현재 플레이어의 카드가 2장 남은 경우
             for _ in range(len(self.players)-1): # 컴퓨터 플레이어 수만큼 1~3초 사이 난수 리스트에 append
                 self.random_delay.append(random.randrange(1,4))
+
+    def change_card_color(self):
+        for i in range(3):
+            for card in self.players[i].hand.cards:
+                if not card.color == 'black':
+                    colors = ['red', 'yellow', 'green', 'blue']
+                    random_color = random.choice(colors)
+                    card.reinit(card.value, random_color, self.screen_width, self.screen_height)
+        self.render()
+
 
 
 

@@ -39,7 +39,7 @@ class GameOverUI:
         
         self.frame_index = 0 # gif frame index
 
-        self.uno_game = game.Game(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
+        self.uno_game = game.Game(self.screen_size[0], self.screen_size[1], self.color_blind_mode,4)
 
     def display(self):
         pygame.display.set_caption("Game Over")

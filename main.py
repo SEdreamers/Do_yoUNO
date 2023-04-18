@@ -48,6 +48,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     settings_text = font.render("Settings", True, WHITE)
     exit_text = font.render("Exit", True, WHITE)
 
+
     # 메뉴 위치 설정
     game_title_rect = game_title.get_rect()
     game_title_rect.centerx = screen.get_rect().centerx
@@ -88,8 +89,10 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
                     menu_flag += 1
                 elif event.key == 13:
                     if menu_flag == 0:
-                        uno_game = game.Game(size[0],size[1], color)
-                        uno_game.run()
+
+                        lobbystate = lobby.Lobby(size[0],size[1], color)
+                        lobbystate.displayPlayer(3) 
+
                     elif menu_flag == 1:
                         story_mode = storyMap.StoryMap(screen_width, screen_height)
                         story_mode.run()
@@ -127,14 +130,13 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             exit_text = font.render("Exit", True, WHITE)
         # 마우스 클릭 시
         if single_player_rect.collidepoint(mouse_pos) and mouse_click[0]:
+
             
-            
-            
-            
+            lobbystate = lobby.Lobby(size[0],size[1], color)
+            lobbystate.displayPlayer(3) 
 
 
-            uno_game = game.Game(size[0],size[1], color)
-            uno_game.run()
+            
         elif story_mode_rect.collidepoint(mouse_pos) and mouse_click[0]:
             story_mode = storyMap.StoryMap(size[0], size[1])
             story_mode.run()
