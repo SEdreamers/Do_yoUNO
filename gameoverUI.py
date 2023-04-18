@@ -1,5 +1,6 @@
 import pygame
 import game
+import main
 import sys
 import json
 
@@ -66,7 +67,7 @@ class GameOverUI:
         self.winner_rect.y = self.screen.get_size()[1] / 2.4
 
         # new game 버튼
-        self.new_game_text = self.font.render("New Game", True, 'white')
+        self.new_game_text = self.font.render("Back To Main", True, 'white')
         self.new_game_rect = self.new_game_text.get_rect()
         self.new_game_rect.centerx = self.screen.get_rect().centerx
         self.new_game_rect.y = self.screen.get_size()[1] / 1.714
@@ -112,7 +113,7 @@ class GameOverUI:
                     self.menu_flag += 1
                 elif event.key == 13:
                     if self.menu_flag == 0:
-                        self.uno_game.run()
+                        main.main(self.data["size"][0], self.data["size"][1],self.color_blind_mode)
                     elif self.menu_flag == 1:
                         sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -121,20 +122,20 @@ class GameOverUI:
 
         # 메뉴 시각화(색상 변경)
         if self.new_game_rect.collidepoint(mouse_pos) or self.menu_flag == 0:
-            self.new_game_text = self.font.render("New Game", True, 'red')
+            self.new_game_text = self.font.render("Back To Main", True, 'red')
             self.exit_text = self.font.render("Exit", True, 'white')
         else:
-            self.new_game_text = self.font.render("New Game", True, 'white')
+            self.new_game_text = self.font.render("Back To Main", True, 'white')
 
         if self.exit_rect.collidepoint(mouse_pos) or self.menu_flag == 1:
             self.exit_text = self.font.render("Exit", True, 'red')
-            self.new_game_text = self.font.render("New Game", True, 'white')
+            self.new_game_text = self.font.render("Back To Main", True, 'white')
         else:
             self.exit_text = self.font.render("Exit", True, 'white')
     
         # 메뉴 동작
         if self.new_game_rect.collidepoint(mouse_pos) and mouse_click:
-            self.uno_game.run() # 새 게임 불러오기
+            main.main(self.data["size"][0], self.data["size"][1],self.color_blind_mode) # 새 게임 불러오기
         elif self.exit_rect.collidepoint(mouse_pos) and mouse_click:
             sys.exit() # 종료
         pygame.display.flip()

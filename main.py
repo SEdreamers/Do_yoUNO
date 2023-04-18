@@ -92,7 +92,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
                     if menu_flag == 0:
 
                         lobbystate = lobby.Lobby(size[0],size[1], color)
-                        lobbystate.displayPlayer(3) 
+                        lobbystate.displayPlayer()
 
                     elif menu_flag == 1:
                         story_mode = storyMap.StoryMap(screen_width, screen_height)
