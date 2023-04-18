@@ -1,8 +1,10 @@
 import pygame
 from player import Player
-import computer 
+import time
 import json
 import game
+import sys
+
 
 class Lobby():
     def __init__(self, screen_width, screen_height, color_blind_mode):
@@ -11,156 +13,144 @@ class Lobby():
         self.screen_size = (screen_width, screen_height)
         self.screen = pygame.display.set_mode(self.screen_size)
         self.color_blind_mode = color_blind_mode 
-         
-
-        # Get the dimensions of the computer's image  사이즈
-        self.computer_width = self.screen_size[0] / 3.333
-        self.computer_height = self.screen_size[1] / 5
-
-        # Load the computer's image   
-        self.computer_image = pygame.image.load("images/gray.jpg")
-        self.computer_image = pygame.transform.scale(self.computer_image, (self.computer_width, self.computer_height))
-
-        # Load the image 
-        self.computer_background_image = pygame.image.load("images/black.jpg")
-        self.computer_background_image = pygame.transform.scale(self.computer_background_image, (self.computer_width, self.screen_size[1]))
+        
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5'
+            }
+            self.save_game()
     
-        self.running = True
+      
         
+    def save_game(self):
+    # 실행중이던 세팅 설정을 딕셔너리 형태로 저장 
+        with open('setting_data.json','w') as setting_data_file: 
+            json.dump(self.data, setting_data_file)
 
-
-
-    def displayPlayer(self, players):
-        ## Draw the background image
-        self.screen.blit(self.computer_background_image, (self.screen_size[0] - self.computer_width, 0))
-        
-        
-
-        ##?? 이거 되나? 
-        ## Draw the computer's image on the screen (computer는 0번 자리 부터 -> i - 1)
-        computer_x = self.screen_size[0] - self.computer_width
-        computer_y = 0
-        self.screen.blit(self.computer_image, (computer_x, computer_y + 5 * self.computer_height))
-
-
-        
-        # for i in range(1, len(players)):
-        #     players[i].draw(i - 1)
-        
+    def displayPlayer(self):
 
         with open('setting_data.json') as game_file:
-            data = json.load(game_file)
-            color = data['color_blind_mode']     ## 저장된 값 불러오기. 
-            size = data["size"]
+            self.data = json.load(game_file)
+            color = self.data['color_blind_mode']     ## 저장된 값 불러오기. 
+            size = self.data["size"]
 
 
-
-        ## Player 수 입력받기
+        ## Player 수 입력받기  
         font = pygame.font.SysFont("arial", size[0] // 40, True) 
-        player_numbers = ""
+        self.data["me"] = "me"
+        self.data["c1name"] = "c1"
+        self.data["c2name"] = "c2"
+        self.data["c3name"] = "c3"
+        self.data["c4name"] = "c4"
+        self.data["c5name"] = "c5"
         
-        c1name = ""
-        c2name = ""
-        c3name = ""
-        c4name = ""
-        c5name = ""
+        
 
-        input_active = True     # 사용자 이름 입력 상태 여부
-        blink_timer = 0         # 깜빡이는 커서 타이머
-        cursor_visible = True   # 커서 가시성 상태
+        # pygame 초기화
+        pygame.init()
+
+   
+        screen = pygame.display.set_mode((self.screen_size[0], self.screen_size[1]))
+
+        font = pygame.font.SysFont("arial", size[0] // 20, True)
+        
+        title = font.render("Lobby", True, 'white')
+        title_rect = title.get_rect()
+        title_rect.centerx = screen.get_rect().centerx
+        title_rect.y = screen.get_size()[1] // 12
 
 
-        while self.running:
-            pygame.init()
+        play_text = font.render("Play", True, 'white')
+        play_rect = play_text.get_rect()
+        play_rect.centerx = screen.get_rect().centerx
+        play_rect.y = screen.get_size()[1] * 0.81
+
+        #메뉴 상수
+        menu_flag = 0
+
+
+
+
+        # 버튼 크기 및 간격 설정
+        button_width = 150
+        button_height = 50
+        button_spacing = 10
+
+        # 버튼 색상 설정
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+
+        # 버튼 초기 상태 설정
+        button_states = [False, False, False, False, False]
+
+        # 버튼 좌표 계산
+        button_x = (self.screen_size[0] - button_width) // 2
+        button_y = (self.screen_size[1] - (button_height + button_spacing) * 5) // 2
+
+        # 게임 루프
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.running = False
-                elif event.type == pygame.KEYDOWN:
-                    if input_active:  # 사용자 이름 입력 상태일 때만 입력 받기
-                        if event.key == pygame.K_BACKSPACE:
-                            player_numbers = player_numbers[:-1]  # 백스페이스 키 입력 처리
-                        elif event.key == pygame.K_RETURN:
-                            input_active = False  # 엔터 키 입력 처리 후 사용자 이름 입력 상태 해제
-                        else: player_numbers += event.unicode  # 다른 키 입력 처리
-                        
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # 마우스 클릭 시 버튼 상태 변경
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    for i in range(5):
+                        button_rect = pygame.Rect(button_x, button_y + i * (button_height + button_spacing), button_width, button_height)
+                        if button_rect.collidepoint(mouse_x, mouse_y):
+                            button_states[i] = not button_states[i]
 
+            # 배경 색상 설정
+            screen.fill(BLACK)
 
-
-            # 깜빡이는 커서 타이머 업데이트
-            blink_timer += pygame.time.get_ticks() / 2 
-            if blink_timer >= 500:  # 0.5초마다 커서 가시성 상태 변경
-                cursor_visible = not cursor_visible
-                blink_timer = 0
-
-            # 화면에 이름과 커서 출력
-            self.screen.fill((0,0,0))    ##검은색 바탕
-            if input_active:
-                text_surface = font.render("Enter Player Numbers(1~5): " + player_numbers, True, (255,255,255))
-                self.screen.blit(text_surface, (100, 100))  # 화면에 텍스트 출력
-                if cursor_visible:  # 커서 가시성에 따라 커서 출력
-                    pygame.draw.rect(self.screen, (255, 0, 0), (100 + text_surface.get_width(), 100, 2, text_surface.get_height()))
-            else:
-                text_surface = font.render("Wrong! Choose Again!" + player_numbers, True, (255,255,255))
-                self.screen.blit(text_surface, (100, 100))  # 화면에 텍스트 출력
-
-                # computer_name = computer.Computer()
-
-
-                uno_game = game.Game(size[0],size[1], color,int(player_numbers))  
+            # 버튼 그리기
+            for i in range(5):
+                if button_states[i]:
+                    pygame.draw.rect(screen, BLACK, (button_x, button_y + i * (button_height + button_spacing), button_width, button_height))
+                    text = pygame.font.SysFont(None, 24).render("", True, WHITE)
+                    screen.blit(text, (button_x + button_width // 2 - text.get_width() // 2, button_y + i * (button_height + button_spacing) + button_height // 2 - text.get_height() // 2))
+                else:
+                    pygame.draw.rect(screen, WHITE, (button_x, button_y + i * (button_height + button_spacing), button_width, button_height))
+                    if i == 0: text = pygame.font.SysFont(None, 24).render(self.data["c1name"], True, BLACK)
+                    elif i == 1: text = pygame.font.SysFont(None, 24).render(self.data["c2name"], True, BLACK)
+                    elif i == 2: text = pygame.font.SysFont(None, 24).render(self.data["c3name"], True, BLACK)
+                    elif i == 3: text = pygame.font.SysFont(None, 24).render(self.data["c4name"], True, BLACK)
+                    elif i == 4: text = pygame.font.SysFont(None, 24).render(self.data["c5name"], True, BLACK)
+                    
+                    screen.blit(text, (button_x + button_width // 2 - text.get_width() // 2, button_y + i * (button_height + button_spacing) + button_height // 2 - text.get_height() // 2))
+            
+            # 마우스 이벤트 처리
+            mouse_pos = pygame.mouse.get_pos()
+            mouse_click = pygame.mouse.get_pressed()
+            if play_rect.collidepoint(mouse_pos) or menu_flag == 0:
+                play_text = font.render("Play", True, 'white')
+            # 마우스 클릭 시
+            if play_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                Player_number = 5 - button_states.count(True)
+                self.data["player_numbers"] = Player_number
+                self.save_game()
+                uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"]) 
                 uno_game.run()
 
-        # Update the display
-            pygame.display.update()
-        # Quit Pygame
-        pygame.quit()
 
 
 
-
-# class Computer(Player):
-#     def __init__(self, screen, deck, i, region):
-#         super().__init__("Computer" + str(i), screen, deck, region)
-#         self.screen = screen
-#         self.screen_size = (screen.get_width(), screen.get_height())
-#         # Get the dimensions of the computer's image
-#         self.computer_width = self.screen_size[0] / 3.333
-#         self.computer_height = self.screen_size[1] / 5
-#         # Load the computer's image
-#         self.computer_image = pygame.image.load("images/gray.jpg")
-#         self.computer_image = pygame.transform.scale(self.computer_image, (self.computer_width, self.computer_height))
-#         self.backcard_image = pygame.image.load("images/card.png")
-#         self.backcard_image = pygame.transform.scale(self.backcard_image, (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
-
-
-#         font = pygame.font.SysFont("arial", self.screen_size[0]//40, True)
-#         # create computer name 
-#         self.c1name = font.render("computer1",True,'GREEN')      ## 이름 받는 부분
-#         self.c1name_rect = self.c1name.get_rect()
-#         self.c2name = font.render("computer2",True,'GREEN')      ## 이름 받는 부분
-#         self.c2name_rect = self.c2name.get_rect()
-#         self.c3name = font.render("computer3",True,'GREEN')      ## 이름 받는 부분
-#         self.c3name_rect = self.c3name.get_rect()
-
-
-#     def draw(self, i):      ## 컴퓨터 플레이어 수만큼 호출
-#         # Set the position of the computer's image on the right side of the screen
-#         computer_x = self.screen_size[0] - self.computer_width
-#         computer_y = 0
-#         self.screen.blit(self.computer_image, (computer_x, computer_y + i * self.computer_height))
-
-#         N = Player.count_cards(self)
-#         for x in range(N):
-#             self.screen.blit(self.backcard_image,(computer_x+ x*self.computer_height*0.1, computer_y + i * self.computer_height))
-
-#         # 컴퓨터 이름 화면에 띄우는 부분. 
-#         if i == 0: 
-#             self.c1name_rect.x, self.c1name_rect.y = computer_x, i * self.computer_height
-#             self.screen.blit(self.c1name,self.c1name_rect)
-#         elif i == 1: 
-#             self.c2name_rect.x, self.c2name_rect.y = computer_x, i * self.computer_height
-#             self.screen.blit(self.c2name,self.c2name_rect)
-#         elif i == 2: 
-#             self.c3name_rect.x, self.c3name_rect.y = computer_x, i * self.computer_height
-#             self.screen.blit(self.c3name,self.c3name_rect)
-
-    
+            screen.blit(title, title_rect)
+            screen.blit(play_text, play_rect)
+            pygame.display.flip()
+            

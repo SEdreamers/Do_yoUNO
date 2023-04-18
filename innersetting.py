@@ -42,11 +42,22 @@ class Setting():
         
         ## create the button code 있던 부분 -> reposition으로 옮김.
         
-
+        try: 
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3
+            }
+            self.save_game()
 
         
         # 슬라이더의 초기값과 상태 설정
-        self.slider1_value = 0.3
+        self.slider1_value = self.data["Total_Volume"]
         self.slider1_dragging = False
         # 슬라이더 색상 설정
         self.slider1_bg_color = 'red'
@@ -55,7 +66,7 @@ class Setting():
         
 
         # 슬라이더의 초기값과 상태 설정
-        self.slider2_value = 0.3
+        self.slider2_value = self.data["Background_Volume"]
         self.slider2_dragging = False
         # 슬라이더 색상 설정
         self.slider2_bg_color = 'red'
@@ -64,7 +75,7 @@ class Setting():
        
 
         # 슬라이더의 초기값과 상태 설정
-        self.slider3_value = 0.3
+        self.slider3_value = self.data["Sideeffect_Volume"]
         self.slider3_dragging = False
         # 슬라이더 색상 설정
         self.slider3_bg_color = 'red'
@@ -77,14 +88,8 @@ class Setting():
                 
 
 
-        self.data ={
-        "color_blind_mode": False,
-        "size": (800,600),
-        "Total_Volume": 0.3,
-        "Background_Volume": 0.3,
-        "Sideeffect_Volume": 0.3
-        }
-        self.save_game()
+        
+        
 
     def save_game(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
