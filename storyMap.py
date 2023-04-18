@@ -161,13 +161,16 @@ class StoryMap:
                 gameA.run()
             elif self.current_region == 1:
                 print('regionB')
-                pass # 지역B 게임 로드
+                gameB = game.Game(self.size[0], self.size[1], self.color, "B")
+                gameB.run()
             elif self.current_region == 2:
                 print('regionC')
-                pass # 지역C 게임 로드
+                gameC = game.Game(self.size[0], self.size[1], self.color, "C")
+                gameC.run()
             elif self.current_region == 3:
                 print('regionD')
-                pass # 지역D 게임 로드 
+                gameD = game.Game(self.size[0], self.size[1], self.color, "D")
+                gameD.run()
             self.mouse_click = False ## 임시 // 추후 게임 로드 추가 시 삭제해도됨
         elif self.no_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
             self.selected = False
