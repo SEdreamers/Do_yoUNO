@@ -7,8 +7,6 @@ import json
 
 class StoryMap:
     def __init__(self, screen_width, screen_height):
-        
-        
         self.menu_flag = 0
         # 화면 크기 설정
         self.screen_width = screen_width
@@ -41,8 +39,7 @@ class StoryMap:
             with open('story_mode_data.json','w') as story_mode_data_file: 
                 json.dump(data, story_mode_data_file)
             self.unlocked_regions = ["regionA"]
-        
-        self.unlocked_regions = ["regionA", "regionB", "regionC"]
+    
         ## 지역 이미지
         self.regionA_image = pygame.image.load("images/map/regionA.png")
         self.regionA_image = pygame.transform.scale(self.regionA_image, (self.screen_width/4.4944, self.screen_height/4.0107))
@@ -173,7 +170,8 @@ class StoryMap:
                 gameC.run()
             elif self.current_region == 3:
                 print('regionD')
-                pass # 지역D 게임 로드 
+                gameD = game.Game(self.size[0], self.size[1], 2, self.color, "D")
+                gameD.run()
             self.mouse_click = False ## 임시 // 추후 게임 로드 추가 시 삭제해도됨
         elif self.no_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
             self.selected = False
@@ -216,7 +214,8 @@ class StoryMap:
                                 gameC.run()
                             elif self.current_region == 3:
                                 print('regionD')
-                                pass # 지역D 게임 로드
+                                gameD = game.Game(self.size[0], self.size[1], self.color, 2, "D")
+                                gameD.run()
                         elif self.menu_flag == 1: # no
                             self.selected = False
                 
