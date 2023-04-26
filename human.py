@@ -1,4 +1,5 @@
 from player import Player
+import main
 import pygame
 
 class Human(Player):

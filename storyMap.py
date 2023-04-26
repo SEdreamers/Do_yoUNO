@@ -42,7 +42,6 @@ class StoryMap:
             }
             with open('story_mode_data.json','w') as story_mode_data_file: 
                 json.dump(data, story_mode_data_file)
-            self.unlocked_regions = ["regionA"]
     
         ## 지역 이미지
         self.regionA_image = pygame.image.load("images/map/regionA.png")
@@ -244,7 +243,7 @@ class StoryMap:
                                 gameC.run()
                             elif self.current_region == 3:
                                 print('regionD')
-                                gameD = game.Game(self.size[0], self.size[1], self.color, 2, "D")
+                                gameD = game.Game(self.size[0], self.size[1], self.color, 4, "D")
                                 gameD.run()
                         elif self.menu_flag == 1: # back
                             self.selected = False

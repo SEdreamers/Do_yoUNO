@@ -1,12 +1,53 @@
 import pygame
 import game
+import main
 import sys
+import json
 
 BLACK = (0, 0, 0)
 
 class GameOverUI:
     def __init__(self, screen_width, screen_height, winner, color_blind_mode):
+
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5'
+            }
+
+
         self.menu_flag = 0
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5'
+            }
 
         # 화면 설정
         self.screen_size = (screen_width, screen_height)
@@ -26,7 +67,7 @@ class GameOverUI:
         self.winner_rect.y = self.screen.get_size()[1] / 2.4
 
         # new game 버튼
-        self.new_game_text = self.font.render("New Game", True, 'white')
+        self.new_game_text = self.font.render("Back To Main", True, 'white')
         self.new_game_rect = self.new_game_text.get_rect()
         self.new_game_rect.centerx = self.screen.get_rect().centerx
         self.new_game_rect.y = self.screen.get_size()[1] / 1.714
@@ -39,7 +80,7 @@ class GameOverUI:
         
         self.frame_index = 0 # gif frame index
 
-        self.uno_game = game.Game(self.screen_size[0], self.screen_size[1], self.color_blind_mode,4)
+        self.uno_game = game.Game(self.screen_size[0], self.screen_size[1], self.color_blind_mode,self.data["player_numbers"])
 
     def display(self):
         pygame.display.set_caption("Game Over")
@@ -72,7 +113,7 @@ class GameOverUI:
                     self.menu_flag += 1
                 elif event.key == 13:
                     if self.menu_flag == 0:
-                        self.uno_game.run()
+                        main.main(self.data["size"][0], self.data["size"][1],self.color_blind_mode)
                     elif self.menu_flag == 1:
                         sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -81,20 +122,20 @@ class GameOverUI:
 
         # 메뉴 시각화(색상 변경)
         if self.new_game_rect.collidepoint(mouse_pos) or self.menu_flag == 0:
-            self.new_game_text = self.font.render("New Game", True, 'red')
+            self.new_game_text = self.font.render("Back To Main", True, 'red')
             self.exit_text = self.font.render("Exit", True, 'white')
         else:
-            self.new_game_text = self.font.render("New Game", True, 'white')
+            self.new_game_text = self.font.render("Back To Main", True, 'white')
 
         if self.exit_rect.collidepoint(mouse_pos) or self.menu_flag == 1:
             self.exit_text = self.font.render("Exit", True, 'red')
-            self.new_game_text = self.font.render("New Game", True, 'white')
+            self.new_game_text = self.font.render("Back To Main", True, 'white')
         else:
             self.exit_text = self.font.render("Exit", True, 'white')
     
         # 메뉴 동작
         if self.new_game_rect.collidepoint(mouse_pos) and mouse_click:
-            self.uno_game.run() # 새 게임 불러오기
+            main.main(self.data["size"][0], self.data["size"][1],self.color_blind_mode) # 새 게임 불러오기
         elif self.exit_rect.collidepoint(mouse_pos) and mouse_click:
             sys.exit() # 종료
         pygame.display.flip()

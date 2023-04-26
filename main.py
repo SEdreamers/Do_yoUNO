@@ -38,6 +38,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     # 화면 생성
     pygame.display.set_caption("Uno Game")
 
+
     # 폰트 생성
 
     # 메뉴 텍스트 생성
@@ -91,7 +92,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
                     if menu_flag == 0:
 
                         lobbystate = lobby.Lobby(size[0],size[1], color)
-                        lobbystate.displayPlayer(3) 
+                        lobbystate.displayPlayer()
 
                     elif menu_flag == 1:
                         story_mode = storyMap.StoryMap(screen_width, screen_height)
@@ -133,7 +134,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
 
             
             lobbystate = lobby.Lobby(size[0],size[1], color)
-            lobbystate.displayPlayer(3) 
+            lobbystate.displayPlayer() 
 
 
             
@@ -155,7 +156,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         screen.blit(settings_text, settings_rect)
         screen.blit(exit_text, exit_rect)
         
-
+        
         
         
 

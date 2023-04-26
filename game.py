@@ -61,6 +61,7 @@ class GameState:
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "E"):
         pygame.init()
+        
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.screen_size = (self.screen_width, self.screen_height)
@@ -148,7 +149,10 @@ class Game:
                 self.top_card.draw_action(self.deck, self.players, self.turn_num-1, int(self.top_card.value[9]), self.reverse)
 
         # Game 너비, 높이 기본 배경 설정
-        self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn)
+        if region == "D":
+            self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn, region)
+        else:
+            self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn)
         
         
         
@@ -417,6 +421,8 @@ class Game:
                         elif event.key == 13: ## press entered
                             entered_card = self.players[0].hand.cards[GameUI.cur_card]
                             if entered_card.can_play_on(self.top_card):
+                                # skip 2번 방지
+                                self.skip_flag = 0
                                 self.card_clicked = entered_card
                                 start_time = pygame.time.get_ticks()
                                 self.top_card = entered_card
@@ -508,6 +514,7 @@ class Game:
                     
                     for sprite in clicked_sprites:
                         if sprite.can_play_on(self.top_card):
+                            self.skip_flag = 0
                             self.card_clicked = sprite
                             start_time = pygame.time.get_ticks()   
                             self.top_card = sprite 
@@ -634,8 +641,8 @@ class Game:
                         clock.tick(fps)
                         
 
-                        self.move.set_volume(svol)
                         self.move = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
+                        self.move.set_volume(svol)
                         self.move.play()
                         
 
@@ -711,6 +718,8 @@ class Game:
                 for i, element in enumerate(hand_card_list):  
                     if element.can_play_on(self.top_card):    ## 일반카드 규칙 성립할 때. 모든 카드를 살펴서 제출 가능한 카드가 있으면 바로 제출하고 함수 탈출. 
                         # time.sleep(1.5)
+                        self.skip_flag = 0
+                        
                         self.card_clicked = element
                         if self.region == "A": # A일 때 컴퓨터 플레이어는 콤보 사용 가능
                             if self.combo > 0:
@@ -798,9 +807,10 @@ class Game:
     # This function is responsible for updating the game state and logic
     def update(self):
         # 색 있는 기술카드 동작 처리
-        if self.top_card.value == 'skip':
+        if self.top_card.value == 'skip' and self.skip_flag == 0:
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
             self.skip = True
+            self.skip_flag += 1        
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
