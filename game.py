@@ -212,13 +212,6 @@ class Game:
         pygame.mixer.music.play(-1,3)    ## 무한번 반복, 음악의 3초 지점부터 재생
         
 
-
-
-        ## pygame.mixer.music.play()
-        ## pygame.mixer.music.stop()
-        ## pygame.mixer.music.fadeout()
-        
-        
         
         
                
@@ -269,7 +262,11 @@ class Game:
 
                 self.update()
             self.render()
-            print(self.clicked_uno)
+            # print(self.clicked_uno)
+
+
+
+
 
             # 게임 오버 판별
             if self.players[self.turn_num].hand.is_empty():
@@ -388,8 +385,6 @@ class Game:
                         
 
 
-                        
-
                         # font = pygame.font.SysFont("arial", self.screen_width // 40, True)
                         # surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
                         # text_surface = font.render("Setting", True, (255, 0, 0))
@@ -439,7 +434,7 @@ class Game:
                                     for event in pygame.event.get():
                                         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                                             pos = pygame.mouse.get_pos()
-                                            print(pos)
+                                            # print(pos)
                                             if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
                                                 self.top_card.color = 'blue'
                                                 self.render()
@@ -504,7 +499,7 @@ class Game:
                 # mouse handling    
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
-                    print(pos)
+                    # print(pos)
                     if self.back_card.rect.collidepoint(pos):
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
@@ -538,7 +533,7 @@ class Game:
                                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                                     pos = pygame.mouse.get_pos()
                                     
-                                    print(pos)
+                                    # print(pos)
                                     if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
                                         self.top_card.color = 'blue'
                                         self.render()

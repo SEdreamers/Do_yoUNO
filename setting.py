@@ -81,7 +81,8 @@ class Setting():
             "c2name" :'computer2',
             "c3name" :'computer3',
             "c4name" :'computer4',
-            "c5name" :'computer5'
+            "c5name" :'computer5',
+            "unclicked_list": []
             }
             self.save_game()
 

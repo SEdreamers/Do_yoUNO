@@ -2,7 +2,7 @@ from turtle import color
 import pygame
 import colorBox
 from human import Human
-import time
+import json
 
 class GameUI:
 
@@ -279,7 +279,16 @@ class GameUI:
             pass
         
     
-                            
+        ## 사용자 이름 화면에 출력 
+        with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        self.myname = self.font.render(self.data["me"],True,'green')
+        self.myname_rect = self.myname.get_rect()
+        self.myname_rect.x = self.screen_size[0] / 80
+        self.myname_rect.y = self.screen_size[1] / 10
+        self.screen.blit(self.myname, self.myname_rect)
+
+
 
         self.exit_menu = self.font.render("Exit", True, 'black')
         if GameUI.exit_flag == 1:
