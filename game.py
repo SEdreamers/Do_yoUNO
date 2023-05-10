@@ -103,6 +103,9 @@ class Game:
         self.uno_rect = self.uno_btn.get_rect()
         self.uno_rect.x = self.screen_size[0] * 0.55
         self.uno_rect.y = self.screen_size[1] * 0.27
+        
+        
+        self.card_picked = False # 업적2: 픽0 승리(카드를 1장도 뽑지 않고 승리하기) 여부
          
         # players 저장
         self.players = []
@@ -237,7 +240,7 @@ class Game:
 
 
             
-
+        
         self.turn_num = 0
         while self.running:
             # Human turn인지 Computer turn인지 구분
@@ -289,10 +292,14 @@ class Game:
                         self.set_achv_date(9)
                     elif self.region == 'D': # 지역D 승리
                         self.set_achv_date(10)
-                    elif self.region == 'E': # 싱글 플레이어 승리
+                    elif self.region == 'E': # 싱글 승리
                         self.set_achv_date(0)
                     else:
                         pass
+                    
+                    self.set_achv_date(0)
+                    if not self.card_picked: # 픽0 승리
+                        self.set_achv_date(2)
                     
                     try:
                         with open('story_mode_data.json') as story_mode_data_file:
@@ -373,6 +380,7 @@ class Game:
                 start_time = pygame.time.get_ticks()
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
+                self.card_picked = True
 
             elapsed_time = (pygame.time.get_ticks() - start_time2) / 1000
             if int(elapsed_time) > delay_time:
@@ -507,6 +515,7 @@ class Game:
                         self.render()
                     if event.key == 13 and GameUI.backcard_uno_flag == 1:
                         self.card_clicked = self.back_card
+                        self.card_picked = True
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
                     elif event.key == 13 and GameUI.backcard_uno_flag == 2: #uno 버튼 눌렀을 때
@@ -523,6 +532,7 @@ class Game:
                     # print(pos)
                     if self.back_card.rect.collidepoint(pos):
                         self.card_clicked = self.back_card
+                        self.card_picked = True
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
 
@@ -549,6 +559,7 @@ class Game:
                                 start_time = pygame.time.get_ticks()
                                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                                 self.card_clicked = self.back_card
+                                self.card_picked = True
                                 play = False
                             for event in pygame.event.get():
                                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
