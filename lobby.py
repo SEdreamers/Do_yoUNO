@@ -14,6 +14,7 @@ class Lobby():
         self.screen = pygame.display.set_mode(self.screen_size)
         self.color_blind_mode = color_blind_mode 
         self.unclicked_lst = []
+        self.character = 0
 
 
         try:
@@ -219,7 +220,7 @@ class Lobby():
                 self.data["player_numbers"] = Player_number
                 self.save_game()
                 if (Player_number != 0): 
-                    uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"]) 
+                    uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"], self.character) 
                     uno_game.run()
 
 
