@@ -17,7 +17,7 @@ class GameUI:
     backcard_uno_flag = 0
 
     def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn, region = "E",):
-        self.achv_title = ["싱글 승리", "기술5 승리", "픽0 승리", "10턴 승리", "20턴 승리", "기술0 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "지역 클리어"]
+        self.achv_title = ["싱글 승리", "기술5 승리", "픽0 승리", "10턴 승리", "20턴 승리", "30턴 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"]
         self.achv_cnt = 0
         
          # Color
@@ -336,7 +336,7 @@ class GameUI:
             achv_icon_rect.x = self.achv_popup.x + self.inner_magrin
             achv_icon_rect.centery = self.achv_popup.centery
             self.screen.blit(achv_icon, achv_icon_rect)
-            
+
             achv_title = self.title_font.render(f"{self.achv_title[self.achv_index]} 달성!", True, FCOLOR)
             achv_title_rect = achv_title.get_rect()
             achv_title_rect.x = self.achv_popup.x + self.inner_magrin * 2 + self.achv_icon_size

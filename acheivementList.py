@@ -13,7 +13,7 @@ BCOLOR = (40, 62, 255)
 class AcheivementList:
     def __init__(self, screen_width, screen_height):
         self.achv_info = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
-        self.achv_title = ["싱글 승리", "기술5 승리", "픽0 승리", "10턴 승리", "20턴 승리", "기술0 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "지역 클리어"]
+        self.achv_title = ["싱글 승리", "기술5 승리", "픽0 승리", "10턴 승리", "20턴 승리", "30턴 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"]
         
         # 화면 설정
         self.screen_size = (screen_width, screen_height)
@@ -58,7 +58,7 @@ class AcheivementList:
         self.achv1_icon = pygame.image.load("images/acheivement/achv1.png")
         self.achv1_icon =  pygame.transform.smoothscale(self.achv1_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv1_icon = pygame.image.load("images/acheivement/bw_achv1.png")
-        self.bw_achv1_icon =  pygame.transform.scale(self.bw_achv1_icon, (self.achv_icon_size, self.achv_icon_size))
+        self.bw_achv1_icon = pygame.transform.scale(self.bw_achv1_icon, (self.achv_icon_size, self.achv_icon_size))
         self.achv1_title = self.title_font.render(self.achv_title[1], True, FCOLOR)
         self.achv1_desc1 = self.desc_font.render("기술카드를", True, FCOLOR)
         self.achv1_desc2 = self.desc_font.render("5장 이상 사용하고", True, FCOLOR)
@@ -95,9 +95,9 @@ class AcheivementList:
         self.bw_achv5_icon = pygame.image.load("images/acheivement/bw_achv5.png")
         self.bw_achv5_icon =  pygame.transform.scale(self.bw_achv5_icon, (self.achv_icon_size, self.achv_icon_size))
         self.achv5_title = self.title_font.render(self.achv_title[5], True, FCOLOR)
-        self.achv5_desc1 = self.desc_font.render("기술 카드를", True, FCOLOR)
-        self.achv5_desc2 = self.desc_font.render("단 한 번도 사용", True, FCOLOR)
-        self.achv5_desc3 = self.desc_font.render("하지 않고 승리하기", True, FCOLOR)
+        self.achv5_desc1 = self.desc_font.render("싱글 플레이어", True, FCOLOR)
+        self.achv5_desc2 = self.desc_font.render("게임에서 30턴", True, FCOLOR)
+        self.achv5_desc3 = self.desc_font.render("안에 승리하기", True, FCOLOR)
         
         self.achv6_icon = pygame.image.load("images/acheivement/achv6.png")
         self.achv6_icon =  pygame.transform.scale(self.achv6_icon, (self.achv_icon_size, self.achv_icon_size))
@@ -145,8 +145,9 @@ class AcheivementList:
         self.bw_achv11_icon = pygame.image.load("images/acheivement/bw_achv11.png")
         self.bw_achv11_icon =  pygame.transform.scale(self.bw_achv11_icon, (self.achv_icon_size, self.achv_icon_size))
         self.achv11_title = self.title_font.render(self.achv_title[11], True, FCOLOR)
-        self.achv11_desc1 = self.desc_font.render("스토리 모드 지역", True, FCOLOR)
-        self.achv11_desc2 = self.desc_font.render("모두 클리어하기", True, FCOLOR)
+        self.achv11_desc1 = self.desc_font.render("기술 카드를", True, FCOLOR)
+        self.achv11_desc2 = self.desc_font.render("단 한 번도 사용", True, FCOLOR)
+        self.achv11_desc3 = self.desc_font.render("하지 않고 승리하기", True, FCOLOR)
         
         self.lock_icon_size = self.screen_size[0] * 0.04
         self.lock_icon = pygame.image.load("images/acheivement/lock.png")
@@ -255,7 +256,6 @@ class AcheivementList:
             achv1_date = self.desc_font.render(f"{self.achv_info[1]}", True, BCOLOR)
             self.screen.blit(self.achv1_icon, (self.box1.x + self.inner_magrin, self.box1.y + self.inner_magrin))
             
-        self.screen.blit(self.achv1_icon, (self.box1.x + self.inner_magrin, self.box1.y + self.inner_magrin))
         self.screen.blit(self.achv1_title, (self.box1.x + self.inner_magrin * 2 + self.achv_icon_size, self.box1.y + self.inner_magrin))
         self.screen.blit(self.achv1_desc1, (self.box1.x + self.inner_magrin * 2 + self.achv_icon_size, self.box1.y + self.inner_magrin + self.screen_size[1] * 0.04))
         self.screen.blit(self.achv1_desc2, (self.box1.x + self.inner_magrin * 2 + self.achv_icon_size, self.box1.y + self.inner_magrin + self.screen_size[1] * 0.065))
@@ -424,6 +424,7 @@ class AcheivementList:
         self.screen.blit(self.achv11_title, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin))
         self.screen.blit(self.achv11_desc1, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.04))
         self.screen.blit(self.achv11_desc2, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.065))
+        self.screen.blit(self.achv11_desc3, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.09))
         self.screen.blit(achv11_date, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.117))
         
         

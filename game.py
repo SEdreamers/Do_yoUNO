@@ -3,6 +3,7 @@ import main
 import hand 
 from deck import Deck
 from human import Human
+from datetime import datetime
 from computer import Computer
 from gameUI import GameUI
 import gameoverUI
@@ -277,7 +278,22 @@ class Game:
             if self.players[self.turn_num].hand.is_empty():
                 game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
                 
+                
+                
                 if self.turn_num == 0:
+                    if self.region == 'A': # 지역A 승리
+                       self.set_achv_date(7)
+                    elif self.region == 'B': # 지역B 승리
+                        self.set_achv_date(8)
+                    elif self.region == 'C': # 지역C 승리
+                        self.set_achv_date(9)
+                    elif self.region == 'D': # 지역D 승리
+                        self.set_achv_date(10)
+                    elif self.region == 'E': # 싱글 플레이어 승리
+                        self.set_achv_date(0)
+                    else:
+                        pass
+                    
                     try:
                         with open('story_mode_data.json') as story_mode_data_file:
                             data = json.load(story_mode_data_file)
@@ -828,6 +844,16 @@ class Game:
         if len(self.players[self.turn_num].hand.cards) == 2: # 현재 플레이어의 카드가 2장 남은 경우
             for _ in range(len(self.players)-1): # 컴퓨터 플레이어 수만큼 1~3초 사이 난수 리스트에 append
                 self.random_delay.append(random.randrange(1,4))
+                
+    def set_achv_date(self, idx):
+        with open('acheivement_data.json') as acheivement_data_file:
+            data = json.load(acheivement_data_file)
+            achv_info = data['achv_info'] # 저장된 값 불러오기
+            if achv_info[idx] == "None":
+                now = datetime.now()
+                achv_info[idx] = now.strftime("%Y.%m.%d")
+                with open('acheivement_data.json','w') as acheivement_data_file: 
+                    json.dump(data, acheivement_data_file)
 
 
 
