@@ -4,6 +4,9 @@ import colorBox
 from human import Human
 import json
 
+SCOLOR = (228, 221, 134)
+FCOLOR = (45, 43, 32)
+
 class GameUI:
 
     # for keyboard selection
@@ -13,7 +16,10 @@ class GameUI:
 
     backcard_uno_flag = 0
 
-    def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn, region = "E"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, uno_btn, region = "E",):
+        self.achv_title = ["싱글 승리", "기술5 승리", "픽0 승리", "10턴 승리", "20턴 승리", "기술0 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "지역 클리어"]
+        self.achv_cnt = 0
+        
          # Color
         GameUI.cur_card = 0
         self.region = region
@@ -123,10 +129,22 @@ class GameUI:
         text_rect = text.get_rect(center=(button_width//2, button_height//2))
         self.uno_button.blit(text, text_rect)
         '''
+        self.title_font = pygame.font.Font("font/GangwonEduPower.ttf", self.screen_size[0] // 40)
+        self.radius = 10
+        self.popup_width = self.screen_size[0] * 0.235
+        self.popup_height = self.screen_size[1] * 0.07
+        self.w_top = (self.screen_size[0] - self.popup_width) * 0.5
+        self.h_top = self.screen_size[1] * 0.02
+        self.achv_popup = pygame.Rect(self.w_top, self.h_top, self.popup_width, self.popup_height)
+    
+        self.achv_icon_size = self.screen_size[0] * 0.035
+        self.inner_magrin = self.screen_size[0] * 0.01
+        self.achv_index = None
 
 
-    def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time, clicked_uno_player):
+    def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time, clicked_uno_player, achv_index):
         # card 위치 설정(player card)
+        
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
             y_pos = self.deck_y
@@ -306,6 +324,26 @@ class GameUI:
             pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 1.716, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
         elif color_box.name == 'black' and GameUI.color_flag == 3:
             pygame.draw.rect(self.screen, 'white', (self.screen_size[0] / 1.335, self.screen_size[1] / 2, self.screen_size[0] / 25, self.screen_size[0] / 25), 3)
+            
+        if achv_index != None:
+            self.achv_index = achv_index
+            self.achv_cnt = 3
+        if self.achv_cnt > 0:
+            pygame.draw.rect(self.screen, SCOLOR, self.achv_popup, border_radius=self.radius)
+            achv_icon = pygame.image.load("images/acheivement/achv0.png")
+            achv_icon =  pygame.transform.scale(achv_icon, (self.achv_icon_size, self.achv_icon_size))
+            achv_icon_rect = achv_icon.get_rect()
+            achv_icon_rect.x = self.achv_popup.x + self.inner_magrin
+            achv_icon_rect.centery = self.achv_popup.centery
+            self.screen.blit(achv_icon, achv_icon_rect)
+            
+            achv_title = self.title_font.render(f"{self.achv_title[self.achv_index]} 달성!", True, FCOLOR)
+            achv_title_rect = achv_title.get_rect()
+            achv_title_rect.x = self.achv_popup.x + self.inner_magrin * 2 + self.achv_icon_size
+            achv_title_rect.centery = self.achv_popup.centery
+            self.screen.blit(achv_title, achv_title_rect)
+            self.achv_cnt -= 1
+        
 
         # Update the screen
         pygame.display.flip()
