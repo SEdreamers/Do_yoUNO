@@ -1,6 +1,6 @@
 import socket
 import threading
-from network import Network
+from multi.network import Network
 
 class Server:
     def __init__(self, host, port, max_clients=4):
