@@ -1,5 +1,5 @@
 import socket
-import json
+import pickle
 
 class Network:
     def __init__(self, host, port):
@@ -17,10 +17,11 @@ class Network:
         return client_socket
 
     def send_message(self, sock, message):
-        message_json = json.dumps(message)
-        sock.sendall(message_json.encode('utf-8'))
+            data = pickle.dumps(message)
+            sock.sendall(data)
 
     def receive_message(self, sock, buffer_size=1024):
-        message_json = sock.recv(buffer_size).decode('utf-8')
-        message = json.loads(message_json)
-        return message
+        data = sock.recv(buffer_size)
+        if data:
+            return pickle.loads(data)
+        return None
