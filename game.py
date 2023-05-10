@@ -176,7 +176,7 @@ class Game:
         self.data = {
             # "running_time": ,
             # "human_hand": list(map(str,self.players[0].hand.cards)),  
-            # ##사람 손에 있는 카드  ## self.players[0].hand.cards 리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다. 
+            # ##사람 손에 있는 카드  ## self.players[0].hand.cards      리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다. 
             # "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
             # "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
             # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
