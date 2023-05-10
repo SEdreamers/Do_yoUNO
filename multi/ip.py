@@ -10,9 +10,9 @@ def get_local_ip_address():
 host = get_local_ip_address()
 print(f"Local IP address: {host}")
 
-# server = Server(host, 5555)
-# server.start()
+server = Server(host, 5555)
+server.start()
 
-client = Client("192.168.1.116", 5555)
-client.connect()
-client.send_message("hello")
+# client = Client("10.10.54.198", 5555)
+# client.connect()
+# client.send_message("hello")

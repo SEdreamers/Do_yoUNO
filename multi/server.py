@@ -29,17 +29,10 @@ class Server:
         "players": self.players,
         "turn_num": self.turn_num
         }
-        f = open("test.pkl","wb")
-        pickle.dumps(self.data,f)
-        f.close() 
         
+
         
-        
-    def update(self):
-        self.start() 
-        
-        
-        
+
         
     def start(self):
         self.server_socket.listen(self.max_clients)
@@ -57,16 +50,12 @@ class Server:
         while True:
             try:
                 message = self.network.receive_message(client_socket)
-                
+
                 self.deck = message['deck']
                 self.players = message['players']
                 self.turn_num = message['turn_num']
                 
-                self.data = {
-                "deck": self.deck,
-                "players": self.players,
-                "turn_num": self.turn_num
-                }
+                
                 self.network.send_message(client_socket,self.data)
                 
                 
