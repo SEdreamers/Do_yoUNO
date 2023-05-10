@@ -1,0 +1,9 @@
+import socket
+
+def get_local_ip_address():
+    hostname = socket.gethostname()
+    local_ip_address = socket.gethostbyname(hostname)
+    return local_ip_address
+
+host = get_local_ip_address()
+print(f"Local IP address: {host}")
