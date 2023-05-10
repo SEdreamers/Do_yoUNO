@@ -1,6 +1,7 @@
 import socket
 import threading
-from multi.network import Network
+import json
+from network import Network
 
 class Server:
     def __init__(self, host, port, max_clients=4):
@@ -28,11 +29,17 @@ class Server:
                 if message:
                     print(f"Received message: {message}")
                     # Process the message, update the game state, and broadcast updates to all clients
+                    self.broadcast_message(message)
                 else:
                     break
             except socket.error:
                 break
 
+
         print("Client disconnected")
         client_socket.close()
         self.clients.remove(client_socket)
+        
+    def broadcast_message(self, message):
+        for client_socket in self.clients:
+            self.network.send_message(client_socket, message)

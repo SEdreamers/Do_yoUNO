@@ -1,6 +1,6 @@
 import socket
 import threading
-from multi.network import Network
+from network import Network
 
 class Client:
     def __init__(self, host, port):
@@ -34,3 +34,7 @@ class Client:
 
         print("Disconnected from the server")
         self.client_socket.close()
+
+    def send_message(self, message):
+        self.network.send_message(self.client_socket, message)
+        print(f"Sent message: {message}")
