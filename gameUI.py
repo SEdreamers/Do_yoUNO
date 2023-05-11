@@ -250,10 +250,8 @@ class GameUI:
         h_text_rect.x = self.screen_size[0] - self.computer_width - self.screen_size[0] // 24
         h_text_rect.y = self.screen_size[1] - self.screen_size[0] // 24
         self.screen.blit(h_text, h_text_rect)
-        print(h_length)
         for i in range(len(players)):
             length = str(len(players[i].hand.cards))
-            print(length)
             text = font.render(length, True, (0, 0, 0))
             text_rect = text.get_rect()
             text_rect.x = self.screen_size[0] - self.screen_size[0] // 24

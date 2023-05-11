@@ -80,6 +80,9 @@ class Game:
         
         
         self.achv_index = None
+        self.wild_use_cnt = 0
+        self.achv1_comp = False
+        self.achv2_comp = False
        
         # combo
         self.combo = 0
@@ -299,7 +302,7 @@ class Game:
                     
                     self.set_achv_date(0)
                     if not self.card_picked: # 픽0 승리
-                        self.set_achv_date(2)
+                        self.set_achv_date(5)
                     
                     try:
                         with open('story_mode_data.json') as story_mode_data_file:
@@ -837,13 +840,32 @@ class Game:
         if self.top_card.value == 'skip' and self.skip_flag == 0:
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
             self.skip = True
-            self.skip_flag += 1        
+            self.skip_flag += 1
+            
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
         elif self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[9]), self.reverse)
+        self.wild_use_cnt += 1
+        if self.top_card.value == 'skip' or self.top_card.value == 'reverse' or self.top_card.value == 'draw2' or self.top_card.value == 'draw4' or self.top_card.value == 'wild' or self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4': # 기술 카드를 낸 경우
+            if self.wild_use_cnt == 5 and not self.achv1_comp: # 업적1 달성했는데  업적1 팝업 띄운 적 없는 경우
+                self.set_achv_date(1) # 업적1 달성 날짜 세팅
+                self.achv1_comp = True 
+                # 업적1 달성 팝업 띄우기
+                self.achv_index = 1
+                self.render()
+                self.achv_index = None
+            
+            if self.wild_use_cnt == 7 and not self.achv2_comp: # 업적2 달성했는데 업적2 팝업 띄운 적 없는 경우
+                self.set_achv_date(2) # 업적2 달성 날짜 세팅
+                self.achv1_comp = True 
+                # 업적2 달성 팝업 띄우기
+                self.achv_indx = 2
+                self.render()
+                self.achv_index = None
+    
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
