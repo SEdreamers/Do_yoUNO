@@ -59,7 +59,7 @@ class GameState:
 
 
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, character, region = "E"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "E"):
         pygame.init()
         
         self.screen_width = screen_width
@@ -68,7 +68,6 @@ class Game:
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
         self.numberofPlayers = numberofPlayers
-        self.character = character
         
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -107,7 +106,7 @@ class Game:
         # add computers(player 숫자 받아서 설정)
         computers = []
         for i in range(self.numberofPlayers):     ## player 수 
-            computers.append(Computer(self.screen, self.deck, i, region, character))
+            computers.append(Computer(self.screen, self.deck, i, region))
 
         self.players.extend(computers)
         
@@ -115,7 +114,7 @@ class Game:
         # 사람은 가중치 없이 뽑아야 함
         self.deck.shuffle()
         # human player 만들기!
-        human = Human(self.screen, self.deck, self.color_blind_mode, region, False)
+        human = Human(self.screen, self.deck, self.color_blind_mode, region)
         self.players.insert(0, human)
         # turn, reverse, skip, start time 세팅
         self.turn_num = 0

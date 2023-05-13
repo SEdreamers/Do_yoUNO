@@ -14,7 +14,7 @@ class Lobby():
         self.screen = pygame.display.set_mode(self.screen_size)
         self.color_blind_mode = color_blind_mode 
         self.unclicked_lst = []
-        self.character = 0
+        self.characters = []
 
 
         try:
@@ -34,7 +34,8 @@ class Lobby():
             "c3name" :'computer3',
             "c4name" :'computer4',
             "c5name" :'computer5',
-            "unclicked_list": []
+            "unclicked_list": [],
+            "characters" : []
             }
             self.save_game()
 
@@ -79,6 +80,14 @@ class Lobby():
         play_rect.centerx = screen.get_rect().centerx
         play_rect.y = screen.get_size()[1] * 0.81
 
+        charact_text = font.render("Characterization", True, 'white')
+        charact_rect = charact_text.get_rect()
+        charact_rect.x = screen.get_rect().centerx + self.screen_size[1] // 10
+        charact_rect.y = screen.get_size()[1] // 5
+
+
+        
+
         #메뉴 상수
         menu_flag = 0
 
@@ -86,9 +95,13 @@ class Lobby():
 
 
         # 버튼 크기 및 간격 설정
-        button_width = 150
-        button_height = 50
-        button_spacing = 10
+        button_width = self.screen_size[1] // 4
+        button_height = self.screen_size[1] // 12
+        button_spacing = self.screen_size[1] // 60
+        # checkbox 크기 및 간격 설정
+        checkbox_width = button_height
+        checkbox_height = button_height
+        checkbox_spacing = button_spacing
 
         # 버튼 색상 설정
         WHITE = (255, 255, 255)
@@ -97,10 +110,14 @@ class Lobby():
 
         # 버튼 초기 상태 설정
         button_states = [False, False, False, False, False]
+        checkbox_states = [False, False, False, False, False]
 
         # 버튼 좌표 계산
         button_x = (self.screen_size[0] - button_width) // 2
         button_y = (self.screen_size[1] - (button_height + button_spacing) * 5) // 2
+        # checkbox 좌표 계산
+        checkbox_x = button_x + button_width + checkbox_spacing
+        checkbox_y = (self.screen_size[1] - (button_height + button_spacing) * 5) // 2
 
 
 
@@ -175,6 +192,9 @@ class Lobby():
                         button_rect = pygame.Rect(button_x, button_y + i * (button_height + button_spacing), button_width, button_height)
                         if button_rect.collidepoint(mouse_x, mouse_y):
                             button_states[i] = not button_states[i]
+                        checkbox_rect = pygame.Rect(checkbox_x, checkbox_y + i * (checkbox_height + checkbox_spacing), checkbox_width, checkbox_height)
+                        if checkbox_rect.collidepoint(mouse_x, mouse_y):
+                            checkbox_states[i] = not checkbox_states[i]
 
                         
 
@@ -196,6 +216,14 @@ class Lobby():
                     elif i == 2: text = pygame.font.SysFont(None, 24).render(self.data["c3name"], True, BLACK)
                     elif i == 3: text = pygame.font.SysFont(None, 24).render(self.data["c4name"], True, BLACK)
                     elif i == 4: text = pygame.font.SysFont(None, 24).render(self.data["c5name"], True, BLACK)
+
+                    #checkbox 그리기
+                    checkbox_rect = pygame.Rect(checkbox_x, checkbox_y + i * (checkbox_height + checkbox_spacing), checkbox_width, checkbox_height)
+                    pygame.draw.rect(screen, WHITE, checkbox_rect, self.screen_size[0] // 400)
+                    if checkbox_states[i]:
+                        pygame.draw.rect(screen, WHITE, (checkbox_rect.x + self.screen_size[0] // 160, checkbox_rect.y + self.screen_size[0] // 160, self.screen_size[0] // 20, self.screen_size[0] // 20))
+                    else:
+                        pygame.draw.rect(screen, BLACK, (checkbox_rect.x + self.screen_size[0] // 160, checkbox_rect.y + self.screen_size[0] // 160, self.screen_size[0] // 20, self.screen_size[0] // 20))
                     
                     screen.blit(text, (button_x + button_width // 2 - text.get_width() // 2, button_y + i * (button_height + button_spacing) + button_height // 2 - text.get_height() // 2))
                     
@@ -220,11 +248,12 @@ class Lobby():
                 self.data["player_numbers"] = Player_number
                 self.save_game()
                 if (Player_number != 0): 
-                    uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"], self.character) 
+                    uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"], self.characters) 
                     uno_game.run()
 
 
             screen.blit(title, title_rect)
             screen.blit(play_text, play_rect)
+            screen.blit(charact_text, charact_rect)
             pygame.display.flip()
             

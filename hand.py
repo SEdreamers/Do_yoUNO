@@ -1,11 +1,11 @@
 import random
 class Hand:
-    def __init__(self, screen, deck, region, character):
+    def __init__(self, screen, deck, region):
         self.screen = screen
         self.deck = deck
         self.cards = []
         # set up the region
-        if region == "A" or character == True:
+        if region == "A":
             random.shuffle(self.deck.cards[:40])
             random.shuffle(self.deck.cards[41:])
             for _ in range(5):
