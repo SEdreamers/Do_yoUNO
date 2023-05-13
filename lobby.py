@@ -241,14 +241,19 @@ class Lobby():
                 for i in range(5):
                     if not button_states[i]:
                         self.unclicked_lst.append(i)
+                    # a 지역 특성 또한 추가
+                    if checkbox_states[i]:
+                        self.characters.append(i)
                 self.unclicked_lst = list(set(self.unclicked_lst))
                 self.data["unclicked_list"] = self.unclicked_lst
+                self.characters = list(set(self.characters))
+                self.data["characters"] = self.characters
 
                 Player_number = 5 - button_states.count(True)
                 self.data["player_numbers"] = Player_number
                 self.save_game()
                 if (Player_number != 0): 
-                    uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"], self.characters) 
+                    uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"]) 
                     uno_game.run()
 
 

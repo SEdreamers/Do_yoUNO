@@ -103,9 +103,19 @@ class Game:
         # players 저장
         self.players = []
         
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except:
+            pass
+
         # add computers(player 숫자 받아서 설정)
         computers = []
-        for i in range(self.numberofPlayers):     ## player 수 
+        for i in range(self.numberofPlayers):     ## player 수
+            region = "E"
+            for j in range(len(self.data["characters"])) :
+                if self.data["characters"][j] == self.data["unclicked_list"][i]:
+                    region = "A"
             computers.append(Computer(self.screen, self.deck, i, region))
 
         self.players.extend(computers)
