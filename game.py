@@ -80,9 +80,10 @@ class Game:
         
         
         self.achv_index = None
-        self.wild_use_cnt = 0
-        self.achv1_comp = False
-        self.achv2_comp = False
+        self.tech_use_cnt = 0 # 기술카드 사용 횟수
+        self.achv1_comp = False # 업적1 달성 팝업 띄운적이 있는지
+        self.achv2_comp = False # 업적2 달성 팝업 띄운적이 있는지
+        self.comp_achv_list = [] # 게임 오버 시 띄울 달성 업적 리스트
        
         # combo
         self.combo = 0
@@ -287,23 +288,32 @@ class Game:
                 
                 
                 if self.turn_num == 0:
-                    if self.region == 'A': # 지역A 승리
+                    if self.region == 'A': # 지역A 승리(업적) 달성
                        self.set_achv_date(7)
-                    elif self.region == 'B': # 지역B 승리
+                       self.comp_achv_list.append(7)
+                    elif self.region == 'B': # 지역B 승리(업적) 달성
                         self.set_achv_date(8)
-                    elif self.region == 'C': # 지역C 승리
+                        self.comp_achv_list.append(8)
+                    elif self.region == 'C': # 지역C 승리(업적) 달성
                         self.set_achv_date(9)
-                    elif self.region == 'D': # 지역D 승리
+                        self.comp_achv_list.append(9)
+                    elif self.region == 'D': # 지역D 승리(업적) 달성
                         self.set_achv_date(10)
-                    elif self.region == 'E': # 싱글 승리
+                        self.comp_achv_list.append(10)
+                    elif self.region == 'E': # 싱글 승리(업적) 달성
                         self.set_achv_date(0)
+                        self.comp_achv_list.append(0)
                     else:
                         pass
                     
-                    self.set_achv_date(0)
-                    if not self.card_picked: # 픽0 승리
+                    if not self.card_picked: # 픽0 승리(업적) 달성
                         self.set_achv_date(5)
-                    
+                        self.comp_achv_list.append(5)
+                        
+                    if self.tech_use_cnt == 0: # 기술0 승리(업적) 달성
+                        self.set_achv_date(11)
+                        self.comp_achv_list.append(11)
+
                     try:
                         with open('story_mode_data.json') as story_mode_data_file:
                             data = json.load(story_mode_data_file)
@@ -320,7 +330,7 @@ class Game:
                         pass
                 
                 while True:
-                    game_over.display() # 게임 오버 화면 불러오기
+                    game_over.display(self.comp_achv_list) # 게임 오버 화면 불러오기
                     pygame.display.flip()
                     
                 
@@ -848,23 +858,24 @@ class Game:
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
         elif self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[9]), self.reverse)
-        self.wild_use_cnt += 1
-        if self.top_card.value == 'skip' or self.top_card.value == 'reverse' or self.top_card.value == 'draw2' or self.top_card.value == 'draw4' or self.top_card.value == 'wild' or self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4': # 기술 카드를 낸 경우
-            if self.wild_use_cnt == 5 and not self.achv1_comp: # 업적1 달성했는데  업적1 팝업 띄운 적 없는 경우
-                self.set_achv_date(1) # 업적1 달성 날짜 세팅
-                self.achv1_comp = True 
-                # 업적1 달성 팝업 띄우기
-                self.achv_index = 1
-                self.render()
-                self.achv_index = None
-            
-            if self.wild_use_cnt == 7 and not self.achv2_comp: # 업적2 달성했는데 업적2 팝업 띄운 적 없는 경우
-                self.set_achv_date(2) # 업적2 달성 날짜 세팅
-                self.achv1_comp = True 
-                # 업적2 달성 팝업 띄우기
-                self.achv_indx = 2
-                self.render()
-                self.achv_index = None
+        self.tech_use_cnt += 1
+        if self.region == 'E':
+            if self.top_card.value == 'skip' or self.top_card.value == 'reverse' or self.top_card.value == 'draw2' or self.top_card.value == 'draw4' or self.top_card.value == 'wild' or self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4': # 기술 카드를 낸 경우
+                if self.tech_use_cnt == 1 and not self.achv1_comp: # 업적1 달성했는데 업적1 팝업 띄운 적 없는 경우
+                    self.achv1_comp = True 
+                    if self.set_achv_date(1): # 처음 달성한 경우
+                        # 업적1 달성 팝업 띄우기
+                        self.achv_index = 1
+                        self.render()
+                        self.achv_index = None
+                
+                if self.tech_use_cnt == 7 and not self.achv1_comp: # 업적2 달성했는데  업적2 팝업 띄운 적 없는 경우
+                    self.achv2_comp = True 
+                    if self.set_achv_date(1): # 처음 달성한 경우
+                        # 업적2 달성 팝업 띄우기
+                        self.achv_index = 2
+                        self.render()
+                        self.achv_index = None
     
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
@@ -887,6 +898,8 @@ class Game:
                 achv_info[idx] = now.strftime("%Y.%m.%d")
                 with open('acheivement_data.json','w') as acheivement_data_file: 
                     json.dump(data, acheivement_data_file)
+                return True # 달성한 적이 없는 경우
+        return False # 이미 달성한 경우
 
 
 
