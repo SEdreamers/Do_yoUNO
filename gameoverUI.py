@@ -98,7 +98,6 @@ class GameOverUI:
         self.inner_magrin = self.screen_size[0] * 0.01
 
     def display(self, comp_achv_list):
-        print(comp_achv_list)
         pygame.display.set_caption("Game Over")
         self.screen.fill(BLACK)
         
