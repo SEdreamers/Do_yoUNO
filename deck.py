@@ -51,8 +51,4 @@ class Deck:
     def to_list(self):
         return [card.__str__() for card in self.cards]
 
-    @classmethod
-    def from_list(cls, screen_width, screen_height, data):
-        deck = cls(screen_width, screen_height)
-        deck.cards = [Card.from_str(screen_width, screen_height, card_data) for card_data in data]
-        return deck
+

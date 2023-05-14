@@ -23,5 +23,5 @@ class Player:
     def from_list(cls, name, screen, deck, region, character, data):
         player = cls(name, screen, deck, region, character)
         player.hand = Hand(screen, deck, region, character)
-        player.hand.cards = [Card.from_str(card) for card in data]
+        player.hand.cards = [Card.from_str(screen.get_width(), screen.get_height(), card) for card in data]
 

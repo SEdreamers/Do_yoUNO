@@ -16,6 +16,7 @@ class Server:
 
     def send_game_state(self):
         deck = Deck(800, 600)
+        deck.shuffle()
         deck = deck.to_list()
         players = []
         numberofPlayers = 1

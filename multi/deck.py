@@ -25,10 +25,10 @@ class Deck:
                 card = Card(value, color, self.screen_size[0], self.screen_size[1])
                 self.cards.append(card)
 
-        for value in colorless_values:
-            for _ in range(3):
-                card = Card(value, "black", self.screen_size[0], self.screen_size[1])
-                self.cards.append(card)
+        # for value in colorless_values:
+        #     for _ in range(3):
+        #         card = Card(value, "black", self.screen_size[0], self.screen_size[1])
+        #         self.cards.append(card)
         self.list = self.cards.copy()
 
     def shuffle(self):
@@ -55,5 +55,6 @@ class Deck:
     @classmethod
     def from_list(cls, screen_width, screen_height, data):
         deck = cls(screen_width, screen_height)
-        deck.cards = [Card.from_str(screen_width, screen_height, card_data) for card_data in data]
+        for card_data in data:
+            deck.cards = [Card.from_str(screen_width, screen_height, card_data)]
         return deck

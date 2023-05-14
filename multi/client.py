@@ -18,8 +18,6 @@ class Client:
         # Initialize pygame and the game display here...
         self.screen = screen
         self.current_state = None
-        self.game_thread = threading.Thread(target=self.game_loop)
-        self.game_thread.daemon = True
         self.listen_thread = threading.Thread(target=self.listen_to_server)
         self.listen_thread.daemon = True
         self.listen_thread.start()
@@ -30,27 +28,29 @@ class Client:
     def game_loop(self):
         if self.current_state is not None:
             self.current_state.run()
+            pygame.display.flip()
 
 
     def update(self):
         data = self.sock.recv(1024)
         state = self.deserialize_data(data)
-        print("update")
+        print(f"{state}")
         text_deck = state['deck']
         deck = Deck.from_list(self.screen.get_width(), self.screen.get_height(), text_deck)
         players = []
         text_player = state['players']
 
         for player in text_player:
-            real_player = Player(self.name, self.screen, deck, False)
+            real_player = Player(self.name, self.screen, deck, 'E', False)
+            print(player)
             real_player.from_list(self.name, self.screen, deck, 'E', 'E', player)
             players.append(real_player)
 
         turn_num = state['turn_num']
         reverse = state['reverse']
-        self.current_state = GameLogic(self.screen.get_width(), self.screen.get_height(),
+        self.current_state = GameLogic(self.screen.get_width(), self.screen.get_height(), False, 0, False,
                                        deck, players, turn_num, reverse, "E")
-        self.game_thread.start()
+        self.game_loop()
 
 
     def serialize_data(self, data):

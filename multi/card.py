@@ -8,7 +8,6 @@ class Card(pygame.sprite.Sprite):
         self.value = value
         self.color = color
         self.screen_size = (screen_width, screen_height)
-        os.chdir('C:/Users/USER/Desktop/SEdreamers/Do_yoUNO/')
         self.default_image = pygame.transform.smoothscale(pygame.image.load(f"cards/default_mode/{color}_{value}.png"),
                                                           (self.screen_size[0] / 12.5, self.screen_size[0] / 8.333))
         self.blind_image = pygame.transform.smoothscale(
@@ -80,7 +79,7 @@ class Card(pygame.sprite.Sprite):
     @classmethod
     def from_str(cls, model, screen, data):
         color, value = data.split('_')
-        return cls(model, screen, value, color)
+        return cls(value, color, model, screen)
 
     def __str__(self):
         return f"{self.color}_{self.value}"
