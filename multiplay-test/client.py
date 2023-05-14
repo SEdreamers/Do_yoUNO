@@ -17,13 +17,13 @@ class Button:
         self.width = 150
         self.height = 100
 
-    def draw(self, win):
+    def draw(self, win):            # 버튼 출력 
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
         font = pygame.font.SysFont("comicsans", 40)
         text = font.render(self.text, 1, (255,255,255))
         win.blit(text, (self.x + round(self.width/2) - round(text.get_width()/2), self.y + round(self.height/2) - round(text.get_height()/2)))
 
-    def click(self, pos):
+    def click(self, pos):           # 클릭 여부
         x1 = pos[0]
         y1 = pos[1]
         if self.x <= x1 <= self.x + self.width and self.y <= y1 <= self.y + self.height:
@@ -32,13 +32,16 @@ class Button:
             return False
 
 
-def redrawWindow(win, game, p):
+def redrawWindow(win, game, p):      ## 화면 출력 
     win.fill((128,128,128))
 
     if not(game.connected()):
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Waiting for Player...", 1, (255,0,0), True)
         win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
+        
+        
+        
     else:
         font = pygame.font.SysFont("comicsans", 60)
         text = font.render("Your Move", 1, (0, 255,255))
@@ -81,6 +84,8 @@ def redrawWindow(win, game, p):
 
 
 btns = [Button("Rock", 50, 500, (0,0,0)), Button("Scissors", 250, 500, (255,0,0)), Button("Paper", 450, 500, (0,255,0))]
+
+
 def main():
     run = True
     clock = pygame.time.Clock()
@@ -139,17 +144,17 @@ def main():
 
 def menu_screen():
     run = True
-    clock = pygame.time.Clock()
+    clock = pygame.time.Clock()                 # 시간 동기화
 
     while run:
-        clock.tick(60)
-        win.fill((128, 128, 128))
+        clock.tick(60)                          # 프레임 속도 제한
+        win.fill((128, 128, 128)) 
         font = pygame.font.SysFont("comicsans", 60)
         text = font.render("Click to Play!", 1, (255,0,0))
         win.blit(text, (100,200))
         pygame.display.update()
 
-        for event in pygame.event.get():
+        for event in pygame.event.get():                           #  게임 종료 
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
@@ -158,5 +163,5 @@ def menu_screen():
 
     main()
 
-while True:
+while True:               # 시작 
     menu_screen()

@@ -7,7 +7,7 @@ import pickle
 from game_logic import Game
 
 server = "localhost"
-port = 10000
+port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -16,11 +16,14 @@ try:
 except socket.error as e:
     str(e)
 
-s.listen(2)     ##
+s.listen()     
 print("Waiting for a connection, Server Started")
 
+
+
+
 connected = set()
-games = {}
+games = {}                 # dictionary
 idCount = 0
 
 
@@ -45,35 +48,38 @@ def threaded_client(conn, p, gameId):
                         game.play(p, data)
 
                     conn.sendall(pickle.dumps(game))
-            else:
-                break
-        except:
-            break
+            else:break
+        except:break
 
     print("Lost connection")
+    
     try:
         del games[gameId]
         print("Closing Game", gameId)
     except:
         pass
+    
     idCount -= 1
     conn.close()
 
 
 
-while True:
+
+
+
+
+
+while True:                         #여기서 서버 연결 시작. 
     conn, addr = s.accept()
-    print("Connected to:", addr)
+    print("Connected to:", addr)    # addr가 ('127.0.0.1',52980)같은 식으로 print됨
 
     idCount += 1
     p = 0
-    gameId = (idCount - 1)//2
-    if idCount % 2 == 1:
+    gameId = (idCount - 1)//2       # 2명씩 짝지운 것. 
+    if idCount % 2 == 1:            # 홀수번째 player  --> 여기서는 player 0 (즉, p = 0)만 출력. 
         games[gameId] = Game(gameId)
         print("Creating a new game...")
     else:
         games[gameId].ready = True
-        p = 1
-
-
-    start_new_thread(threaded_client, (conn, p, gameId))
+        p = 1                       # 짝수번째 player  --> 여기서는 player 1 (즉, p = 1)만 출력. 
+    start_new_thread(threaded_client, (conn, p, gameId))   # client connection
