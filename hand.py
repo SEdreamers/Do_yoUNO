@@ -8,7 +8,7 @@ class Hand:
         if region == "A":
             random.shuffle(self.deck.cards[:40])
             random.shuffle(self.deck.cards[41:])
-            for _ in range(5):
+            for _ in range(2):
                 random_number = random.uniform(0, 1)
                 # skill card 맨 뒤 pop
                 if random_number < 0.6:

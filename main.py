@@ -6,9 +6,8 @@ import json
 import time
 import storyMap
 import lobby
-import computer
-import deck
-import human
+
+
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
@@ -77,7 +76,10 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     
     # 게임 루프
     play = True
+    
     while play:
+
+        
         
         # 이벤트 처리
         for event in pygame.event.get():
