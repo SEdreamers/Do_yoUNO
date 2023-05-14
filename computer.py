@@ -7,8 +7,8 @@ import json
 import lobby 
 
 class Computer(Player):
-    def __init__(self, screen, deck, i, region, character):
-        super().__init__("Computer" + str(i), screen, deck, region, character)
+    def __init__(self, screen, deck, i, region):
+        super().__init__("Computer" + str(i), screen, deck, region)
 
         try:
             with open('setting_data.json') as game_file:
