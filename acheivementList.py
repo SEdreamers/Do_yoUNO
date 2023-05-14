@@ -13,10 +13,11 @@ BCOLOR = (40, 62, 255)
 
 class AcheivementList:
     def __init__(self, screen_width, screen_height, color_blind_mode):
-        self.achv_info = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
-        self.achv_title = ["싱글 승리", "싱글 기술5", "싱글 기술7", "10턴 승리", "픽0 승리", "30턴 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"]
-        
+        self.running = True
         self.color_blind_mode = color_blind_mode
+    
+        self.achv_info = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"] # 업적 달성 날짜
+        self.achv_title = ["싱글 승리", "싱글 기술5", "싱글 기술7", "10턴 승리", "픽0 승리", "30턴 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"] # 업적 타이틀
         
         # 화면 설정
         self.screen_size = (screen_width, screen_height)
@@ -442,20 +443,24 @@ class AcheivementList:
         self.screen.blit(self.back_icon, (self.screen_size[0] // 100, self.screen_size[0] // 100))     
         pygame.display.flip()
         
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                    sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE: # ESC키
+                    self.running = False
+                    main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)    
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                if self.back_rect.collidepoint(pos):
+                    running = False
+                    main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)      
         
     def run(self):
-        running = True
-        while running:
+        self.running = True
+        while self.running:
             self.display()
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE: # ESC키
-                        running = False
-                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)    
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    pos = pygame.mouse.get_pos()
-                    if self.back_rect.collidepoint(pos):
-                        running = False
-                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)        
+            self.handle_events()
             
 
