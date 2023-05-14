@@ -14,6 +14,7 @@ BCOLOR = (40, 62, 255)
 class AcheivementList:
     def __init__(self, screen_width, screen_height, color_blind_mode):
         self.achv_info = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
+        self.achv_title = ["싱글 승리", "싱글 기술5", "싱글 기술7", "10턴 승리", "픽0 승리", "30턴 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"]
         
         self.color_blind_mode = color_blind_mode
         
@@ -53,32 +54,34 @@ class AcheivementList:
         self.achv0_icon =  pygame.transform.scale(self.achv0_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv0_icon = pygame.image.load("images/acheivement/bw_achv0.png")
         self.bw_achv0_icon =  pygame.transform.scale(self.bw_achv0_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv0_title = self.title_font.render("업적0", True, FCOLOR)
+        self.achv0_title = self.title_font.render(self.achv_title[0], True, FCOLOR)
         self.achv0_desc1 = self.desc_font.render("싱글 플레이어", True, FCOLOR)
         self.achv0_desc2 = self.desc_font.render("게임에서 승리하기", True, FCOLOR)
         
         self.achv1_icon = pygame.image.load("images/acheivement/achv1.png")
         self.achv1_icon =  pygame.transform.smoothscale(self.achv1_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv1_icon = pygame.image.load("images/acheivement/bw_achv1.png")
-        self.bw_achv1_icon =  pygame.transform.scale(self.bw_achv1_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv1_title = self.title_font.render("업적1", True, FCOLOR)
-        self.achv1_desc1 = self.desc_font.render("기술카드를", True, FCOLOR)
-        self.achv1_desc2 = self.desc_font.render("5장 이상 사용하고", True, FCOLOR)
-        self.achv1_desc3 = self.desc_font.render("승리하기", True, FCOLOR)
+        self.bw_achv1_icon = pygame.transform.scale(self.bw_achv1_icon, (self.achv_icon_size, self.achv_icon_size))
+        self.achv1_title = self.title_font.render(self.achv_title[1], True, FCOLOR)
+        self.achv1_desc1 = self.desc_font.render("싱글 플레이어", True, FCOLOR)
+        self.achv1_desc2 = self.desc_font.render("게임에서 기술카드", True, FCOLOR)
+        self.achv1_desc3 = self.desc_font.render("5장 사용하기", True, FCOLOR)
         
         self.achv2_icon = pygame.image.load("images/acheivement/achv2.png")
-        self.achv2_icon =  pygame.transform.scale(self.achv2_icon, (self.achv_icon_size, self.achv_icon_size))
+        self.achv2_icon =  pygame.transform.smoothscale(self.achv2_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv2_icon = pygame.image.load("images/acheivement/bw_achv2.png")
-        self.bw_achv2_icon =  pygame.transform.scale(self.bw_achv2_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv2_title = self.title_font.render("업적2", True, FCOLOR)
-        self.achv2_desc1 = self.desc_font.render("카드를 1장도", True, FCOLOR)
-        self.achv2_desc2 = self.desc_font.render("뽑지않고 승리하기", True, FCOLOR)
+        self.bw_achv2_icon = pygame.transform.scale(self.bw_achv2_icon, (self.achv_icon_size, self.achv_icon_size))
+        self.achv2_title = self.title_font.render(self.achv_title[2], True, FCOLOR)
+        self.achv2_desc1 = self.desc_font.render("싱글 플레이어", True, FCOLOR)
+        self.achv2_desc2 = self.desc_font.render("게임에서 기술카드", True, FCOLOR)
+        self.achv2_desc3 = self.desc_font.render("7장 사용하기", True, FCOLOR)
+        
         
         self.achv3_icon = pygame.image.load("images/acheivement/achv3.png")
         self.achv3_icon =  pygame.transform.scale(self.achv3_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv3_icon = pygame.image.load("images/acheivement/bw_achv3.png")
         self.bw_achv3_icon =  pygame.transform.scale(self.bw_achv3_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv3_title = self.title_font.render("업적3", True, FCOLOR)
+        self.achv3_title = self.title_font.render(self.achv_title[3], True, FCOLOR)
         self.achv3_desc1 = self.desc_font.render("싱글 플레이어", True, FCOLOR)
         self.achv3_desc2 = self.desc_font.render("게임에서 10턴 안에", True, FCOLOR)
         self.achv3_desc3 = self.desc_font.render("승리하기", True, FCOLOR)
@@ -87,7 +90,7 @@ class AcheivementList:
         self.achv4_icon =  pygame.transform.scale(self.achv4_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv4_icon = pygame.image.load("images/acheivement/bw_achv4.png")
         self.bw_achv4_icon =  pygame.transform.scale(self.bw_achv4_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv4_title = self.title_font.render("업적4", True, FCOLOR)
+        self.achv4_title = self.title_font.render(self.achv_title[4], True, FCOLOR)
         self.achv4_desc1 = self.desc_font.render("싱글 플레이어", True, FCOLOR)
         self.achv4_desc2 = self.desc_font.render("게임에서 20턴", True, FCOLOR)
         self.achv4_desc3 = self.desc_font.render("안에 승리하기", True, FCOLOR)       
@@ -96,16 +99,15 @@ class AcheivementList:
         self.achv5_icon =  pygame.transform.scale(self.achv5_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv5_icon = pygame.image.load("images/acheivement/bw_achv5.png")
         self.bw_achv5_icon =  pygame.transform.scale(self.bw_achv5_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv5_title = self.title_font.render("업적5", True, FCOLOR)
-        self.achv5_desc1 = self.desc_font.render("기술 카드를", True, FCOLOR)
-        self.achv5_desc2 = self.desc_font.render("단 한 번도 사용", True, FCOLOR)
-        self.achv5_desc3 = self.desc_font.render("하지 않고 승리하기", True, FCOLOR)
+        self.achv5_title = self.title_font.render(self.achv_title[5], True, FCOLOR)
+        self.achv5_desc1 = self.desc_font.render("카드를 1장도", True, FCOLOR)
+        self.achv5_desc2 = self.desc_font.render("뽑지않고 승리하기", True, FCOLOR)
         
         self.achv6_icon = pygame.image.load("images/acheivement/achv6.png")
         self.achv6_icon =  pygame.transform.scale(self.achv6_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv6_icon = pygame.image.load("images/acheivement/bw_achv6.png")
         self.bw_achv6_icon =  pygame.transform.scale(self.bw_achv6_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv6_title = self.title_font.render("업적6", True, FCOLOR)
+        self.achv6_title = self.title_font.render(self.achv_title[6], True, FCOLOR)
         self.achv6_desc1 = self.desc_font.render("다른 플레이어가", True, FCOLOR)
         self.achv6_desc2 = self.desc_font.render("UNO를 선언한 뒤", True, FCOLOR)
         self.achv6_desc3 = self.desc_font.render("승리하기", True, FCOLOR)
@@ -114,7 +116,7 @@ class AcheivementList:
         self.achv7_icon =  pygame.transform.scale(self.achv7_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv7_icon = pygame.image.load("images/acheivement/bw_achv7.png")
         self.bw_achv7_icon =  pygame.transform.scale(self.bw_achv7_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv7_title = self.title_font.render("업적7", True, FCOLOR)
+        self.achv7_title = self.title_font.render(self.achv_title[7], True, FCOLOR)
         self.achv7_desc1 = self.desc_font.render("스토리 모드", True, FCOLOR)
         self.achv7_desc2 = self.desc_font.render("지역A 승리하기", True, FCOLOR)
         
@@ -122,7 +124,7 @@ class AcheivementList:
         self.achv8_icon =  pygame.transform.scale(self.achv8_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv8_icon = pygame.image.load("images/acheivement/bw_achv8.png")
         self.bw_achv8_icon =  pygame.transform.scale(self.bw_achv8_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv8_title = self.title_font.render("업적8", True, FCOLOR)
+        self.achv8_title = self.title_font.render(self.achv_title[8], True, FCOLOR)
         self.achv8_desc1 = self.desc_font.render("스토리 모드", True, FCOLOR)
         self.achv8_desc2 = self.desc_font.render("지역B 승리하기", True, FCOLOR)
         
@@ -130,7 +132,7 @@ class AcheivementList:
         self.achv9_icon =  pygame.transform.scale(self.achv9_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv9_icon = pygame.image.load("images/acheivement/bw_achv9.png")
         self.bw_achv9_icon =  pygame.transform.scale(self.bw_achv9_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv9_title = self.title_font.render("업적9", True, FCOLOR)
+        self.achv9_title = self.title_font.render(self.achv_title[9], True, FCOLOR)
         self.achv9_desc1 = self.desc_font.render("스토리 모드", True, FCOLOR)
         self.achv9_desc2 = self.desc_font.render("지역C 승리하기", True, FCOLOR)
         
@@ -138,7 +140,7 @@ class AcheivementList:
         self.achv10_icon =  pygame.transform.scale(self.achv10_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv10_icon = pygame.image.load("images/acheivement/bw_achv10.png")
         self.bw_achv10_icon =  pygame.transform.scale(self.bw_achv10_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv10_title = self.title_font.render("업적10", True, FCOLOR)
+        self.achv10_title = self.title_font.render(self.achv_title[10], True, FCOLOR)
         self.achv10_desc1 = self.desc_font.render("스토리 모드", True, FCOLOR)
         self.achv10_desc2 = self.desc_font.render("지역D 승리하기", True, FCOLOR)
         
@@ -146,9 +148,10 @@ class AcheivementList:
         self.achv11_icon =  pygame.transform.scale(self.achv11_icon, (self.achv_icon_size, self.achv_icon_size))
         self.bw_achv11_icon = pygame.image.load("images/acheivement/bw_achv11.png")
         self.bw_achv11_icon =  pygame.transform.scale(self.bw_achv11_icon, (self.achv_icon_size, self.achv_icon_size))
-        self.achv11_title = self.title_font.render("업적11", True, FCOLOR)
-        self.achv11_desc1 = self.desc_font.render("스토리 모드 지역", True, FCOLOR)
-        self.achv11_desc2 = self.desc_font.render("모두 클리어하기", True, FCOLOR)
+        self.achv11_title = self.title_font.render(self.achv_title[11], True, FCOLOR)
+        self.achv11_desc1 = self.desc_font.render("기술 카드를", True, FCOLOR)
+        self.achv11_desc2 = self.desc_font.render("단 한 번도 사용", True, FCOLOR)
+        self.achv11_desc3 = self.desc_font.render("하지 않고 승리하기", True, FCOLOR)
         
         self.lock_icon_size = self.screen_size[0] * 0.04
         self.lock_icon = pygame.image.load("images/acheivement/lock.png")
@@ -264,7 +267,6 @@ class AcheivementList:
             achv1_date = self.desc_font.render(f"{self.achv_info[1]}", True, BCOLOR)
             self.screen.blit(self.achv1_icon, (self.box1.x + self.inner_magrin, self.box1.y + self.inner_magrin))
             
-        self.screen.blit(self.achv1_icon, (self.box1.x + self.inner_magrin, self.box1.y + self.inner_magrin))
         self.screen.blit(self.achv1_title, (self.box1.x + self.inner_magrin * 2 + self.achv_icon_size, self.box1.y + self.inner_magrin))
         self.screen.blit(self.achv1_desc1, (self.box1.x + self.inner_magrin * 2 + self.achv_icon_size, self.box1.y + self.inner_magrin + self.screen_size[1] * 0.04))
         self.screen.blit(self.achv1_desc2, (self.box1.x + self.inner_magrin * 2 + self.achv_icon_size, self.box1.y + self.inner_magrin + self.screen_size[1] * 0.065))
@@ -285,6 +287,7 @@ class AcheivementList:
         self.screen.blit(self.achv2_title, (self.box2.x + self.inner_magrin * 2 + self.achv_icon_size, self.box2.y + self.inner_magrin))
         self.screen.blit(self.achv2_desc1, (self.box2.x + self.inner_magrin * 2 + self.achv_icon_size, self.box2.y + self.inner_magrin + self.screen_size[1] * 0.04))
         self.screen.blit(self.achv2_desc2, (self.box2.x + self.inner_magrin * 2 + self.achv_icon_size, self.box2.y + self.inner_magrin + self.screen_size[1] * 0.065))
+        self.screen.blit(self.achv2_desc3, (self.box2.x + self.inner_magrin * 2 + self.achv_icon_size, self.box2.y + self.inner_magrin + self.screen_size[1] * 0.09))
         self.screen.blit(achv2_date, (self.box2.x + self.inner_magrin * 2 + self.achv_icon_size, self.box2.y + self.inner_magrin + self.screen_size[1] * 0.117))
         
         # 업적3 정보 출력
@@ -335,7 +338,6 @@ class AcheivementList:
         self.screen.blit(self.achv5_title, (self.box5.x + self.inner_magrin * 2 + self.achv_icon_size, self.box5.y + self.inner_magrin))
         self.screen.blit(self.achv5_desc1, (self.box5.x + self.inner_magrin * 2 + self.achv_icon_size, self.box5.y + self.inner_magrin + self.screen_size[1] * 0.04))
         self.screen.blit(self.achv5_desc2, (self.box5.x + self.inner_magrin * 2 + self.achv_icon_size, self.box5.y + self.inner_magrin + self.screen_size[1] * 0.065))
-        self.screen.blit(self.achv5_desc3, (self.box5.x + self.inner_magrin * 2 + self.achv_icon_size, self.box5.y + self.inner_magrin + self.screen_size[1] * 0.09))
         self.screen.blit(achv5_date, (self.box5.x + self.inner_magrin * 2 + self.achv_icon_size, self.box5.y + self.inner_magrin + self.screen_size[1] * 0.117))
         
         # 업적6 정보 출력
@@ -433,6 +435,7 @@ class AcheivementList:
         self.screen.blit(self.achv11_title, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin))
         self.screen.blit(self.achv11_desc1, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.04))
         self.screen.blit(self.achv11_desc2, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.065))
+        self.screen.blit(self.achv11_desc3, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.09))
         self.screen.blit(achv11_date, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.117))
 
         # 뒤로가기 아이콘 출력

@@ -88,7 +88,10 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     
     # 게임 루프
     play = True
+    
     while play:
+
+        
         
         # 이벤트 처리
         for event in pygame.event.get():

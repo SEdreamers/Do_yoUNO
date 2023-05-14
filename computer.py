@@ -4,6 +4,7 @@ from gameUI import GameUI
 from card import Card
 import time
 import json
+import lobby 
 
 class Computer(Player):
     def __init__(self, screen, deck, i, region):
@@ -25,7 +26,8 @@ class Computer(Player):
             "c2name" :'computer2',
             "c3name" :'computer3',
             "c4name" :'computer4',
-            "c5name" :'computer5'
+            "c5name" :'computer5',
+            "unclicked_list": []
             }
 
 
@@ -78,20 +80,21 @@ class Computer(Player):
         for x in range(N):
             self.screen.blit(self.backcard_image,(computer_x+ x*self.computer_height*0.1, computer_y + i * self.computer_height))
 
+        
         # 컴퓨터 이름 화면에 띄우는 부분. 
-        if i == 0: 
+        if self.data["unclicked_list"][i] == 0 :
             self.c1name_rect.x, self.c1name_rect.y = computer_x, i * self.computer_height
             self.screen.blit(self.c1name,self.c1name_rect)
-        elif i == 1: 
+        elif self.data["unclicked_list"][i] == 1:
             self.c2name_rect.x, self.c2name_rect.y = computer_x, i * self.computer_height
             self.screen.blit(self.c2name,self.c2name_rect)
-        elif i == 2: 
+        elif self.data["unclicked_list"][i] == 2:
             self.c3name_rect.x, self.c3name_rect.y = computer_x, i * self.computer_height
             self.screen.blit(self.c3name,self.c3name_rect)
-        elif i == 3: 
+        elif self.data["unclicked_list"][i] == 3:
             self.c4name_rect.x, self.c4name_rect.y = computer_x, i * self.computer_height
             self.screen.blit(self.c4name,self.c4name_rect)
-        elif i == 4: 
+        elif self.data["unclicked_list"][i] == 4:
             self.c5name_rect.x, self.c5name_rect.y = computer_x, i * self.computer_height
             self.screen.blit(self.c5name,self.c5name_rect)
 
