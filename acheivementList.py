@@ -462,5 +462,4 @@ class AcheivementList:
         while self.running:
             self.display()
             self.handle_events()
-            
 
