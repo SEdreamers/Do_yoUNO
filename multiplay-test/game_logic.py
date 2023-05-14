@@ -1,13 +1,14 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 import pygame
 import main
-import hand 
 from deck import Deck
 from human import Human
+from datetime import datetime
 from computer import Computer
-from gameUI import GameUI
+from gamedisplay import GameUI
 import gameoverUI
 from card import Card  
 from player import Player
@@ -15,12 +16,8 @@ import innersetting
 import time 
 import json
 import math
-import copy
 import random
 
-
-
-import pickle
 # 게임의 상태를 저장할 클래스
 class GameState:
     def __init__(self, score, level):
@@ -28,50 +25,32 @@ class GameState:
         self.level = level
 
 
-
-
-# # 게임의 초기 상태
-# initial_state = GameState(0, 1)
-
-# self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time
-
-# # 게임의 상태를 저장하는 함수
-# def save_game_state(state, filename):
-#     with open(filename, 'wb') as file:
-#         pickle.dump(state, file)
-
-# # 게임의 상태를 불러오는 함수
-# def load_game_state(filename):
-#     with open(filename, 'rb') as file:
-#         state = pickle.load(file)
-#     return state
-
-# # 게임의 상태를 저장할 파일명
-# save_filename = 'game_state.pickle'
-
-# # 게임의 상태를 저장
-# save_game_state(initial_state, save_filename)
-
-# # 게임의 상태를 불러옴
-# loaded_state = load_game_state(save_filename)
-
-# # 불러온 상태 출력
-# print("Loaded State - Score: {}, Level: {}".format(loaded_state.score, loaded_state.level))
-
-
-
-
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, character, region = "E"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, id,region = "E"):
         pygame.init()
         
-        self.screen_width = screen_width
+
+
+        # 아래는 multiplay를 위한 변수
+        ###############################################
+        self.p1Went = False
+        self.p2Went = False
+        self.ready = False
+        self.id = id
+        self.moves = [None, None]
+        self.wins = [0,0]
+        self.ties = 0
+        ###############################################
+
+
+
+
+        self.screen_width = screen_width    
         self.screen_height = screen_height
         self.screen_size = (self.screen_width, self.screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
         self.numberofPlayers = numberofPlayers
-        self.character = character
         
         # Set up the game screen
         self.screen = pygame.display.set_mode(self.screen_size)
@@ -79,8 +58,17 @@ class Game:
         background_image = pygame.transform.scale(background_image, self.screen_size)     
         self.running = True
 
+        self.skip_flag = 0
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
-       
+        
+        self.achv_index = None # 게임 도중 팝업으로 띄울 달성 업적 index
+        self.tech_use_cnt = 0 # 기술카드 사용 횟수
+        self.achv1_comp = False # 업적1 달성 팝업 띄운적이 있는지
+        self.achv2_comp = False # 업적2 달성 팝업 띄운적이 있는지
+        self.other_clicked_uno_first = False # 다른 플레이어가 uno버튼을 먼저 클릭했는지
+        self.comp_achv_list = [] # 게임 오버 시 띄울 달성 업적 리스트
+        self.turn_cnt = 0
+        
         # combo
         self.combo = 0
         self.region = region
@@ -90,9 +78,6 @@ class Game:
         self.combo_rect = self.combo_image.get_rect()
         self.combo_rect.x = self.screen_size[0] * 0.55
         self.combo_rect.y = self.screen_size[1] * 0.27
-        # # Set up the Deck
-        # self.deck = Deck(self.screen_size[0], self.screen_size[1])
-        # self.deck.shuffle()
 
         # Draw the Deck image on the screen(back)
         self.back_card = Card(0, "back", self.screen_width, self.screen_height)
@@ -103,22 +88,32 @@ class Game:
         self.uno_rect = self.uno_btn.get_rect()
         self.uno_rect.x = self.screen_size[0] * 0.55
         self.uno_rect.y = self.screen_size[1] * 0.27
+        
+        self.card_picked = False # 업적2: 픽0 승리(카드를 1장도 뽑지 않고 승리하기) 여부
          
         # players 저장
         self.players = []
         
+        try:
+            with open('setting_data.json') as game_file:
+                self.data = json.load(game_file)
+        except:
+            pass
+
         # add computers(player 숫자 받아서 설정)
         computers = []
-        for i in range(self.numberofPlayers):     ## player 수 
-            computers.append(Computer(self.screen, self.deck, i, region, character))
-
+        for i in range(self.numberofPlayers):     ## player 수
+            region = "E"
+            for j in range(len(self.data["characters"])) :
+                if self.data["characters"][j] == self.data["unclicked_list"][i]:
+                    region = "A"
+            computers.append(Computer(self.screen, self.deck, i, region))
         self.players.extend(computers)
-        
         
         # 사람은 가중치 없이 뽑아야 함
         self.deck.shuffle()
         # human player 만들기!
-        human = Human(self.screen, self.deck, self.color_blind_mode, region, False)
+        human = Human(self.screen, self.deck, self.color_blind_mode, region)
         self.players.insert(0, human)
         # turn, reverse, skip, start time 세팅
         self.turn_num = 0
@@ -132,15 +127,17 @@ class Game:
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
         self.lst = self.firstDeck.showlist()
-        not_first_top_list = [x for x in self.lst if "reverse" or "draw2" or "draw4" or "wild" or "wild_draw4" or "wild_swap" in x]
-        # print(not_first_top_list)
         self.top_card = self.deck.pop()  
+        
+        self.players_num = len(self.players)
 
 
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
             self.skip = True
+            if self.turn_num % self.players_num == 0: # 마지막 턴 플레이어 skip 시
+                self.turn_cnt += 1
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
@@ -158,23 +155,12 @@ class Game:
         else:
             self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn)
         
-        
-        
         self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
         ##innersetting.py의 Setting class
         self.set = innersetting.Setting(self.screen_width, self.screen_height, self.color_blind_mode,self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time,self.move)
         
-
-
-
-        
-        self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
+        self.back_card_pos = [self .screen_size[0] * 0.2, self.screen_size[1] * 0.2]
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
-
-
-
-
-
 
         # 실행중이던 게임을 딕셔너리 형태로 저장
         self.data = {
@@ -187,21 +173,73 @@ class Game:
             # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
         }
         self.save_play()
-        
-        
-        
+    
+
+
+
+
+
+
+# 아래는 multiplay를 위한 함수
+###############################################
+    def get_player_move(self, p):
+        """
+        :param p: [0,1]
+        :return: Move
+        """
+        return self.moves[p]
+
+    def play(self, player, move):
+        self.moves[player] = move
+        if player == 0:
+            self.p1Went = True
+        else:
+            self.p2Went = True
+
+    def connected(self):
+        return self.ready
+
+    def bothWent(self):
+        return self.p1Went and self.p2Went
+
+    def winner(self):
+
+        p1 = self.moves[0].upper()[0]
+        p2 = self.moves[1].upper()[0]
+
+        winner = -1
+        if p1 == "R" and p2 == "S":
+            winner = 0
+        elif p1 == "S" and p2 == "R":
+            winner = 1
+        elif p1 == "P" and p2 == "R":
+            winner = 0
+        elif p1 == "R" and p2 == "P":
+            winner = 1
+        elif p1 == "S" and p2 == "P":
+            winner = 0
+        elif p1 == "P" and p2 == "S":
+            winner = 1
+
+        return winner
+
+    def resetWent(self):
+        self.p1Went = False
+        self.p2Went = False
+###############################################
+
+
+
+
+
 
     def save_play(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         with open('game_data.json','w') as game_data_file: 
             json.dump(self.data, game_data_file)    
-    
 
     def run(self):
         pygame.init()
-    
-        
-
                             
         with open('setting_data.json') as game_file:
                             data = json.load(game_file)
@@ -215,32 +253,22 @@ class Game:
         pygame.mixer.music.load('unogame.mp3')
         pygame.mixer.music.play(-1,3)    ## 무한번 반복, 음악의 3초 지점부터 재생
         
-
-        
-        
-               
         if self.skip: # 시작 카드가 skip 카드인 경우
-            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
+            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
             self.skip = False
         else:
-            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
+            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
         
         try: 
             with open('game_data.json','w') as play_data_file: 
                 json.dump(self.data, play_data_file)
         except: 
             print("No file created yet!")    
-    
-
-
-
             
-
-        self.turn_num = 0
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if self.turn_num == 0: # Human turn
-                print('Human turn:' + str(self.turn_num))
+                # print('Human turn:' + str(self.turn_num))
                 is_draw = self.handle_events()
                 if not is_draw: # 카드를 낸 경우만
                     if len(self.players[self.turn_num].hand.cards) == 1: # 직전에 카드를 내어 카드가 2장에서 1장이 된 경우
@@ -248,12 +276,13 @@ class Game:
                         try: 
                             if self.clicked_uno[0] != self.players[self.turn_num].name:
                                 self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                                self.other_clicked_uno_first = True
                         except:
                             self.players[self.turn_num].hand.cards.append(self.deck.pop())
                             
                     self.update()
             else: # Computer turn
-                print('Computer turn:' + str(self.turn_num))
+                # print('Computer turn:' + str(self.turn_num))
                 self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
                 
                 if len(self.players[self.turn_num].hand.cards) == 1: # 직전에 카드를 내어 카드가 2장에서 1장이 된 경우
@@ -266,17 +295,41 @@ class Game:
 
                 self.update()
             self.render()
-            # print(self.clicked_uno)
-
-
-
-
 
             # 게임 오버 판별
             if self.players[self.turn_num].hand.is_empty():
                 game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
-                
+    
+
                 if self.turn_num == 0:
+                    if self.region == 'A': # 지역A 승리(업적) 달성
+                       self.set_achv_date(7)
+                    elif self.region == 'B': # 지역B 승리(업적) 달성
+                        self.set_achv_date(8)
+                    elif self.region == 'C': # 지역C 승리(업적) 달성
+                        self.set_achv_date(9)
+                    elif self.region == 'D': # 지역D 승리(업적) 달성
+                        self.set_achv_date(10)
+                    elif self.region == 'E': # 싱글 승리(업적) 달성
+                        self.set_achv_date(0)
+                    else:
+                        pass
+                    
+                    if self.turn_cnt <= 10: # 10턴 승리(업적) 달성
+                        self.set_achv_date(3)
+                        
+                    if self.turn_cnt <= 20: # 20턴 승리(업적) 달성
+                        self.set_achv_date(4)
+                    
+                    if not self.card_picked: # 픽0 승리(업적) 달성
+                        self.set_achv_date(5)
+                        
+                    if self.other_clicked_uno_first: # UNO 승리(업적) 달성
+                        self.set_achv_date(6)
+                        
+                    if self.tech_use_cnt == 0: # 기술0 승리(업적) 달성
+                        self.set_achv_date(11)
+
                     try:
                         with open('story_mode_data.json') as story_mode_data_file:
                             data = json.load(story_mode_data_file)
@@ -293,15 +346,16 @@ class Game:
                         pass
                 
                 while True:
-                    game_over.display() # 게임 오버 화면 불러오기
+                    game_over.display(self.comp_achv_list) # 게임 오버 화면 불러오기
                     pygame.display.flip()
-                    
-                
 
             self.clicked_uno_player = None
             # combo true일 때는 turn 안 넘기기
             if self.combo == 0:           
                 # turn 전환
+                if (self.turn_num + 1) % self.players_num == 0: # 한 턴이 완전히 진행된 경우
+                    self.turn_cnt += 1
+                # print(f'턴 횟수: {self.turn_cnt}')
                 if not self.reverse:
                     self.turn_num += 1
                     if self.turn_num >= len(self.players):
@@ -310,10 +364,9 @@ class Game:
                     self.turn_num -= 1
                     if self.turn_num < 0:
                         self.turn_num = len(self.players) - 1
+            
+               
         pygame.quit()
-
-
-
 
     # function is responsible for handling user input and events
     def handle_events(self):
@@ -350,12 +403,13 @@ class Game:
         self.clicked_uno = []
         fps = 500
         while self.running:
-            count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player) # 타이머 시간 업데이트
+            count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index) # 타이머 시간 업데이트
             
             if count_down <= 0: # 제한 시간 내에 카드를 내지 못한 경우
                 start_time = pygame.time.get_ticks()
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
+                self.card_picked = True
 
             elapsed_time = (pygame.time.get_ticks() - start_time2) / 1000
             if int(elapsed_time) > delay_time:
@@ -386,8 +440,6 @@ class Game:
                         print("Pause!")
                         game_paused = True
                         # pygame.mixer.music.pause()    ##잠시 음악 중단 - 넣을 필요 없음(setting들어가서 볼륨 얼마나 조절되는지 확인하기 위해;)
-                        
-
 
                         # font = pygame.font.SysFont("arial", self.screen_width // 40, True)
                         # surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
@@ -398,10 +450,7 @@ class Game:
                         # pygame.display.update()
                         # pygame.time.delay(15000)
 
-
                         self.set.run(self.screen_width, self.screen_height)
-
-
                         
                     elif event.key == pygame.K_q:
                         self.running = False
@@ -490,6 +539,7 @@ class Game:
                         self.render()
                     if event.key == 13 and GameUI.backcard_uno_flag == 1:
                         self.card_clicked = self.back_card
+                        self.card_picked = True
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
                     elif event.key == 13 and GameUI.backcard_uno_flag == 2: #uno 버튼 눌렀을 때
@@ -506,6 +556,7 @@ class Game:
                     # print(pos)
                     if self.back_card.rect.collidepoint(pos):
                         self.card_clicked = self.back_card
+                        self.card_picked = True
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
 
@@ -532,12 +583,11 @@ class Game:
                                 start_time = pygame.time.get_ticks()
                                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                                 self.card_clicked = self.back_card
+                                self.card_picked = True
                                 play = False
                             for event in pygame.event.get():
                                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                                     pos = pygame.mouse.get_pos()
-                                    
-                                    # print(pos)
                                     if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
                                         self.top_card.color = 'blue'
                                         self.render()
@@ -578,8 +628,6 @@ class Game:
                                         return False
 
                     if self.uno_rect.collidepoint(pos): # uno 버튼이 클릭된 경우
-                        
-                        
                         if len(self.players[self.turn_num].hand.cards) == 2:
                             if self.players[self.turn_num].name not in self.clicked_uno:
                                 
@@ -588,14 +636,11 @@ class Game:
                                 if len(self.clicked_uno) == 1: # uno버튼을 첫번째로 누른 플레이어가 현재 플레이어면
                                     self.clicked_uno_player = self.players[self.turn_num].name
                                     self.render()
-                        # print(clicked_uno)
+
                     # exit 버튼이 클릭 된 경우
                     if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
                         self.running = False
                         main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
-
-                   
-            
 
             global svol
             with open('setting_data.json') as game_file:
@@ -617,9 +662,6 @@ class Game:
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
                         clock.tick(fps)
-                        
-                        
-
 
                         self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
                         self.move.set_volume(svol)
@@ -639,20 +681,17 @@ class Game:
                         pygame.display.flip()
                         clock.tick(fps)
                         
-
                         self.move = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
                         self.move.set_volume(svol)
                         self.move.play()
                         
-
-
                         if ratio == 1: 
                             running = False
                             return False
                     
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player) # 타이머 안뜨게 화면 업데이트
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index) # 타이머 안뜨게 화면 업데이트
         
         self.set_random_delay()
         start_time2 = pygame.time.get_ticks()
@@ -774,8 +813,6 @@ class Game:
                     start_time = pygame.time.get_ticks()
                     self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
                     
-                
-                    
                 running = True
                 while running:
                     if self.card_clicked is self.back_card:
@@ -809,17 +846,38 @@ class Game:
         if self.top_card.value == 'skip' and self.skip_flag == 0:
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
             self.skip = True
-            self.skip_flag += 1        
+            self.skip_flag += 1
+            if self.turn_num % self.players_num == 0: # 마지막 턴 플레이어 skip 시
+                self.turn_cnt += 1
+            
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[4]), self.reverse)
         elif self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4':
             self.top_card.draw_action(self.deck, self.players, self.turn_num, int(self.top_card.value[9]), self.reverse)
-
+        self.tech_use_cnt += 1
+        if self.region == 'E':
+            if self.top_card.value == 'skip' or self.top_card.value == 'reverse' or self.top_card.value == 'draw2' or self.top_card.value == 'draw4' or self.top_card.value == 'wild' or self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4': # 기술 카드를 낸 경우
+                if self.tech_use_cnt == 5 and not self.achv1_comp: # 업적1 달성했는데 업적1 팝업 띄운 적 없는 경우
+                    self.achv1_comp = True 
+                    if self.set_achv_date(1): # 처음 달성한 경우
+                        # 업적1 달성 팝업 띄우기
+                        self.achv_index = 1
+                        self.render()
+                        self.achv_index = None
+                
+                if self.tech_use_cnt == 7 and not self.achv1_comp: # 업적2 달성했는데  업적2 팝업 띄운 적 없는 경우
+                    self.achv2_comp = True 
+                    if self.set_achv_date(1): # 처음 달성한 경우
+                        # 업적2 달성 팝업 띄우기
+                        self.achv_index = 2
+                        self.render()
+                        self.achv_index = None
+    
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
         self.skip = False
 
     def set_random_delay(self):
@@ -827,17 +885,22 @@ class Game:
         if len(self.players[self.turn_num].hand.cards) == 2: # 현재 플레이어의 카드가 2장 남은 경우
             for _ in range(len(self.players)-1): # 컴퓨터 플레이어 수만큼 1~3초 사이 난수 리스트에 append
                 self.random_delay.append(random.randrange(1,4))
-
-
-
-
-
-
-
+                
+    def set_achv_date(self, idx):
+        with open('acheivement_data.json') as acheivement_data_file:
+            data = json.load(acheivement_data_file)
+            achv_info = data['achv_info'] # 저장된 값 불러오기
+            if achv_info[idx] == "None":
+                if idx != 1 and idx != 2:
+                    self.comp_achv_list.append(idx)
+                now = datetime.now()
+                achv_info[idx] = now.strftime("%Y.%m.%d")
+                with open('acheivement_data.json','w') as acheivement_data_file: 
+                    json.dump(data, acheivement_data_file)
+                return True # 달성한 적이 없는 경우
+        return False # 이미 달성한 경우
 
 '''
 self.back_card 는 뒷면 그려진 카드 뭉치
-
-
 self.top_card 는 앞면이 보이는 카드 더미 맨 윗장
 '''

@@ -1,5 +1,9 @@
 import pygame
 from network import Network
+import gamedisplay
+import game_logic
+import json
+
 pygame.font.init()
 
 width = 700
@@ -7,6 +11,27 @@ height = 700
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
+
+try:
+    with open('setting_data.json') as game_file:
+        lst = json.load(game_file)
+except: 
+    lst ={
+    "color_blind_mode": False,
+    "size": (800,600),
+    "Total_Volume": 0.3,
+    "Background_Volume": 0.3,
+    "Sideeffect_Volume": 0.3,
+    "player_numbers":3,
+    "me": 'player',
+    "c1name" :'computer1',
+    "c2name" :'computer2',
+    "c3name" :'computer3',
+    "c4name" :'computer4',
+    "c5name" :'computer5',
+    "unclicked_list": [],
+    "characters" : []
+    }
 
 class Button:
     def __init__(self, text, x, y, color):
@@ -36,6 +61,7 @@ def redrawWindow(win, game, p):      ## 화면 출력
     win.fill((128,128,128))
 
     if not(game.connected()):
+        print(1)
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Waiting for Player...", 1, (255,0,0), True)
         win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
@@ -86,6 +112,11 @@ def redrawWindow(win, game, p):      ## 화면 출력
 btns = [Button("Rock", 50, 500, (0,0,0)), Button("Scissors", 250, 500, (255,0,0)), Button("Paper", 450, 500, (0,255,0))]
 
 
+
+
+
+
+## 여기가 존나게 반복되고 있음. 
 def main():
     run = True
     clock = pygame.time.Clock()
@@ -148,11 +179,14 @@ def menu_screen():
 
     while run:
         clock.tick(60)                          # 프레임 속도 제한
-        win.fill((128, 128, 128)) 
-        font = pygame.font.SysFont("comicsans", 60)
-        text = font.render("Click to Play!", 1, (255,0,0))
-        win.blit(text, (100,200))
-        pygame.display.update()
+
+        uno_game = game_logic.Game(lst["size"][0],lst["size"][1],lst["color_blind_mode"],lst["player_numbers"]) 
+        uno_game.run()
+        # win.fill((128, 128, 128)) 
+        # font = pygame.font.SysFont("comicsans", 60)
+        # text = font.render("Click to Play!", 1, (255,0,0))
+        # win.blit(text, (100,200))
+        # pygame.display.update()
 
         for event in pygame.event.get():                           #  게임 종료 
             if event.type == pygame.QUIT:
