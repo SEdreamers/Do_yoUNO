@@ -1,6 +1,5 @@
 import pygame
 import main
-import hand 
 from deck import Deck
 from human import Human
 from datetime import datetime
@@ -13,20 +12,13 @@ import innersetting
 import time 
 import json
 import math
-import copy
 import random
 
-
-
-import pickle
 # 게임의 상태를 저장할 클래스
 class GameState:
     def __init__(self, score, level):
         self.score = score
         self.level = level
-
-
-
 
 # # 게임의 초기 상태
 # initial_state = GameState(0, 1)
@@ -57,8 +49,6 @@ class GameState:
 # print("Loaded State - Score: {}, Level: {}".format(loaded_state.score, loaded_state.level))
 
 
-
-
 class Game:
     def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "E"):
         pygame.init()
@@ -78,7 +68,6 @@ class Game:
 
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
         
-        
         self.achv_index = None
         self.tech_use_cnt = 0 # 기술카드 사용 횟수
         self.achv1_comp = False # 업적1 달성 팝업 띄운적이 있는지
@@ -94,9 +83,6 @@ class Game:
         self.combo_rect = self.combo_image.get_rect()
         self.combo_rect.x = self.screen_size[0] * 0.55
         self.combo_rect.y = self.screen_size[1] * 0.27
-        # # Set up the Deck
-        # self.deck = Deck(self.screen_size[0], self.screen_size[1])
-        # self.deck.shuffle()
 
         # Draw the Deck image on the screen(back)
         self.back_card = Card(0, "back", self.screen_width, self.screen_height)
@@ -107,7 +93,6 @@ class Game:
         self.uno_rect = self.uno_btn.get_rect()
         self.uno_rect.x = self.screen_size[0] * 0.55
         self.uno_rect.y = self.screen_size[1] * 0.27
-        
         
         self.card_picked = False # 업적2: 픽0 승리(카드를 1장도 뽑지 않고 승리하기) 여부
          
@@ -128,9 +113,7 @@ class Game:
                 if self.data["characters"][j] == self.data["unclicked_list"][i]:
                     region = "A"
             computers.append(Computer(self.screen, self.deck, i, region))
-
         self.players.extend(computers)
-        
         
         # 사람은 가중치 없이 뽑아야 함
         self.deck.shuffle()
@@ -149,8 +132,6 @@ class Game:
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
         self.lst = self.firstDeck.showlist()
-        not_first_top_list = [x for x in self.lst if "reverse" or "draw2" or "draw4" or "wild" or "wild_draw4" or "wild_swap" in x]
-        # print(not_first_top_list)
         self.top_card = self.deck.pop()  
 
 
@@ -175,23 +156,12 @@ class Game:
         else:
             self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn)
         
-        
-        
         self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
         ##innersetting.py의 Setting class
         self.set = innersetting.Setting(self.screen_width, self.screen_height, self.color_blind_mode,self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time,self.move)
         
-
-
-
-        
         self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
-
-
-
-
-
 
         # 실행중이던 게임을 딕셔너리 형태로 저장
         self.data = {
@@ -205,22 +175,13 @@ class Game:
         }
         self.save_play()
         
-        
-        
-        
-        
-
     def save_play(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         with open('game_data.json','w') as game_data_file: 
             json.dump(self.data, game_data_file)    
-    
 
     def run(self):
         pygame.init()
-    
-        
-
                             
         with open('setting_data.json') as game_file:
                             data = json.load(game_file)
@@ -234,10 +195,6 @@ class Game:
         pygame.mixer.music.load('unogame.mp3')
         pygame.mixer.music.play(-1,3)    ## 무한번 반복, 음악의 3초 지점부터 재생
         
-
-        
-        
-               
         if self.skip: # 시작 카드가 skip 카드인 경우
             self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
             self.skip = False
@@ -249,17 +206,12 @@ class Game:
                 json.dump(self.data, play_data_file)
         except: 
             print("No file created yet!")    
-    
 
-
-
-            
-        
         self.turn_num = 0
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if self.turn_num == 0: # Human turn
-                print('Human turn:' + str(self.turn_num))
+                # print('Human turn:' + str(self.turn_num))
                 is_draw = self.handle_events()
                 if not is_draw: # 카드를 낸 경우만
                     if len(self.players[self.turn_num].hand.cards) == 1: # 직전에 카드를 내어 카드가 2장에서 1장이 된 경우
@@ -272,7 +224,7 @@ class Game:
                             
                     self.update()
             else: # Computer turn
-                print('Computer turn:' + str(self.turn_num))
+                # print('Computer turn:' + str(self.turn_num))
                 self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
                 
                 if len(self.players[self.turn_num].hand.cards) == 1: # 직전에 카드를 내어 카드가 2장에서 1장이 된 경우
@@ -285,18 +237,11 @@ class Game:
 
                 self.update()
             self.render()
-            # print(self.clicked_uno)
-
-
-
-
 
             # 게임 오버 판별
             if self.players[self.turn_num].hand.is_empty():
                 game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
-                
-                
-                
+
                 if self.turn_num == 0:
                     if self.region == 'A': # 지역A 승리(업적) 달성
                        self.set_achv_date(7)
@@ -342,8 +287,6 @@ class Game:
                 while True:
                     game_over.display(self.comp_achv_list) # 게임 오버 화면 불러오기
                     pygame.display.flip()
-                    
-                
 
             self.clicked_uno_player = None
             # combo true일 때는 turn 안 넘기기
@@ -358,9 +301,6 @@ class Game:
                     if self.turn_num < 0:
                         self.turn_num = len(self.players) - 1
         pygame.quit()
-
-
-
 
     # function is responsible for handling user input and events
     def handle_events(self):
@@ -434,8 +374,6 @@ class Game:
                         print("Pause!")
                         game_paused = True
                         # pygame.mixer.music.pause()    ##잠시 음악 중단 - 넣을 필요 없음(setting들어가서 볼륨 얼마나 조절되는지 확인하기 위해;)
-                        
-
 
                         # font = pygame.font.SysFont("arial", self.screen_width // 40, True)
                         # surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
@@ -446,10 +384,7 @@ class Game:
                         # pygame.display.update()
                         # pygame.time.delay(15000)
 
-
                         self.set.run(self.screen_width, self.screen_height)
-
-
                         
                     elif event.key == pygame.K_q:
                         self.running = False
@@ -587,8 +522,6 @@ class Game:
                             for event in pygame.event.get():
                                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                                     pos = pygame.mouse.get_pos()
-                                    
-                                    # print(pos)
                                     if self.screen_size[0] / 4 < pos[0] < self.screen_size[0] / 3.448 and self.screen_size[1] / 2 < pos[1] < self.screen_size[1] / 1.807:
                                         self.top_card.color = 'blue'
                                         self.render()
@@ -629,8 +562,6 @@ class Game:
                                         return False
 
                     if self.uno_rect.collidepoint(pos): # uno 버튼이 클릭된 경우
-                        
-                        
                         if len(self.players[self.turn_num].hand.cards) == 2:
                             if self.players[self.turn_num].name not in self.clicked_uno:
                                 
@@ -639,14 +570,11 @@ class Game:
                                 if len(self.clicked_uno) == 1: # uno버튼을 첫번째로 누른 플레이어가 현재 플레이어면
                                     self.clicked_uno_player = self.players[self.turn_num].name
                                     self.render()
-                        # print(clicked_uno)
+
                     # exit 버튼이 클릭 된 경우
                     if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < pos[1] < self.screen_size[1] / 17.143:
                         self.running = False
                         main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
-
-                   
-            
 
             global svol
             with open('setting_data.json') as game_file:
@@ -668,9 +596,6 @@ class Game:
                         self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
                         pygame.display.flip()
                         clock.tick(fps)
-                        
-                        
-
 
                         self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
                         self.move.set_volume(svol)
@@ -690,13 +615,10 @@ class Game:
                         pygame.display.flip()
                         clock.tick(fps)
                         
-
                         self.move = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
                         self.move.set_volume(svol)
                         self.move.play()
                         
-
-
                         if ratio == 1: 
                             running = False
                             return False
@@ -825,8 +747,6 @@ class Game:
                     start_time = pygame.time.get_ticks()
                     self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
                     
-                
-                    
                 running = True
                 while running:
                     if self.card_clicked is self.back_card:
@@ -887,7 +807,6 @@ class Game:
                         self.render()
                         self.achv_index = None
     
-
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
         self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
@@ -911,16 +830,7 @@ class Game:
                 return True # 달성한 적이 없는 경우
         return False # 이미 달성한 경우
 
-
-
-
-
-
-
-
 '''
 self.back_card 는 뒷면 그려진 카드 뭉치
-
-
 self.top_card 는 앞면이 보이는 카드 더미 맨 윗장
 '''

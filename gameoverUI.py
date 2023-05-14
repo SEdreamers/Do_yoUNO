@@ -10,7 +10,6 @@ FCOLOR = (45, 43, 32)
 
 class GameOverUI:
     def __init__(self, screen_width, screen_height, winner, color_blind_mode):
-
         try:
             with open('setting_data.json') as game_file:
                 self.data = json.load(game_file)
@@ -103,11 +102,9 @@ class GameOverUI:
         self.screen.fill(BLACK)
         
         # 업적 달성 팝업 순서대로 출력
-        achv_len = len(comp_achv_list)
-        
-        popup_time = 50
-        popup_interval = 10
-        
+        achv_len = len(comp_achv_list) # 팝업 띄어야할 업적 수
+        popup_time = 50 # 팝업 출력 시간
+        popup_interval = 10 # 팝업 출력 간격
         if achv_len > 0 and popup_interval < self.achv_cnt < popup_interval + popup_time: # 첫번째 팝업
             self.shown_achv_popup(comp_achv_list[0])
         elif achv_len > 1 and popup_interval * 2 + popup_time < self.achv_cnt < popup_interval * 2 + popup_time * 2: # 두번째 팝업
@@ -120,11 +117,7 @@ class GameOverUI:
             self.shown_achv_popup(comp_achv_list[4])
         elif achv_len > 5 and popup_interval * 6 + popup_time * 5 + popup_interval < self.achv_cnt < popup_interval * 6 + popup_time * 6: # 여섯번째 팝업
             self.shown_achv_popup(comp_achv_list[5])
-
         self.achv_cnt += 1
-        
-            
-        
         
         # 폭죽 이미지 출력
         if self.frame_index <= 90:
@@ -140,7 +133,6 @@ class GameOverUI:
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_click = False
-
         
         # 키보드 이벤트 처리
         for event in pygame.event.get():

@@ -1,14 +1,10 @@
 ## # 이벤트 처리, # 마우스 클릭 시 에 추가해야 화면 전환. 
 import pygame
-import game
 import setting 
 import json
 import time
 import storyMap
 import lobby
-import computer
-import deck
-import human
 import acheivementList
 
 # 색상 상수 설정
@@ -34,13 +30,8 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         screen = pygame.display.set_mode((screen_width, screen_height))
         font = pygame.font.SysFont("arial", screen_width // 20, True)
 
-    
-
     # 화면 생성
     pygame.display.set_caption("Uno Game")
-
-
-    # 폰트 생성
 
     # 메뉴 텍스트 생성
     game_title = font.render("Uno Game", True, WHITE)
@@ -50,15 +41,13 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     achv_text = font.render("Acheivments", True, WHITE)
     exit_text = font.render("Exit", True, WHITE)
 
-
-
     # 메뉴 위치 설정
     game_title_rect = game_title.get_rect()
     game_title_rect.centerx = screen.get_rect().centerx
     game_title_rect.y = screen.get_size()[1] // 12
     
-    start_y = 0.25
-    interval = 0.14
+    start_y = 0.25 # 메뉴 출력 시작 y값
+    interval = 0.14 # 메뉴 간격
 
     single_player_rect = single_player_text.get_rect()
     single_player_rect.centerx = screen.get_rect().centerx
@@ -79,20 +68,14 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     exit_rect = exit_text.get_rect()
     exit_rect.centerx = screen.get_rect().centerx
     exit_rect.y = screen.get_size()[1] * (start_y + interval * 4)
-    
-
 
     #메뉴 상수
     menu_flag = 0
 
-    
     # 게임 루프
     play = True
     
-    while play:
-
-        
-        
+    while play: 
         # 이벤트 처리
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -185,12 +168,7 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         screen.blit(settings_text, settings_rect)
         screen.blit(exit_text, exit_rect)
         screen.blit(achv_text, achv_rect)
-        
-        
-        
-        
 
-        
         pygame.display.update()
     pygame.quit()
 if __name__=='__main__':
