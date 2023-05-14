@@ -2,6 +2,7 @@ import pygame
 import game
 import main
 import sys
+import innersetting
 import json
 
 BGCOLOR = (221, 195, 81)
@@ -11,8 +12,10 @@ BCOLOR = (40, 62, 255)
 
 
 class AcheivementList:
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, color_blind_mode):
         self.achv_info = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
+        
+        self.color_blind_mode = color_blind_mode
         
         # 화면 설정
         self.screen_size = (screen_width, screen_height)
@@ -188,6 +191,13 @@ class AcheivementList:
         
         self.lock11_icon = pygame.transform.scale(self.lock_icon, (self.lock_icon_size, self.lock_icon_size))
         self.lock11_rect = self.lock11_icon.get_rect()
+        
+        # 뒤로가기
+        self.back_icon = pygame.image.load("images/acheivement/back.png")
+        self.back_icon = pygame.transform.scale(self.back_icon, (self.screen_size[0] // 23, self.screen_size[0] // 23))
+        self.back_rect = self.back_icon.get_rect()
+
+        
 
 
     def display(self):
@@ -424,10 +434,25 @@ class AcheivementList:
         self.screen.blit(self.achv11_desc1, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.04))
         self.screen.blit(self.achv11_desc2, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.065))
         self.screen.blit(achv11_date, (self.box11.x + self.inner_magrin * 2 + self.achv_icon_size, self.box11.y + self.inner_magrin + self.screen_size[1] * 0.117))
-        
-        
-        
-        
-        pygame.display.flip()
 
+        # 뒤로가기 아이콘 출력
+        self.screen.blit(self.back_icon, (self.screen_size[0] // 100, self.screen_size[0] // 100))     
+        pygame.display.flip()
+        
+        
+    def run(self):
+        running = True
+        while running:
+            self.display()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE: # ESC키
+                        running = False
+                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)    
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    pos = pygame.mouse.get_pos()
+                    if self.back_rect.collidepoint(pos):
+                        running = False
+                        main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)        
+            
 
