@@ -226,7 +226,7 @@ class AcheivementList:
         pygame.display.set_caption("Acheivement List")
         self.screen.fill(BGCOLOR)
         
-        
+        # 업적 박스 출력
         pygame.draw.rect(self.screen, SCOLOR, self.box0, border_radius=self.radius)
         pygame.draw.rect(self.screen, SCOLOR, self.box1, border_radius=self.radius)
         pygame.draw.rect(self.screen, SCOLOR, self.box2, border_radius=self.radius)
