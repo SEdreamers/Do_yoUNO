@@ -17,7 +17,7 @@ class AcheivementList:
         self.color_blind_mode = color_blind_mode
     
         self.achv_info = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None"] # 업적 달성 날짜
-        self.achv_title = ["싱글 승리", "싱글 기술5", "싱글 기술7", "10턴 승리", "픽0 승리", "30턴 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"] # 업적 타이틀
+        self.achv_title = ["싱글 승리", "싱글 기술5", "싱글 기술7", "10턴 승리", "20턴 승리", "픽0 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"] # 업적 타이틀
         
         # 화면 설정
         self.screen_size = (screen_width, screen_height)

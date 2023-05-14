@@ -72,6 +72,7 @@ class Game:
         self.tech_use_cnt = 0 # 기술카드 사용 횟수
         self.achv1_comp = False # 업적1 달성 팝업 띄운적이 있는지
         self.achv2_comp = False # 업적2 달성 팝업 띄운적이 있는지
+        self.other_clicked_uno_first = False # 다른 플레이어가 uno버튼을 먼저 클릭했는지
         self.comp_achv_list = [] # 게임 오버 시 띄울 달성 업적 리스트
        
         # combo
@@ -219,6 +220,7 @@ class Game:
                         try: 
                             if self.clicked_uno[0] != self.players[self.turn_num].name:
                                 self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                                self.other_clicked_uno_first = True
                         except:
                             self.players[self.turn_num].hand.cards.append(self.deck.pop())
                             
@@ -241,33 +243,31 @@ class Game:
             # 게임 오버 판별
             if self.players[self.turn_num].hand.is_empty():
                 game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
+    
 
                 if self.turn_num == 0:
                     if self.region == 'A': # 지역A 승리(업적) 달성
                        self.set_achv_date(7)
-                       self.comp_achv_list.append(7)
+                       
                     elif self.region == 'B': # 지역B 승리(업적) 달성
                         self.set_achv_date(8)
-                        self.comp_achv_list.append(8)
                     elif self.region == 'C': # 지역C 승리(업적) 달성
                         self.set_achv_date(9)
-                        self.comp_achv_list.append(9)
                     elif self.region == 'D': # 지역D 승리(업적) 달성
                         self.set_achv_date(10)
-                        self.comp_achv_list.append(10)
                     elif self.region == 'E': # 싱글 승리(업적) 달성
                         self.set_achv_date(0)
-                        self.comp_achv_list.append(0)
                     else:
                         pass
                     
                     if not self.card_picked: # 픽0 승리(업적) 달성
                         self.set_achv_date(5)
-                        self.comp_achv_list.append(5)
                         
                     if self.tech_use_cnt == 0: # 기술0 승리(업적) 달성
                         self.set_achv_date(11)
-                        self.comp_achv_list.append(11)
+                        
+                    if self.other_clicked_uno_first:
+                        self.set_achv_date(6)
 
                     try:
                         with open('story_mode_data.json') as story_mode_data_file:
@@ -791,7 +791,7 @@ class Game:
         self.tech_use_cnt += 1
         if self.region == 'E':
             if self.top_card.value == 'skip' or self.top_card.value == 'reverse' or self.top_card.value == 'draw2' or self.top_card.value == 'draw4' or self.top_card.value == 'wild' or self.top_card.value == 'wild_draw2' or self.top_card.value == 'wild_draw4': # 기술 카드를 낸 경우
-                if self.tech_use_cnt == 1 and not self.achv1_comp: # 업적1 달성했는데 업적1 팝업 띄운 적 없는 경우
+                if self.tech_use_cnt == 5 and not self.achv1_comp: # 업적1 달성했는데 업적1 팝업 띄운 적 없는 경우
                     self.achv1_comp = True 
                     if self.set_achv_date(1): # 처음 달성한 경우
                         # 업적1 달성 팝업 띄우기
@@ -823,6 +823,8 @@ class Game:
             data = json.load(acheivement_data_file)
             achv_info = data['achv_info'] # 저장된 값 불러오기
             if achv_info[idx] == "None":
+                if idx != 1 and idx != 2:
+                    self.comp_achv_list.append(idx)
                 now = datetime.now()
                 achv_info[idx] = now.strftime("%Y.%m.%d")
                 with open('acheivement_data.json','w') as acheivement_data_file: 

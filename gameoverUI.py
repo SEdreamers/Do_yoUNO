@@ -83,7 +83,7 @@ class GameOverUI:
 
         self.uno_game = game.Game(self.screen_size[0], self.screen_size[1], self.color_blind_mode,self.data["player_numbers"])
         
-        self.achv_title = ["싱글 승리", "기술5 승리", "픽0 승리", "10턴 승리", "20턴 승리", "30턴 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"] # 업적 타이틀
+        self.achv_title = ["싱글 승리", "싱글 기술5", "싱글 기술7", "10턴 승리", "20턴 승리", "픽0 승리", "UNO 승리", "지역A 승리", "지역B 승리", "지역C 승리", "지역D 승리", "기술0 승리"] # 업적 타이틀
         self.achv_cnt = 0
         
         self.title_font = pygame.font.Font("font/GangwonEduPower.ttf", self.screen_size[0] // 40)
@@ -98,6 +98,7 @@ class GameOverUI:
         self.inner_magrin = self.screen_size[0] * 0.01
 
     def display(self, comp_achv_list):
+        print(comp_achv_list)
         pygame.display.set_caption("Game Over")
         self.screen.fill(BLACK)
         
