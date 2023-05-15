@@ -1,5 +1,7 @@
 import pygame
 from player import Player
+import human as hm
+import computer as com
 from deck import Deck
 import time
 import json
@@ -266,7 +268,6 @@ class Lobby():
                         print(send_players)
                         # send_turn_num = uno_game.turn_num.to_list()
                         data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
-                        
                         pickle.dump(data, f)
                     
 
@@ -274,16 +275,19 @@ class Lobby():
                         data = pickle.load(f)
                         deck, players, turn_num, reverse, skip, start_time = data
                         deck = Deck.from_list(self.screen_size[0], self.screen_size[1], deck)
-
-                        real_players = []
-                        for player in players:
-                            real_player = Player.from_list("name", self.screen, deck, 'Z', player)
+                        real_players = [] 
+                        
+                        for idx, player in enumerate(players):
+                            if idx == 0:
+                                real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
+                            else:
+                                real_player = com.Computer.from_list(self.screen, deck, idx, 'Z', player)
+                            print(real_player)
                             real_players.append(real_player)
-                            print(real_player.hand)
 
-                        print(deck)
-                        print(players)
-                    uno_game.run()
+                        # print(deck)
+                        # print(players)
+                    uno_game.run(deck, real_players, turn_num, reverse, skip, start_time)
 
 
             screen.blit(title, title_rect)

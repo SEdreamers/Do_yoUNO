@@ -1,6 +1,8 @@
 from player import Player
 import main
 import pygame
+from hand import Hand
+from card import Card
 
 class Human(Player):
     def __init__(self, screen, deck, color_blind_mode, region):
@@ -13,7 +15,7 @@ class Human(Player):
         self.skip_icon = pygame.image.load("images/skip.png")
         self.skip_icon = pygame.transform.scale(self.skip_icon, (self.screen_size[0] / 10, self.screen_size[0] / 10))
         self.skip_rect = self.skip_icon.get_rect()
-
+        self.region = region
     
     def draw(self):
     # draw the cards(player)(front)
@@ -35,3 +37,13 @@ class Human(Player):
         self.skip_rect.centerx = skip_x
         self.skip_rect.centery = skip_y
         self.screen.blit(self.skip_icon, self.skip_rect)
+
+
+    @classmethod
+    def from_list(cls, screen, deck, blind_mode, region, data):
+        
+        human = cls(screen, deck, blind_mode, region)
+        print(human)
+        human.hand = Hand(screen, deck, region, False)
+        human.hand.cards = [Card.from_str(800, 600, card) for card in data]
+        return human

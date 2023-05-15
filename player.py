@@ -10,7 +10,8 @@ class Player:
         if region == 'Z':
             self.hand = None
         else:
-            self.hand = Hand(screen, deck, region)
+            self.hand = Hand(screen, deck, region, True)
+            
     def get_hand(self):
         return self.hand
     def count_cards(self):
@@ -23,5 +24,6 @@ class Player:
     def from_list(cls, name, screen, deck, region, data):
         player = cls(name, screen, deck, region)
         print(player)
-        player.hand = [Card.from_str(screen.get_width(), screen.get_height(), card) for card in data]
+        player.hand = Hand(screen, deck, region, False)
+        player.hand.cards = [Card.from_str(screen.get_width(), screen.get_height(), card) for card in data]
         return player

@@ -2,7 +2,7 @@ import pygame
 import main
 import hand 
 from deck import Deck
-from human import Human
+import human as hm 
 from computer import Computer
 from gameUI import GameUI
 import gameoverUI
@@ -112,7 +112,7 @@ class Game:
         # 사람은 가중치 없이 뽑아야 함
         self.deck.shuffle()
         # human player 만들기!
-        human = Human(self.screen, self.deck, self.color_blind_mode, region)
+        human = hm.Human(self.screen, self.deck, self.color_blind_mode, region)
         self.players.insert(0, human)
         # turn, reverse, skip, start time 세팅
         self.turn_num = 0
