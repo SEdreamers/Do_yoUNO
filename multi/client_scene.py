@@ -4,7 +4,7 @@ from inputbox import InputBox
 from client import Client
 
 
-class ClientScene():
+class ClientScene:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((800, 600))
@@ -18,6 +18,9 @@ class ClientScene():
     def run(self):
         while not self.done:
             box = self.input_box
+            if self.client is not None:
+                print(self.client.current_state)
+                self.client.game_loop()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.done = True

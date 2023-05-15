@@ -107,7 +107,7 @@ class GameLogic:
 
         self.clicked_uno = []
         self.random_delay = []
-        self.clicked_uno_player = uno_num
+        self.clicked_uno_player = False
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1])
         self.lst = self.firstDeck.showlist()

@@ -5,6 +5,7 @@ from game_logic import GameLogic
 from deck import Deck
 from player import Player
 import threading
+import queue
 
 class Client:
     def __init__(self, host, port, screen, name):
@@ -21,18 +22,26 @@ class Client:
         self.listen_thread = threading.Thread(target=self.listen_to_server)
         self.listen_thread.daemon = True
         self.listen_thread.start()
+        self.queue = queue.Queue()
 
     def listen_to_server(self):
         while True:
-            self.update()
+            data = self.sock.recv(1024)
+            print("listen_to_server")
+            self.queue.put(data)
+
     def game_loop(self):
+        if not self.queue.empty():
+            self.update(self.queue.get())
+            print("updated")
+        print("game_loop")
         if self.current_state is not None:
+            print("start")
             self.current_state.run()
-            pygame.display.flip()
+        pygame.display.flip()
+        pygame.time.delay(33)  # to limit the frame rate to 30 fps
 
-
-    def update(self):
-        data = self.sock.recv(1024)
+    def update(self, data):
         state = self.deserialize_data(data)
         print(f"{state}")
         text_deck = state['deck']
@@ -43,19 +52,21 @@ class Client:
         for player in text_player:
             real_player = Player(self.name, self.screen, deck, 'E', False)
             print(player)
-            real_player.from_list(self.name, self.screen, deck, 'E', 'E', player)
+            real_player.from_list(self.name, self.screen, deck, 'E', False, player)
             players.append(real_player)
 
         turn_num = state['turn_num']
         reverse = state['reverse']
-        self.current_state = GameLogic(self.screen.get_width(), self.screen.get_height(), False, 0, False,
-                                       deck, players, turn_num, reverse, "E")
-        self.game_loop()
-
+        try:
+            self.current_state = GameLogic(self.screen.get_width(), self.screen.get_height(), False, 0, False, deck,
+                                           players, turn_num, reverse, "E")
+            print(self.client)
+            print(self.current_state)
+        except Exception as e:
+            print("Error creating GameLogic:", str(e))
 
     def serialize_data(self, data):
         return json.dumps(data).encode('utf-8')
 
     def deserialize_data(self, data):
         return json.loads(data.decode('utf-8'))
-
