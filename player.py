@@ -23,7 +23,6 @@ class Player:
     @classmethod
     def from_list(cls, name, screen, deck, region, data):
         player = cls(name, screen, deck, region)
-        print(player)
         player.hand = Hand(screen, deck, region, False)
         player.hand.cards = [Card.from_str(screen.get_width(), screen.get_height(), card) for card in data]
         return player

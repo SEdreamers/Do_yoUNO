@@ -1,14 +1,13 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
 import pygame
 import main
 from deck import Deck
-from human import Human
+import human as hm 
 from datetime import datetime
 from computer import Computer
-from gamedisplay import GameUI
+from gameUI import GameUI
 import gameoverUI
 from card import Card  
 from player import Player
@@ -17,6 +16,7 @@ import time
 import json
 import math
 import random
+import pickle 
 
 # 게임의 상태를 저장할 클래스
 class GameState:
@@ -24,28 +24,40 @@ class GameState:
         self.score = score
         self.level = level
 
+# # 게임의 초기 상태
+# initial_state = GameState(0, 1)
+
+# self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time
+
+# # 게임의 상태를 저장하는 함수
+# def save_game_state(state, filename):
+#     with open(filename, 'wb') as file:
+#         pickle.dump(state, file)
+
+# # 게임의 상태를 불러오는 함수
+# def load_game_state(filename):
+#     with open(filename, 'rb') as file:
+#         state = pickle.load(file)
+#     return state
+
+# # 게임의 상태를 저장할 파일명
+# save_filename = 'game_state.pickle'
+
+# # 게임의 상태를 저장
+# save_game_state(initial_state, save_filename)
+
+# # 게임의 상태를 불러옴
+# loaded_state = load_game_state(save_filename)
+
+# # 불러온 상태 출력
+# print("Loaded State - Score: {}, Level: {}".format(loaded_state.score, loaded_state.level))
+
 
 class Game:
-    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, id,region = "E"):
+    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, region = "E"):
         pygame.init()
         
-
-
-        # 아래는 multiplay를 위한 변수
-        ###############################################
-        self.p1Went = False
-        self.p2Went = False
-        self.ready = False
-        self.id = id
-        self.moves = [None, None]
-        self.wins = [0,0]
-        self.ties = 0
-        ###############################################
-
-
-
-
-        self.screen_width = screen_width    
+        self.screen_width = screen_width
         self.screen_height = screen_height
         self.screen_size = (self.screen_width, self.screen_height)
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
@@ -79,8 +91,7 @@ class Game:
         self.combo_rect.x = self.screen_size[0] * 0.55
         self.combo_rect.y = self.screen_size[1] * 0.27
 
-        # Draw the Deck image on the screen(back)
-        self.back_card = Card(0, "back", self.screen_width, self.screen_height)
+        
         
         # create the uno button
         self.uno_btn = pygame.image.load("images/uno_btn.png")
@@ -97,9 +108,23 @@ class Game:
         try:
             with open('setting_data.json') as game_file:
                 self.data = json.load(game_file)
-        except:
-            pass
-
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5',
+            "unclicked_list": [],
+            "characters" : []
+            }
         # add computers(player 숫자 받아서 설정)
         computers = []
         for i in range(self.numberofPlayers):     ## player 수
@@ -113,7 +138,7 @@ class Game:
         # 사람은 가중치 없이 뽑아야 함
         self.deck.shuffle()
         # human player 만들기!
-        human = Human(self.screen, self.deck, self.color_blind_mode, region)
+        human = hm.Human(self.screen, self.deck, self.color_blind_mode, region)
         self.players.insert(0, human)
         # turn, reverse, skip, start time 세팅
         self.turn_num = 0
@@ -126,12 +151,20 @@ class Game:
         self.clicked_uno_player = None
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
+        print("deck created")
         self.lst = self.firstDeck.showlist()
         self.top_card = self.deck.pop()  
         
         self.players_num = len(self.players)
 
 
+        # Draw the Deck image on the screen(back)
+        self.back_card = Card(0, "back", self.screen_width, self.screen_height)
+        
+
+
+
+        
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
@@ -172,80 +205,52 @@ class Game:
             # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
             # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
         }
-        self.save_play()
+
+
+
+
+
+    def save(self,file_path):
+        with open(file_path, 'wb') as f:
+            data = (self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
+            pickle.dump(data, f)
+    
+    @staticmethod
+    def load(file_path):
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+            players, turn_num, top_card, back_card, reverse, skip, start_time, = data
+            game = Game(data["size"][0],data["size"][1],data["color_blind_mode"],data["player_numbers"])
+            game.players = players
+            game.turn_num = turn_num
+            game.top_card = top_card
+            game.back_card = back_card
+            game.reverse = reverse
+            game.skip = skip
+            game.start_time = start_time
+            return game
     
 
 
 
 
+    def run(self, deck, players, turn_num, reverse, skip, start_time): 
+        self.deck = deck
+        self.top_card = self.deck.pop()
+        self.players = players 
+        self.turn_num = turn_num
+        self.reverse = reverse
+        self.skip = skip 
+        self.start_time = start_time
 
-
-# 아래는 multiplay를 위한 함수
-###############################################
-    def get_player_move(self, p):
-        """
-        :param p: [0,1]
-        :return: Move
-        """
-        return self.moves[p]
-
-    def play(self, player, move):
-        self.moves[player] = move
-        if player == 0:
-            self.p1Went = True
-        else:
-            self.p2Went = True
-
-    def connected(self):
-        return self.ready
-
-    def bothWent(self):
-        return self.p1Went and self.p2Went
-
-    def winner(self):
-
-        p1 = self.moves[0].upper()[0]
-        p2 = self.moves[1].upper()[0]
-
-        winner = -1
-        if p1 == "R" and p2 == "S":
-            winner = 0
-        elif p1 == "S" and p2 == "R":
-            winner = 1
-        elif p1 == "P" and p2 == "R":
-            winner = 0
-        elif p1 == "R" and p2 == "P":
-            winner = 1
-        elif p1 == "S" and p2 == "P":
-            winner = 0
-        elif p1 == "P" and p2 == "S":
-            winner = 1
-
-        return winner
-
-    def resetWent(self):
-        self.p1Went = False
-        self.p2Went = False
-###############################################
-
-
-
-
-
-
-    def save_play(self):
-        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
-        with open('game_data.json','w') as game_data_file: 
-            json.dump(self.data, game_data_file)    
-
-    def run(self):
         pygame.init()
-                            
+
         with open('setting_data.json') as game_file:
                             data = json.load(game_file)
                             tvol = data["Total_Volume"]
                             bvol = data["Background_Volume"]
                             svol = data["Sideeffect_Volume"]
+        
 
 
         pygame.mixer.music.set_volume(tvol)
@@ -259,12 +264,7 @@ class Game:
         else:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
         
-        try: 
-            with open('game_data.json','w') as play_data_file: 
-                json.dump(self.data, play_data_file)
-        except: 
-            print("No file created yet!")    
-            
+
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if self.turn_num == 0: # Human turn
@@ -432,7 +432,6 @@ class Game:
                 else:
                     GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
-                    self.save_play()
                     self.running = False
                 # keyboard handling
                 elif event.type == pygame.KEYDOWN: 

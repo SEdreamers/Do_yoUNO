@@ -43,7 +43,6 @@ class Human(Player):
     def from_list(cls, screen, deck, blind_mode, region, data):
         
         human = cls(screen, deck, blind_mode, region)
-        print(human)
         human.hand = Hand(screen, deck, region, False)
         human.hand.cards = [Card.from_str(800, 600, card) for card in data]
         return human

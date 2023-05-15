@@ -1,8 +1,18 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import pygame
 from network import Network
 import gamedisplay
 import game_logic
 import json
+import pickle 
+from card import Card  
+from player import Player
+from computer import Computer
+import human as hm 
+from deck import Deck
+
 
 pygame.font.init()
 
@@ -172,32 +182,64 @@ def main():
                                 n.send(btn.text)
 
         redrawWindow(win, game, player)
+class Client:
+    def __init__(self, screen):
+        self.screen = screen
+    def menu_screen(self):
+        run = True
+        clock = pygame.time.Clock()                 # 시간 동기화
 
-def menu_screen():
-    run = True
-    clock = pygame.time.Clock()                 # 시간 동기화
-
-    while run:
-        clock.tick(60)                          # 프레임 속도 제한
+        while run:
+            clock.tick(60)                          # 프레임 속도 제한
 
 
 
-        uno_game = game_logic.Game(lst["size"][0],lst["size"][1],lst["color_blind_mode"],lst["player_numbers"]) 
-        uno_game.run()
-        # win.fill((128, 128, 128)) 
-        # font = pygame.font.SysFont("comicsans", 60)
-        # text = font.render("Click to Play!", 1, (255,0,0))
-        # win.blit(text, (100,200))
-        # pygame.display.update()
+            uno_game = game_logic.Game(lst["size"][0],lst["size"][1], lst["color_blind_mode"], lst["player_numbers"]) 
+            with open('game_data.pickle', 'wb') as f:
+                send_deck = uno_game.deck.to_list()
+                send_players = []
+                for player in uno_game.players:
+                    send_player = player.to_list()
+                    send_players.append(send_player)
+                print(send_players)
+                # send_turn_num = uno_game.turn_num.to_list()
+                data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
+                pickle.dump(data, f)
+            
 
-        for event in pygame.event.get():                           #  게임 종료 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                run = False
+            with open('game_data.pickle', 'rb') as f:
+                data = pickle.load(f)
+                deck, players, turn_num, reverse, skip, start_time = data
+                deck = Deck.from_list(lst["size"][0],lst["size"][1], deck)
+                real_players = [] 
+                
+                for idx, player in enumerate(players):
+                    if idx == 0:
+                        real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
+                    else:
+                        real_player = Computer.from_list(self.screen, deck, idx, 'Z', player)
+                    real_players.append(real_player)
 
-    main()
+                # print(deck)
+                # print(players)
+            uno_game.run(deck, real_players, turn_num, reverse, skip, start_time)
 
-while True:               # 시작 
-    menu_screen()
+
+
+            # win.fill((128, 128, 128)) 
+            # font = pygame.font.SysFont("comicsans", 60)
+            # text = font.render("Click to Play!", 1, (255,0,0))
+            # win.blit(text, (100,200))
+            # pygame.display.update()
+
+            for event in pygame.event.get():                           #  게임 종료 
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    run = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    run = False
+
+        main()
+    screen = pygame.display.set_mode((800, 600))
+    while True:               # 시작 
+        menu_screen(screen)

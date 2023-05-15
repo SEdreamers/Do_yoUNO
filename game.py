@@ -148,6 +148,7 @@ class Game:
         self.clicked_uno_player = None
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
+        print("deck created")
         self.lst = self.firstDeck.showlist()
         self.top_card = self.deck.pop()  
         
@@ -234,22 +235,13 @@ class Game:
         self.deck = deck
         self.top_card = self.deck.pop()
         self.players = players 
-        print(players)
-        print("22")
         self.turn_num = turn_num
         self.reverse = reverse
         self.skip = skip 
         self.start_time = start_time
 
         pygame.init()
-
-        # print(self.players, type(self.players))
-        # print(self.turn_num, type(self.turn_num))
-        # print(self.top_card, type(self.top_card))
-        # # print(self.back_card, type(self.back_card))
-        # print(self.reverse, type(self.reverse))
-        # print(self.skip, type(self.skip))
-        # print(self.start_time, type(self.start_time))
+        
 
 
 

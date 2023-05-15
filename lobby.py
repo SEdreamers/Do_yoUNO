@@ -282,7 +282,6 @@ class Lobby():
                                 real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
                             else:
                                 real_player = com.Computer.from_list(self.screen, deck, idx, 'Z', player)
-                            print(real_player)
                             real_players.append(real_player)
 
                         # print(deck)

@@ -144,8 +144,6 @@ class GameUI:
 
     def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time, clicked_uno_player, achv_index):
         # card 위치 설정(player card)
-        print(players[0])
-        print(players[0].hand)
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
             y_pos = self.deck_y
