@@ -265,7 +265,7 @@ class Lobby():
                         for player in uno_game.players:
                             send_player = player.to_list()
                             send_players.append(send_player)
-                        print(send_players)
+                            
                         # send_turn_num = uno_game.turn_num.to_list()
                         data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
                         pickle.dump(data, f)
