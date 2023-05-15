@@ -69,6 +69,7 @@ class Game:
 
         self.skip_flag = 0
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
+        self.deck.load_cards()
         
         self.achv_index = None # 게임 도중 팝업으로 띄울 달성 업적 index
         self.tech_use_cnt = 0 # 기술카드 사용 횟수

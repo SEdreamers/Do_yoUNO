@@ -72,6 +72,7 @@ class Game:
 
         self.skip_flag = 0
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
+        self.deck.load_cards()
         
         self.achv_index = None # 게임 도중 팝업으로 띄울 달성 업적 index
         self.tech_use_cnt = 0 # 기술카드 사용 횟수
@@ -111,7 +112,7 @@ class Game:
         except: 
             self.data ={
             "color_blind_mode": False,
-            "size": (800,600),
+            "size": (800, 600),
             "Total_Volume": 0.3,
             "Background_Volume": 0.3,
             "Sideeffect_Volume": 0.3,
@@ -236,7 +237,7 @@ class Game:
 
     def run(self, deck, players, turn_num, reverse, skip, start_time): 
         self.deck = deck
-        self.top_card = self.deck.pop()
+        self.top_card = self.deck.peek()
         self.players = players 
         self.turn_num = turn_num
         self.reverse = reverse
@@ -263,87 +264,84 @@ class Game:
             self.skip = False
         else:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
-        
 
-        while self.running:
-            # Human turn인지 Computer turn인지 구분
-            if self.turn_num == 0: # Human turn
-                # print('Human turn:' + str(self.turn_num))
-                is_draw = self.handle_events()
-                if not is_draw: # 카드를 낸 경우만
-                    if len(self.players[self.turn_num].hand.cards) == 1: # 직전에 카드를 내어 카드가 2장에서 1장이 된 경우
-                        # 다른 플레이어가 현재 플레이어보다 uno버튼을 빠르게 눌렀거나 아무도 누르지 않은 경우 현재 플레이어에게 1장 강제 부여
-                        try: 
-                            if self.clicked_uno[0] != self.players[self.turn_num].name:
-                                self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                                self.other_clicked_uno_first = True
-                        except:
-                            self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                            
-                    self.update()
-            else: # Computer turn
-                # print('Computer turn:' + str(self.turn_num))
-                self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
-                
+        if self.turn_num == 0: # Human turn
+            # print('Human turn:' + str(self.turn_num))
+            is_draw = self.handle_events()
+            if not is_draw: # 카드를 낸 경우만
                 if len(self.players[self.turn_num].hand.cards) == 1: # 직전에 카드를 내어 카드가 2장에서 1장이 된 경우
-                        # 다른 플레이어가 현재 플레이어보다 uno버튼을 빠르게 눌렀거나 아무도 누르지 않은 경우 현재 플레이어에게 1장 강제 부여
-                        try: 
-                            if self.clicked_uno[0] != self.players[self.turn_num].name:
-                                self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                        except:
+                    # 다른 플레이어가 현재 플레이어보다 uno버튼을 빠르게 눌렀거나 아무도 누르지 않은 경우 현재 플레이어에게 1장 강제 부여
+                    try:
+                        if self.clicked_uno[0] != self.players[self.turn_num].name:
                             self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                            self.other_clicked_uno_first = True
+                    except:
+                        self.players[self.turn_num].hand.cards.append(self.deck.pop())
 
                 self.update()
-            self.render()
+        else: # Computer turn
+            # print('Computer turn:' + str(self.turn_num))
+            self.auto_handling()   ## 자동으로 카드 가져가거나 내도록
 
-            # 게임 오버 판별
-            if self.players[self.turn_num].hand.is_empty():
-                game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode) 
-    
-
-                if self.turn_num == 0:
-                    if self.region == 'A': # 지역A 승리(업적) 달성
-                       self.set_achv_date(7)
-                    elif self.region == 'B': # 지역B 승리(업적) 달성
-                        self.set_achv_date(8)
-                    elif self.region == 'C': # 지역C 승리(업적) 달성
-                        self.set_achv_date(9)
-                    elif self.region == 'D': # 지역D 승리(업적) 달성
-                        self.set_achv_date(10)
-                    elif self.region == 'E': # 싱글 승리(업적) 달성
-                        self.set_achv_date(0)
-                    else:
-                        pass
-                    
-                    if self.turn_cnt <= 10: # 10턴 승리(업적) 달성
-                        self.set_achv_date(3)
-                        
-                    if self.turn_cnt <= 20: # 20턴 승리(업적) 달성
-                        self.set_achv_date(4)
-                    
-                    if not self.card_picked: # 픽0 승리(업적) 달성
-                        self.set_achv_date(5)
-                        
-                    if self.other_clicked_uno_first: # UNO 승리(업적) 달성
-                        self.set_achv_date(6)
-                        
-                    if self.tech_use_cnt == 0: # 기술0 승리(업적) 달성
-                        self.set_achv_date(11)
-
+            if len(self.players[self.turn_num].hand.cards) == 1: # 직전에 카드를 내어 카드가 2장에서 1장이 된 경우
+                    # 다른 플레이어가 현재 플레이어보다 uno버튼을 빠르게 눌렀거나 아무도 누르지 않은 경우 현재 플레이어에게 1장 강제 부여
                     try:
-                        with open('story_mode_data.json') as story_mode_data_file:
-                            data = json.load(story_mode_data_file)
-                            unlocked_regions = data['unlocked_regions'] # 저장된 값 불러오기
-                            rg = f"region{chr(ord(self.region)+1)}"
-                            if rg not in unlocked_regions:
-                                unlocked_regions.append(rg)
-                                data = {
-                                    "unlocked_regions": unlocked_regions
-                                }
-                        with open('story_mode_data.json','w') as story_mode_data_file: 
-                            json.dump(data, story_mode_data_file)
-                    except: 
-                        pass
+                        if self.clicked_uno[0] != self.players[self.turn_num].name:
+                            self.players[self.turn_num].hand.cards.append(self.deck.pop())
+                    except:
+                        self.players[self.turn_num].hand.cards.append(self.deck.pop())
+
+            self.update()
+        self.render()
+
+        # 게임 오버 판별
+        if self.players[self.turn_num].hand.is_empty():
+            game_over = gameoverUI.GameOverUI(self.screen_size[0], self.screen_size[1], self.players[self.turn_num].name, self.color_blind_mode)
+
+
+            if self.turn_num == 0:
+                if self.region == 'A': # 지역A 승리(업적) 달성
+                   self.set_achv_date(7)
+                elif self.region == 'B': # 지역B 승리(업적) 달성
+                    self.set_achv_date(8)
+                elif self.region == 'C': # 지역C 승리(업적) 달성
+                    self.set_achv_date(9)
+                elif self.region == 'D': # 지역D 승리(업적) 달성
+                    self.set_achv_date(10)
+                elif self.region == 'E': # 싱글 승리(업적) 달성
+                    self.set_achv_date(0)
+                else:
+                    pass
+
+                if self.turn_cnt <= 10: # 10턴 승리(업적) 달성
+                    self.set_achv_date(3)
+
+                if self.turn_cnt <= 20: # 20턴 승리(업적) 달성
+                    self.set_achv_date(4)
+
+                if not self.card_picked: # 픽0 승리(업적) 달성
+                    self.set_achv_date(5)
+
+                if self.other_clicked_uno_first: # UNO 승리(업적) 달성
+                    self.set_achv_date(6)
+
+                if self.tech_use_cnt == 0: # 기술0 승리(업적) 달성
+                    self.set_achv_date(11)
+
+                try:
+                    with open('story_mode_data.json') as story_mode_data_file:
+                        data = json.load(story_mode_data_file)
+                        unlocked_regions = data['unlocked_regions'] # 저장된 값 불러오기
+                        rg = f"region{chr(ord(self.region)+1)}"
+                        if rg not in unlocked_regions:
+                            unlocked_regions.append(rg)
+                            data = {
+                                "unlocked_regions": unlocked_regions
+                            }
+                    with open('story_mode_data.json','w') as story_mode_data_file:
+                        json.dump(data, story_mode_data_file)
+                except:
+                    pass
                 
                 while True:
                     game_over.display(self.comp_achv_list) # 게임 오버 화면 불러오기
@@ -351,22 +349,30 @@ class Game:
 
             self.clicked_uno_player = None
             # combo true일 때는 turn 안 넘기기
-            if self.combo == 0:           
-                # turn 전환
-                if (self.turn_num + 1) % self.players_num == 0: # 한 턴이 완전히 진행된 경우
-                    self.turn_cnt += 1
-                # print(f'턴 횟수: {self.turn_cnt}')
-                if not self.reverse:
-                    self.turn_num += 1
-                    if self.turn_num >= len(self.players):
-                        self.turn_num = 0
-                else:
-                    self.turn_num -= 1
-                    if self.turn_num < 0:
-                        self.turn_num = len(self.players) - 1
+        if self.combo == 0:           
+            # turn 전환
+            if (self.turn_num + 1) % self.players_num == 0: # 한 턴이 완전히 진행된 경우
+                self.turn_cnt += 1
+            # print(f'턴 횟수: {self.turn_cnt}')
+            if not self.reverse:
+                self.turn_num += 1
+                if self.turn_num >= len(self.players):
+                    self.turn_num = 0
+            else:
+                self.turn_num -= 1
+                if self.turn_num < 0:
+                    self.turn_num = len(self.players) - 1
             
-               
-        pygame.quit()
+        with open('game_data.pickle', 'wb') as f:
+            send_deck = self.deck.to_list()
+            send_players = []
+            for player in self.players:
+                send_player = player.to_list()
+                send_players.append(send_player)
+            print(send_players)
+            # send_turn_num = uno_game.turn_num.to_list()
+            data = (send_deck, send_players, self.turn_num, self.reverse, self.skip, self.start_time)
+            pickle.dump(data, f)
 
     # function is responsible for handling user input and events
     def handle_events(self):
