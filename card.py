@@ -71,3 +71,20 @@ class Card(pygame.sprite.Sprite):
     
     def __repr__(self):
         return self.color + ' ' + self.value
+    
+
+    @classmethod
+    def from_str(cls, screen1, screen2, data):
+        print(data)
+        if data.count('_') == 1:  
+            color, value = data.split('_')
+        else: 
+            color, wild, value = data.split('_')
+            value = wild + "_" + value
+        return cls(value, color, screen1, screen2)
+
+    def __str__(self):
+        return f"{self.color}_{self.value}"
+
+    def __repr__(self):
+        return self.__str__()      

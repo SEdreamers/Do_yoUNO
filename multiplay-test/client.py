@@ -180,6 +180,8 @@ def menu_screen():
     while run:
         clock.tick(60)                          # 프레임 속도 제한
 
+
+
         uno_game = game_logic.Game(lst["size"][0],lst["size"][1],lst["color_blind_mode"],lst["player_numbers"]) 
         uno_game.run()
         # win.fill((128, 128, 128)) 
