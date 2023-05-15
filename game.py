@@ -13,6 +13,7 @@ import time
 import json
 import math
 import random
+import pickle 
 
 # 게임의 상태를 저장할 클래스
 class GameState:
@@ -87,8 +88,7 @@ class Game:
         self.combo_rect.x = self.screen_size[0] * 0.55
         self.combo_rect.y = self.screen_size[1] * 0.27
 
-        # Draw the Deck image on the screen(back)
-        self.back_card = Card(0, "back", self.screen_width, self.screen_height)
+        
         
         # create the uno button
         self.uno_btn = pygame.image.load("images/uno_btn.png")
@@ -105,9 +105,23 @@ class Game:
         try:
             with open('setting_data.json') as game_file:
                 self.data = json.load(game_file)
-        except:
-            pass
-
+        except: 
+            self.data ={
+            "color_blind_mode": False,
+            "size": (800,600),
+            "Total_Volume": 0.3,
+            "Background_Volume": 0.3,
+            "Sideeffect_Volume": 0.3,
+            "player_numbers":3,
+            "me": 'player',
+            "c1name" :'computer1',
+            "c2name" :'computer2',
+            "c3name" :'computer3',
+            "c4name" :'computer4',
+            "c5name" :'computer5',
+            "unclicked_list": [],
+            "characters" : []
+            }
         # add computers(player 숫자 받아서 설정)
         computers = []
         for i in range(self.numberofPlayers):     ## player 수
@@ -140,6 +154,13 @@ class Game:
         self.players_num = len(self.players)
 
 
+        # Draw the Deck image on the screen(back)
+        self.back_card = Card(0, "back", self.screen_width, self.screen_height)
+        
+
+
+
+        
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
@@ -180,21 +201,60 @@ class Game:
             # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
             # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
         }
-        self.save_play()
-        
-    def save_play(self):
-        # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
-        with open('game_data.json','w') as game_data_file: 
-            json.dump(self.data, game_data_file)    
 
-    def run(self):
+
+
+
+
+    def save(self,file_path):
+        with open(file_path, 'wb') as f:
+            data = (self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time)
+            pickle.dump(data, f)
+    
+    @staticmethod
+    def load(file_path):
+        with open(file_path, 'rb') as f:
+            data = pickle.load(f)
+            players, turn_num, top_card, back_card, reverse, skip, start_time, = data
+            game = Game(data["size"][0],data["size"][1],data["color_blind_mode"],data["player_numbers"])
+            game.players = players
+            game.turn_num = turn_num
+            game.top_card = top_card
+            game.back_card = back_card
+            game.reverse = reverse
+            game.skip = skip
+            game.start_time = start_time
+            return game
+    
+
+
+
+
+    def run(self): 
+
         pygame.init()
-                            
+
+        print(self.players, type(self.players))
+        print(self.turn_num, type(self.turn_num))
+        print(self.top_card, type(self.top_card))
+        # print(self.back_card, type(self.back_card))
+        print(self.reverse, type(self.reverse))
+        print(self.skip, type(self.skip))
+        print(self.start_time, type(self.start_time))
+
+
+
+
+        
+
+
+
         with open('setting_data.json') as game_file:
                             data = json.load(game_file)
                             tvol = data["Total_Volume"]
                             bvol = data["Background_Volume"]
                             svol = data["Sideeffect_Volume"]
+        
 
 
         pygame.mixer.music.set_volume(tvol)
@@ -381,7 +441,6 @@ class Game:
                 else:
                     GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
-                    self.save_play()
                     self.running = False
                 # keyboard handling
                 elif event.type == pygame.KEYDOWN: 

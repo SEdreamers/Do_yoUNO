@@ -1,10 +1,11 @@
 import pygame
 from player import Player
+from deck import Deck
 import time
 import json
 import game
 import sys
-
+import pickle 
 
 class Lobby():
     def __init__(self, screen_width, screen_height, color_blind_mode):
@@ -253,7 +254,25 @@ class Lobby():
                 self.data["player_numbers"] = Player_number
                 self.save_game()
                 if (Player_number != 0): 
+
+                    
                     uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"]) 
+                    with open('game_data.pickle', 'wb') as f:
+                        send_deck = uno_game.deck.to_list()
+                        send_players = uno_game.players.to_list()
+                        # send_turn_num = uno_game.turn_num.to_list()
+                        data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
+                        
+                        pickle.dump(data, f)
+                    
+
+                    with open('game_data.pickle', 'rb') as f:
+                        data = pickle.load(f)
+                        deck, players, turn_num, reverse, skip, start_time = data
+                        deck = Deck.from_list(self.screen_size[0], self.screen_size[1], deck)
+                        # players = Player.from_list()
+                        print(deck)
+                        print(players)
                     uno_game.run()
 
 
@@ -261,4 +280,4 @@ class Lobby():
             screen.blit(play_text, play_rect)
             screen.blit(charact_text, charact_rect)
             pygame.display.flip()
-            
+      

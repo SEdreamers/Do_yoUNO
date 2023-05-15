@@ -47,3 +47,15 @@ class Deck:
     
     def showlist(self):
         return self.list 
+    
+
+    def to_list(self):
+        return [card.__str__() for card in self.cards]
+
+    @classmethod
+    def from_list(cls, screen_width, screen_height, data):
+        deck = cls(screen_width, screen_height)
+        print(data)
+        for card_data in data:
+            deck.cards = [Card.from_str(screen_width, screen_height, card_data)]
+        return deck
