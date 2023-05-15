@@ -2,9 +2,9 @@ import pygame
 import main
 import hand
 from deck import Deck
-from human import Human
-from computer import Computer
-from gameUI import GameUI
+import human as hm
+import computer as com
+import gameUI as g
 import gameoverUI
 from card import Card
 from player import Player
@@ -55,8 +55,8 @@ class GameState:
 
 
 class GameLogic:
-    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers, character,
-                 deck, players, turn_num, reverse, region='E'):
+    def __init__(self, screen_width, screen_height, color_blind_mode, numberofPlayers,
+                 deck, players, turn_num, reverse, character, region="E"):
         pygame.init()
 
         self.screen_width = screen_width
@@ -65,6 +65,11 @@ class GameLogic:
         # font = pygame.font.SysFont("arial", self.screen_size[0] // 42, True, True)
         self.color_blind_mode = color_blind_mode
         self.numberofPlayers = numberofPlayers
+        self.deck = deck
+        self.players = players
+        self.turn_num = turn_num
+        self.reverse = reverse
+        self.skip = False
         self.character = character
 
         # Set up the game screen
@@ -73,8 +78,7 @@ class GameLogic:
         background_image = pygame.transform.scale(background_image, self.screen_size)
         self.running = True
 
-        self.deck = deck
-        self.players = players
+        # self.deck = Deck(self.screen_size[0], self.screen_size[1])
 
         # combo
         self.combo = 0
@@ -92,6 +96,7 @@ class GameLogic:
 
         # Draw the Deck image on the screen(back)
         self.back_card = Card(0, "back", self.screen_width, self.screen_height)
+
         # create the uno button
         self.uno_btn = pygame.image.load("images/uno_btn.png")
         self.uno_btn = pygame.transform.scale(self.uno_btn, (self.screen_size[0] / 12.5, self.screen_size[0] * 0.054))
@@ -99,21 +104,32 @@ class GameLogic:
         self.uno_rect.x = self.screen_size[0] * 0.55
         self.uno_rect.y = self.screen_size[1] * 0.27
 
+        # players 저장
+        # self.players = []
+        #
+        # # add computers(player 숫자 받아서 설정)
+        # computers = []
+        # for i in range(self.numberofPlayers):  ## player 수
+        #     computers.append(com.Computer(self.screen, self.deck, i, region, character))
+        #
+        # self.players.extend(computers)
+        #
+        # # 사람은 가중치 없이 뽑아야 함
+        # self.deck.shuffle()
+        # # human player 만들기!
+        # human = hm.Human(self.screen, self.deck, self.color_blind_mode, region, False)
+        # self.players.insert(0, human)
         # turn, reverse, skip, start time 세팅
-        self.turn_num = turn_num
-        self.reverse = reverse
-        self.skip = False
         self.start_time = -1
 
         self.clicked_uno = []
         self.random_delay = []
-        self.clicked_uno_player = False
+        self.clicked_uno_player = None
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1])
         self.lst = self.firstDeck.showlist()
         not_first_top_list = [x for x in self.lst if
                               "reverse" or "draw2" or "draw4" or "wild" or "wild_draw4" or "wild_swap" in x]
-
         # print(not_first_top_list)
         self.top_card = self.deck.pop()
 
@@ -135,13 +151,12 @@ class GameLogic:
                                           self.reverse)
 
         # Game 너비, 높이 기본 배경 설정
-
         if region == "D":
-            self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn,
-                                 region)
+            self.GameUI = g.GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode,
+                                   self.uno_btn, region)
         else:
-            self.GameUI = GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode, self.uno_btn)
-
+            self.GameUI = g.GameUI(self.screen.get_width(), self.screen.get_height(), self.color_blind_mode,
+                                   self.uno_btn)
 
         self.move = pygame.mixer.Sound('soundeffect-move.mp3')  ## 효과음 추가(move)
         ##innersetting.py의 Setting class
@@ -152,13 +167,23 @@ class GameLogic:
         self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
 
+        # 실행중이던 게임을 딕셔너리 형태로 저장
+        self.data = {
+            # "running_time": ,
+            # "human_hand": list(map(str,self.players[0].hand.cards)),
+            # ##사람 손에 있는 카드  ## self.players[0].hand.cards      리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다.
+            # "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
+            # "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
+            # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
+            # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
+        }
+        self.save_play()
 
     def save_play(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         with open('game_data.json', 'w') as game_data_file:
             json.dump(self.data, game_data_file)
-    def stop(self):
-        self.running = False
+
     def run(self):
         pygame.init()
 
@@ -321,9 +346,9 @@ class GameLogic:
                 pos = pygame.mouse.get_pos()
                 if self.screen_size[0] / 66.667 < pos[0] < self.screen_size[0] / 16.667 and self.screen_size[1] / 37.5 < \
                         pos[1] < self.screen_size[1] / 17.143:
-                    GameUI.exit_flag = 1
+                    g.GameUI.exit_flag = 1
                 else:
-                    GameUI.exit_flag = 0
+                    g.GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
                     self.save_play()
                     self.running = False
@@ -350,16 +375,16 @@ class GameLogic:
                     elif event.key == pygame.K_q:
                         self.running = False
                         main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
-                    if not GameUI.backcard_uno_flag:
+                    if not g.GameUI.backcard_uno_flag:
                         if event.key == pygame.K_LEFT:
-                            GameUI.cur_card -= 1
-                            if GameUI.cur_card < 0:
-                                GameUI.cur_card = 0
+                            g.GameUI.cur_card -= 1
+                            if g.GameUI.cur_card < 0:
+                                g.GameUI.cur_card = 0
                             self.render()
                         elif event.key == pygame.K_RIGHT:
-                            GameUI.cur_card += 1
-                            if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
-                                GameUI.cur_card = len(self.players[0].hand.cards) - 1
+                            g.GameUI.cur_card += 1
+                            if g.GameUI.cur_card > len(self.players[0].hand.cards) - 1:
+                                g.GameUI.cur_card = len(self.players[0].hand.cards) - 1
                             self.render()
                         elif event.key == 13:  ## press entered
                             entered_card = self.players[0].hand.cards[GameUI.cur_card]
@@ -372,8 +397,8 @@ class GameLogic:
                                 self.deck.append(self.top_card)
                                 self.players[self.turn_num].hand.cards.remove(entered_card)
                                 self.update()
-                                if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
-                                    GameUI.cur_card = len(self.players[0].hand.cards) - 1
+                                if g.GameUI.cur_card > len(self.players[0].hand.cards) - 1:
+                                    g.GameUI.cur_card = len(self.players[0].hand.cards) - 1
                                     self.render()
                             if self.top_card.color == 'black':
                                 self.render()
@@ -405,42 +430,41 @@ class GameLogic:
                                                 play = False
                                         elif event.type == pygame.KEYDOWN:
                                             if event.key == pygame.K_RIGHT:
-                                                GameUI.color_flag += 1
-                                                GameUI.color_flag %= 4
+                                                g.GameUI.color_flag += 1
+                                                g.GameUI.color_flag %= 4
                                                 self.render()
                                             elif event.key == pygame.K_LEFT:
-                                                GameUI.color_flag -= 1
-                                                GameUI.color_flag %= 4
+                                                g.GameUI.color_flag %= 4
                                                 self.render()
                                             elif event.key == 13:
-                                                if GameUI.color_flag == 0:
+                                                if g.GameUI.color_flag == 0:
                                                     self.top_card.color = 'blue'
-                                                elif GameUI.color_flag == 1:
+                                                elif g.GameUI.color_flag == 1:
                                                     self.top_card.color = 'green'
-                                                elif GameUI.color_flag == 2:
+                                                elif g.GameUI.color_flag == 2:
                                                     self.top_card.color = 'red'
-                                                elif GameUI.color_flag == 3:
+                                                elif g.GameUI.color_flag == 3:
                                                     self.top_card.color = 'yellow'
                                                 self.render()
                                                 play == False
                                                 return False
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                        if GameUI.backcard_uno_flag:
-                            GameUI.backcard_uno_flag = 0
+                        if g.GameUI.backcard_uno_flag:
+                            g.GameUI.backcard_uno_flag = 0
                         else:
-                            GameUI.backcard_uno_flag = 1
+                            g.GameUI.backcard_uno_flag = 1
                         self.render()
                     elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                        if GameUI.backcard_uno_flag == 1:
-                            GameUI.backcard_uno_flag = 2
-                        elif GameUI.backcard_uno_flag == 2:
-                            GameUI.backcard_uno_flag = 1
+                        if g.GameUI.backcard_uno_flag == 1:
+                            g.GameUI.backcard_uno_flag = 2
+                        elif g.GameUI.backcard_uno_flag == 2:
+                            g.GameUI.backcard_uno_flag = 1
                         self.render()
-                    if event.key == 13 and GameUI.backcard_uno_flag == 1:
+                    if event.key == 13 and g.GameUI.backcard_uno_flag == 1:
                         self.card_clicked = self.back_card
                         start_time = pygame.time.get_ticks()
                         self.players[self.turn_num].hand.cards.append(self.deck.pop())
-                    elif event.key == 13 and GameUI.backcard_uno_flag == 2:  # uno 버튼 눌렀을 때
+                    elif event.key == 13 and g.GameUI.backcard_uno_flag == 2:  # uno 버튼 눌렀을 때
                         if len(self.players[self.turn_num].hand.cards) == 2:
                             if self.players[self.turn_num].name not in self.clicked_uno:
                                 self.clicked_uno.append(self.players[self.turn_num].name)
@@ -509,21 +533,21 @@ class GameLogic:
 
                                 elif event.type == pygame.KEYDOWN:
                                     if event.key == pygame.K_RIGHT:
-                                        GameUI.color_flag += 1
-                                        GameUI.color_flag %= 4
+                                        g.GameUI.color_flag += 1
+                                        g.GameUI.color_flag %= 4
                                         self.render()
                                     elif event.key == pygame.K_LEFT:
-                                        GameUI.color_flag -= 1
-                                        GameUI.color_flag %= 4
+                                        g.GameUI.color_flag -= 1
+                                        g.GameUI.color_flag %= 4
                                         self.render()
                                     elif event.key == 13:
-                                        if GameUI.color_flag == 0:
+                                        if g.GameUI.color_flag == 0:
                                             self.top_card.color = 'blue'
-                                        elif GameUI.color_flag == 1:
+                                        elif g.GameUI.color_flag == 1:
                                             self.top_card.color = 'green'
-                                        elif GameUI.color_flag == 2:
+                                        elif g.GameUI.color_flag == 2:
                                             self.top_card.color = 'red'
-                                        elif GameUI.color_flag == 3:
+                                        elif g.GameUI.color_flag == 3:
                                             self.top_card.color = 'yellow'
                                         self.render()
                                         play == False

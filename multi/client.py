@@ -55,11 +55,12 @@ class Client:
             real_player.from_list(self.name, self.screen, deck, 'E', False, player)
             players.append(real_player)
 
-        turn_num = state['turn_num']
-        reverse = state['reverse']
+        turn_num = int(state['turn_num'])
+        reverse = int(state['reverse'])
         try:
-            self.current_state = GameLogic(self.screen.get_width(), self.screen.get_height(), False, 0, False, deck,
-                                           players, turn_num, reverse, "E")
+            self.current_state = GameLogic(self.screen.get_width(), self.screen.get_height(), False, 0, deck,
+                                           players, turn_num, reverse, False, "E")
+
             print(self.client)
             print(self.current_state)
         except Exception as e:
