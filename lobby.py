@@ -259,7 +259,11 @@ class Lobby():
                     uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"]) 
                     with open('game_data.pickle', 'wb') as f:
                         send_deck = uno_game.deck.to_list()
-                        send_players = uno_game.players.to_list()
+                        send_players = []
+                        for player in uno_game.players:
+                            send_player = player.to_list()
+                            send_players.append(send_player)
+                        print(send_players)
                         # send_turn_num = uno_game.turn_num.to_list()
                         data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
                         
@@ -270,7 +274,13 @@ class Lobby():
                         data = pickle.load(f)
                         deck, players, turn_num, reverse, skip, start_time = data
                         deck = Deck.from_list(self.screen_size[0], self.screen_size[1], deck)
-                        # players = Player.from_list()
+
+                        real_players = []
+                        for player in players:
+                            real_player = Player.from_list("name", self.screen, deck, 'Z', player)
+                            real_players.append(real_player)
+                            print(real_player.hand)
+
                         print(deck)
                         print(players)
                     uno_game.run()
