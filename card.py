@@ -75,6 +75,7 @@ class Card(pygame.sprite.Sprite):
 
     @classmethod
     def from_str(cls, screen1, screen2, data):
+        print(data)
         if data.count('_') == 1:  
             color, value = data.split('_')
         else: 

@@ -2,13 +2,9 @@
 import pygame
 import time
 import json
-import game_logic
+import game
 import gameUI
-import pickle
-from player import Player
-import human as hm
-import computer as com
-from deck import Deck
+
 
 # Initialize Pygame
 class Setting():
@@ -33,6 +29,7 @@ class Setting():
     
         self.running = True
 
+        pygame.init()
         # Set the font for the buttons
         self.font = pygame.font.SysFont("arial", self.screen_width // 20, True)
         self.screen_sizes_font = pygame.font.SysFont("arial", self.screen_width // 40, True)
@@ -208,22 +205,10 @@ class Setting():
                             
 
                         elif menu_flag == 2:
-                            with open('game_data.pickle', 'rb') as f:
-                                data = pickle.load(f)
-                                deck, players, turn_num, reverse, skip, start_time = data
-                                deck = Deck.from_list(window_size[0], window_size[1], deck)
-                                real_players = [] 
-                                
-                                for idx, player in enumerate(players):
-                                    if idx == 0:
-                                        real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
-                                    else:
-                                        real_player = com.Computer.from_list(self.screen, deck, idx, 'Z', player)
-                                    print(real_player)
-                                    real_players.append(real_player)
-                            play = game_logic.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)                
-                            play.run(deck, real_players, turn_num, reverse, skip, start_time)
+                            time.sleep(0.3)
+                            play = game.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)
                             self.save_game()
+                            play.run()
 
                             
                         elif menu_flag == 3: 
@@ -320,22 +305,9 @@ class Setting():
                 
             elif self.back_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 time.sleep(0.3)
-                with open('game_data.pickle', 'rb') as f:
-                    data = pickle.load(f)
-                    deck, players, turn_num, reverse, skip, start_time = data
-                    deck = Deck.from_list(window_size[0], window_size[1], deck)
-                    real_players = [] 
-                    
-                    for idx, player in enumerate(players):
-                        if idx == 0:
-                            real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
-                        else:
-                            real_player = com.Computer.from_list(self.screen, deck, idx, 'Z', player)
-                        print(real_player)
-                        real_players.append(real_player)
-                play = game_logic.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)                
-                play.run(deck, real_players, turn_num, reverse, skip, start_time)
+                play = game.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)
                 self.save_game()
+                play.run()
                 
 
             elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
