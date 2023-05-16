@@ -154,7 +154,7 @@ class StoryMap:
             desc_text = "2명의 플레이어와 대전합니다.\n매 5턴마다 낼 수 있는 카드의 색상이\n 무작위로 변경됩니다."
         elif self.current_region == 3:
             title_text = self.title_font.render("지역 D", True, (13, 0, 12))
-            desc_text = ""
+            desc_text = "1명의 플레이어와 대전합니다.\n매 턴은 5초가 주어집니다."
             
         lines = desc_text.split('\n')
         for i, line in enumerate(lines):
@@ -199,7 +199,7 @@ class StoryMap:
                 gameC = regionC.Game(self.size[0], self.size[1], self.color, 2, "C")
                 gameC.run()
             elif self.current_region == 3:
-                gameD = game.Game(self.size[0], self.size[1], 2, self.color, "D")
+                gameD = game.Game(self.size[0], self.size[1], self.color, 3, "D")
                 gameD.run()
             self.mouse_click = False ## 임시 // 추후 게임 로드 추가 시 삭제해도됨
         elif self.back_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
