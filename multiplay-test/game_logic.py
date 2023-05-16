@@ -381,7 +381,6 @@ class Game:
         self.start_time = pygame.time.get_ticks() # 타이머 시작 시간
         game_paused = False
         # for animation
-        move_speed = 5
         self.card_clicked = None
         deck_x = self.screen_size[0] / 20
         deck_y = self.screen_size[0] / 2
@@ -396,16 +395,11 @@ class Game:
         self.players[0].hand.cards[len(self.players[0].hand.cards) - 1].set_position(self.hand_card_pos_temp[0], self.hand_card_pos_temp[1])
         self.back_rect = self.back_card.rect
         self.hand_rect = self.players[0].hand.cards[len(self.players[0].hand.cards) - 1].rect
-    
-        # set distance
-        back_to_hand = math.dist(self.back_card_pos, self.hand_card_pos) / move_speed
-        hand_to_deck = math.dist(self.hand_card_pos_temp, self.top_card_pos) / move_speed
 
         start_time = None
         start_time2 = pygame.time.get_ticks()
         delay_time = 3
-        
-        clock = pygame.time.Clock()
+    
         self.clicked_uno = []
         fps = 500
         while self.running:
@@ -416,7 +410,8 @@ class Game:
                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
                 self.card_clicked = self.back_card
                 self.card_picked = True
-
+            
+            # 애니메이션 시간 설정
             elapsed_time = (pygame.time.get_ticks() - start_time2) / 1000
             if int(elapsed_time) > delay_time:
                 elapsed_time = delay_time
@@ -444,17 +439,6 @@ class Game:
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
                         game_paused = True
-                        # pygame.mixer.music.pause()    ##잠시 음악 중단 - 넣을 필요 없음(setting들어가서 볼륨 얼마나 조절되는지 확인하기 위해;)
-
-                        # font = pygame.font.SysFont("arial", self.screen_width // 40, True)
-                        # surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
-                        # text_surface = font.render("Setting", True, (255, 0, 0))
-                        # surface.fill((255, 255, 255))
-                        # surface.blit(text_surface, (surface.get_width() / 3, surface.get_height() / 8))
-                        # self.screen.blit(surface, (size[0] / 6, size[1] / 6))
-                        # pygame.display.update()
-                        # pygame.time.delay(15000)
-
                         self.set.run(self.screen_width, self.screen_height)
                         
                     elif event.key == pygame.K_q:
@@ -653,47 +637,57 @@ class Game:
                     tvol = data["Total_Volume"]
                     bvol = data["Background_Volume"]
                     svol = data["Sideeffect_Volume"]
-
             if self.card_clicked is not None:
-                running = True
-                while running:
-                    if self.card_clicked is self.back_card:
-                        elapsed_time = pygame.time.get_ticks() - start_time
-                        ratio = min(elapsed_time / back_to_hand, 1)
-                        current_pos = self.card_clicked.rect.center
-                        new_pos = self.hand_card_pos
-                        self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
-                                                    current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
-                        self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
-                        pygame.display.flip()
-                        clock.tick(fps)
+                end = self.human_animation(start_time, self.card_clicked)
+                if end:
+                    return True
+                else:
+                    return False
 
-                        self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
-                        self.move.set_volume(svol)
-                        self.move.play()
-                        
-                        if ratio == 1:
-                            running = False
-                            return True 
-                    else:
-                        elapsed_time = pygame.time.get_ticks() - start_time
-                        ratio = min(elapsed_time / hand_to_deck, 1)
-                        current_pos = self.card_clicked.rect.center
-                        new_pos = self.top_card_pos
-                        self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
-                                                    current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
-                        self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
-                        pygame.display.flip()
-                        clock.tick(fps)
-                        
-                        self.move = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
-                        self.move.set_volume(svol)
-                        self.move.play()
-                        
-                        if ratio == 1: 
-                            running = False
-                            return False
-                    
+    def human_animation(self, start_time, card):
+        clock = pygame.time.Clock()
+        move_speed = 5
+        # set distance
+        back_to_hand = math.dist(self.back_card_pos, self.hand_card_pos) / move_speed
+        hand_to_deck = math.dist(self.hand_card_pos_temp, self.top_card_pos) / move_speed
+        running = True
+        while running:
+            if card is self.back_card:
+                elapsed_time = pygame.time.get_ticks() - start_time
+                ratio = min(elapsed_time / back_to_hand, 1)
+                current_pos = self.card_clicked.rect.center
+                new_pos = self.hand_card_pos
+                self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                            current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                pygame.display.flip()
+                clock.tick(500)
+
+                self.move = pygame.mixer.Sound('soundeffect-move.mp3')     ## 효과음 추가(move)
+                self.move.set_volume(svol)
+                self.move.play()
+                
+                if ratio == 1:
+                    running = False
+                    return True 
+            else:
+                elapsed_time = pygame.time.get_ticks() - start_time
+                ratio = min(elapsed_time / hand_to_deck, 1)
+                current_pos = self.card_clicked.rect.center
+                new_pos = self.top_card_pos
+                self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                            current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                pygame.display.flip()
+                clock.tick(500)
+                
+                self.move = pygame.mixer.Sound('soundeffect-move.mp3')      ## 효과음 추가(move)
+                self.move.set_volume(svol)
+                self.move.play()
+                
+                if ratio == 1: 
+                    running = False
+                    return False              
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
         self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index) # 타이머 안뜨게 화면 업데이트
@@ -705,9 +699,7 @@ class Game:
         
         start_time = None
         self.card_clicked = None
-        move_speed = 5
-        clock = pygame.time.Clock()
-        fps = 1000
+        
         # set computer position
         computer_width = self.screen_size[0] / 3.333
         computer_height = self.screen_size[1] / 5
@@ -716,8 +708,6 @@ class Game:
         self.card_len = Player.count_cards(self.players[self.turn_num])
         self.computer_pos_temp = [computer_x+ self.card_len * computer_height*0.1, computer_y+ self.turn_num * computer_height]
         self.computer_pos = [computer_x+ (self.card_len + 1)* computer_height*0.1, computer_y+ self.turn_num * computer_height]
-        back_to_com = math.dist(self.back_card_pos, self.computer_pos) / move_speed
-        com_to_deck = math.dist(self.computer_pos_temp, self.top_card_pos) / move_speed
         
         hand_card_list = [s for s in self.players[self.turn_num].hand.cards]
         
@@ -817,34 +807,42 @@ class Game:
                     self.card_clicked = self.back_card
                     start_time = pygame.time.get_ticks()
                     self.players[self.turn_num].hand.cards.append(self.deck.pop())  ## 카드 추가
-                    
-                running = True
-                while running:
-                    if self.card_clicked is self.back_card:
-                        elapsed_time = pygame.time.get_ticks() - start_time
-                        ratio = min(elapsed_time / back_to_com, 1)
-                        current_pos = self.card_clicked.rect.center
-                        new_pos = self.computer_pos
-                        self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
-                                                        current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
-                        self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
-                        pygame.display.flip()
-                        clock.tick(fps)
-                        if ratio == 1:
-                            return 
-                    else:
-                        elapsed_time = pygame.time.get_ticks() - start_time
-                        ratio = min(elapsed_time / com_to_deck, 1)
-                        current_pos = self.computer_pos_temp
-                        new_pos = self.top_card_pos
-                        self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
-                                                        current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
-                        self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
-                        pygame.display.flip()
-                        clock.tick(fps)
-                        if ratio == 1:
-                            return
-                          
+                end = self.com_animation(start_time, self.card_clicked)
+                if end:
+                    return
+                
+    def com_animation(self, start_time, card):
+        move_speed = 5
+        back_to_com = math.dist(self.back_card_pos, self.computer_pos) / move_speed
+        com_to_deck = math.dist(self.computer_pos_temp, self.top_card_pos) / move_speed
+        clock = pygame.time.Clock()
+        fps = 1000
+        running = True
+        while running:
+            if card is self.back_card:
+                elapsed_time = pygame.time.get_ticks() - start_time
+                ratio = min(elapsed_time / back_to_com, 1)
+                current_pos = self.card_clicked.rect.center
+                new_pos = self.computer_pos
+                self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                                current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                pygame.display.flip()
+                clock.tick(fps)
+                if ratio == 1:
+                    return True
+            else:
+                elapsed_time = pygame.time.get_ticks() - start_time
+                ratio = min(elapsed_time / com_to_deck, 1)
+                current_pos = self.computer_pos_temp
+                new_pos = self.top_card_pos
+                self.card_clicked.rect.center = (current_pos[0] + (new_pos[0] - current_pos[0]) * ratio,
+                                                current_pos[1] + (new_pos[1] - current_pos[1]) * ratio)
+                self.screen.blit(self.card_clicked.default_image, self.card_clicked.rect)
+                pygame.display.flip()
+                clock.tick(fps)
+                if ratio == 1:
+                    return True            
     # This function is responsible for updating the game state and logic
     def update(self):
         # 색 있는 기술카드 동작 처리

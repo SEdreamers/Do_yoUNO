@@ -90,8 +90,6 @@ class Client:
                             else:
                                 real_player = Computer.from_list(self.screen, deck, idx, 'Z', player)
                             real_players.append(real_player)
-                        print(turn_num)
-                        print("main)")
                         uno_game.run(deck, real_players, turn_num, reverse, skip, start_time)
 
     4
