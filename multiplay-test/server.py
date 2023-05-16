@@ -1,22 +1,29 @@
-import socket
-import threading
+import asyncio
 import json
+import pickle
 import game_logic
-import json
-import pickle 
 from deck import Deck
 from computer import Computer
 from human import Human
 
 class Server:
     def __init__(self, host, port):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.bind((host, int(port)))
-        self.sock.listen(1)
-        # make game
+        self.host = host
+        self.port = port
         self.clients = []
 
-    def send_game_state(self):
+    async def broadcast(self, msg):
+        for client in self.clients:
+            await client.write(msg.encode())
+
+    async def handle_client(self, reader, writer):
+        while True:
+            msg = await reader.read(100)
+            if msg:
+                print(f'Received {msg.decode()}')
+                await self.broadcast(msg.decode())
+
+    async def send_game_state(self):
         try:
             with open('setting_data.json') as game_file:
                 lst = json.load(game_file)
@@ -47,27 +54,15 @@ class Server:
                 send_players.append(send_player)
             data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
             pickle.dump(data, f)
-            self.broadcast(f)
+            await self.broadcast(f)
 
-    def broadcast(self, msg):
-        for client in self.clients:
-            client.sendall(msg)
+    async def start_server(self):
+        server = await asyncio.start_server(
+            self.handle_client, self.host, self.port)
 
-    def handle_client(self):
-        messages = []
-        for client in self.clients:
-            msg = client.recv(1024)
-            messages.append(msg)
-        self.broadcast(messages[0])
+        async with server:
+            await server.serve_forever()
 
-    def start(self):
-        print("Server started...")
-        while True:
-            client, addr = self.sock.accept()
-            print("server_working")
-            self.clients.append(client)
-            # self.game_logic.players.append("")
-            print(client.getpeername())
-            threading.Thread(target=self.handle_client, args=(client,)).start()
-
-    
+if __name__ == "__main__":
+    server = Server('localhost', 8888)
+    asyncio.run(server.start_server())
