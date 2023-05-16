@@ -54,10 +54,7 @@ class Deck:
     @classmethod
     def from_list(cls, screen_width, screen_height, data):
         deck = cls(screen_width, screen_height)
-        print(data)
-        print("deck_data")
         for card_data in data:
             deck.cards.append(Card.from_str(screen_width, screen_height, card_data))
-        print(deck.cards)
-        print("wh??")
+
         return deck
