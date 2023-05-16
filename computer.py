@@ -1,7 +1,6 @@
 import pygame
 from player import Player
 from gameUI import GameUI
-from hand import Hand
 from card import Card
 import time
 import json
@@ -111,12 +110,4 @@ class Computer(Player):
         self.skip_rect.centery = skip_y
         self.screen.blit(self.skip_icon, self.skip_rect)
         
-
-    @classmethod
-    def from_list(cls, screen, deck, i, region, data):
         
-        computer = cls(screen, deck, i, region)
-        print(computer)
-        computer.hand = Hand(screen, deck, region, False)
-        computer.hand.cards = [Card.from_str(800, 600, card) for card in data]
-        return computer

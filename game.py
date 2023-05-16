@@ -1,7 +1,7 @@
 import pygame
 import main
 from deck import Deck
-import human as hm 
+from human import Human
 from datetime import datetime
 from computer import Computer
 from gameUI import GameUI
@@ -69,7 +69,6 @@ class Game:
 
         self.skip_flag = 0
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
-        self.deck.load_cards()
         
         self.achv_index = None # 게임 도중 팝업으로 띄울 달성 업적 index
         self.tech_use_cnt = 0 # 기술카드 사용 횟수
@@ -136,7 +135,7 @@ class Game:
         # 사람은 가중치 없이 뽑아야 함
         self.deck.shuffle()
         # human player 만들기!
-        human = hm.Human(self.screen, self.deck, self.color_blind_mode, region)
+        human = Human(self.screen, self.deck, self.color_blind_mode, region)
         self.players.insert(0, human)
         # turn, reverse, skip, start time 세팅
         self.turn_num = 0
@@ -149,7 +148,6 @@ class Game:
         self.clicked_uno_player = None
 
         self.firstDeck = Deck(self.screen_size[0], self.screen_size[1]) 
-        print("deck created")
         self.lst = self.firstDeck.showlist()
         self.top_card = self.deck.pop()  
         
@@ -232,17 +230,17 @@ class Game:
 
 
 
-    def run(self, deck, players, turn_num, reverse, skip, start_time): 
-        self.deck = deck
-        self.top_card = self.deck.pop()
-        self.players = players 
-        self.turn_num = turn_num
-        self.reverse = reverse
-        self.skip = skip 
-        self.start_time = start_time
+    def run(self): 
 
         pygame.init()
-        
+
+        print(self.players, type(self.players))
+        print(self.turn_num, type(self.turn_num))
+        print(self.top_card, type(self.top_card))
+        # print(self.back_card, type(self.back_card))
+        print(self.reverse, type(self.reverse))
+        print(self.skip, type(self.skip))
+        print(self.start_time, type(self.start_time))
 
 
 
@@ -270,7 +268,12 @@ class Game:
         else:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
         
-
+        try: 
+            with open('game_data.json','w') as play_data_file: 
+                json.dump(self.data, play_data_file)
+        except: 
+            print("No file created yet!")    
+            
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if self.turn_num == 0: # Human turn
