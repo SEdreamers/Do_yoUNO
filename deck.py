@@ -6,7 +6,6 @@ class Deck:
         self.screen_size = (screen_width, screen_height)
         self.cards = []
         self.list = [] 
-        self.load_cards()
     
     def load_cards(self):
         values = [str(i) for i in range(0, 10)]
@@ -32,7 +31,7 @@ class Deck:
                 
     def shuffle(self):
         random.shuffle(self.cards)
-    
+        print("inside shuffle")
             
     def peek(self):
         if len(self.cards) > 0:
@@ -55,7 +54,7 @@ class Deck:
     @classmethod
     def from_list(cls, screen_width, screen_height, data):
         deck = cls(screen_width, screen_height)
-        print(data)
         for card_data in data:
-            deck.cards = [Card.from_str(screen_width, screen_height, card_data)]
+            deck.cards.append(Card.from_str(screen_width, screen_height, card_data))
+
         return deck

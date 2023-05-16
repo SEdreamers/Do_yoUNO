@@ -1,7 +1,7 @@
 from turtle import color
 import pygame
 import colorBox
-from human import Human
+import human as hm
 import json
 
 SCOLOR = (228, 221, 134)
@@ -144,7 +144,6 @@ class GameUI:
 
     def display(self, players, turn_num, top_card, back_card, reverse, skip, start_time, clicked_uno_player, achv_index):
         # card 위치 설정(player card)
-        
         for i, card in enumerate(players[0].hand.cards):
             x_pos = self.deck_x + i * (self.card_width + self.deck_spacing)
             y_pos = self.deck_y
@@ -219,7 +218,7 @@ class GameUI:
         
         # draw the skip icon
         if skip: 
-            if isinstance(players[turn_num], Human): # turn을 skip 당한 플레이어가 Human일 경우
+            if isinstance(players[turn_num], hm.Human): # turn을 skip 당한 플레이어가 Human일 경우
                 players[turn_num].skip_draw()
             else: # turn을 skip 당한 플레이어가 Computer일 경우
                 players[turn_num].skip_draw(turn_num - 1)
@@ -274,7 +273,7 @@ class GameUI:
             timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('black'))
         else:
             timer = self.timer_font.render('0' + str(remaining_time), True, pygame.Color('red'))
-        if isinstance(players[turn_num], Human): # 인간 플레이어일 때
+        if isinstance(players[turn_num], hm.Human): # 인간 플레이어일 때
             self.screen.blit(timer, (self.screen_size[0] * 0.63, self.screen_size[1] * 0.02))
         else: # 컴퓨터 플레이어일 때 
             self.screen.blit(timer, (-100, -100)) # 화면 밖으로 타이머 배치

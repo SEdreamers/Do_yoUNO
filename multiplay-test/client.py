@@ -1,203 +1,107 @@
 import pygame
-from network import Network
-import gamedisplay
-import game_logic
+import socket
+import pickle
 import json
+import game_logic
+from computer import Computer
+import human as hm
+from deck import Deck
+from player import Player
+import threading
+import queue
 
-pygame.font.init()
-
-width = 700
-height = 700
-win = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Client")
-
-
-try:
-    with open('setting_data.json') as game_file:
-        lst = json.load(game_file)
-except: 
-    lst ={
-    "color_blind_mode": False,
-    "size": (800,600),
-    "Total_Volume": 0.3,
-    "Background_Volume": 0.3,
-    "Sideeffect_Volume": 0.3,
-    "player_numbers":3,
-    "me": 'player',
-    "c1name" :'computer1',
-    "c2name" :'computer2',
-    "c3name" :'computer3',
-    "c4name" :'computer4',
-    "c5name" :'computer5',
-    "unclicked_list": [],
-    "characters" : []
-    }
-
-class Button:
-    def __init__(self, text, x, y, color):
-        self.text = text
-        self.x = x
-        self.y = y
-        self.color = color
-        self.width = 150
-        self.height = 100
-
-    def draw(self, win):            # 버튼 출력 
-        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
-        font = pygame.font.SysFont("comicsans", 40)
-        text = font.render(self.text, 1, (255,255,255))
-        win.blit(text, (self.x + round(self.width/2) - round(text.get_width()/2), self.y + round(self.height/2) - round(text.get_height()/2)))
-
-    def click(self, pos):           # 클릭 여부
-        x1 = pos[0]
-        y1 = pos[1]
-        if self.x <= x1 <= self.x + self.width and self.y <= y1 <= self.y + self.height:
-            return True
-        else:
-            return False
-
-
-def redrawWindow(win, game, p):      ## 화면 출력 
-    win.fill((128,128,128))
-
-    if not(game.connected()):
-        print(1)
-        font = pygame.font.SysFont("comicsans", 80)
-        text = font.render("Waiting for Player...", 1, (255,0,0), True)
-        win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
-        
-        
-        
-    else:
-        font = pygame.font.SysFont("comicsans", 60)
-        text = font.render("Your Move", 1, (0, 255,255))
-        win.blit(text, (80, 200))
-
-        text = font.render("Opponents", 1, (0, 255, 255))
-        win.blit(text, (380, 200))
-
-        move1 = game.get_player_move(0)
-        move2 = game.get_player_move(1)
-        if game.bothWent():
-            text1 = font.render(move1, 1, (0,0,0))
-            text2 = font.render(move2, 1, (0, 0, 0))
-        else:
-            if game.p1Went and p == 0:
-                text1 = font.render(move1, 1, (0,0,0))
-            elif game.p1Went:
-                text1 = font.render("Locked In", 1, (0, 0, 0))
-            else:
-                text1 = font.render("Waiting...", 1, (0, 0, 0))
-
-            if game.p2Went and p == 1:
-                text2 = font.render(move2, 1, (0,0,0))
-            elif game.p2Went:
-                text2 = font.render("Locked In", 1, (0, 0, 0))
-            else:
-                text2 = font.render("Waiting...", 1, (0, 0, 0))
-
-        if p == 1:
-            win.blit(text2, (100, 350))
-            win.blit(text1, (400, 350))
-        else:
-            win.blit(text1, (100, 350))
-            win.blit(text2, (400, 350))
-
-        for btn in btns:
-            btn.draw(win)
-
-    pygame.display.update()
-
-
-btns = [Button("Rock", 50, 500, (0,0,0)), Button("Scissors", 250, 500, (255,0,0)), Button("Paper", 450, 500, (0,255,0))]
-
-
-
-
-
-
-## 여기가 존나게 반복되고 있음. 
-def main():
-    run = True
-    clock = pygame.time.Clock()
-    n = Network()
-    player = int(n.getP())
-    print("You are player", player)
-
-    while run:
-        clock.tick(60)
+class Client:
+    def __init__(self, host, port, screen, name):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.host = host
+        self.port = int(port)
+        self.sock.connect((self.host, self.port))
+        self.name = name
+        print(f"Client started on {self.host}:{self.port}")
+        self.running = False
+        # Initialize pygame and the game display here...
+        self.screen = screen
+        self.current_state = None
+        self.listen_thread = threading.Thread(target=self.listen_to_server)
+        self.listen_thread.daemon = True
+        self.listen_thread.start()
+        self.queue = queue.Queue()
         try:
-            game = n.send("get")
+            with open('setting_data.json') as game_file:
+                self.lst = json.load(game_file)
         except:
-            run = False
-            print("Couldn't get game")
-            break
+            self.lst = {
+                "color_blind_mode": False,
+                "size": (800, 600),
+                "Total_Volume": 0.3,
+                "Background_Volume": 0.3,
+                "Sideeffect_Volume": 0.3,
+                "player_numbers": 3,
+                "me": 'player',
+                "c1name": 'computer1',
+                "c2name": 'computer2',
+                "c3name": 'computer3',
+                "c4name": 'computer4',
+                "c5name": 'computer5',
+                "unclicked_list": [],
+                "characters": []
+            }
 
-        if game.bothWent():
-            redrawWindow(win, game, player)
-            pygame.time.delay(500)
-            try:
-                game = n.send("reset")
-            except:
-                run = False
-                print("Couldn't get game")
-                break
+    def listen_to_server(self):
+        while True:
+            data = self.sock.recv(1024)
+            print("listen_to_server")
+            self.queue.put(data)
 
-            font = pygame.font.SysFont("comicsans", 90)
-            if (game.winner() == 1 and player == 1) or (game.winner() == 0 and player == 0):
-                text = font.render("You Won!", 1, (255,0,0))
-            elif game.winner() == -1:
-                text = font.render("Tie Game!", 1, (255,0,0))
-            else:
-                text = font.render("You Lost...", 1, (255, 0, 0))
-
-            win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
-            pygame.display.update()
-            pygame.time.delay(2000)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                for btn in btns:
-                    if btn.click(pos) and game.connected():
-                        if player == 0:
-                            if not game.p1Went:
-                                n.send(btn.text)
-                        else:
-                            if not game.p2Went:
-                                n.send(btn.text)
-
-        redrawWindow(win, game, player)
-
-def menu_screen():
-    run = True
-    clock = pygame.time.Clock()                 # 시간 동기화
-
-    while run:
-        clock.tick(60)                          # 프레임 속도 제한
+    def game_loop(self):
+        if not self.queue.empty():
+            self.update(self.queue.get())
+            print("updated")
+        if self.current_state is not None:
+            print("start")
+            self.current_state.run()
+        pygame.time.delay(33)  # to limit the frame rate to 30 fps
 
 
+    def update(self, data):
+        with open('game_data.json', 'r') as f:
+            data = json.load(f)
+            deck, players, turn_num, reverse, skip, start_time = data.values()
+            deck = Deck.from_list(self.lst["size"][0], self.lst["size"][1], deck)
+            real_players = [] 
+            for idx, player in enumerate(players):
+                if idx == 0:
+                    real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
+                else:
+                    real_player = Computer.from_list(self.screen, deck, idx, 'Z', player)
+            real_players.append(real_player)
+            uno_game = game_logic.Game(self.lst["size"][0], self.lst["size"][1], self.lst["color_blind_mode"],
+                                                self.lst["player_numbers"])
+            uno_game.run(deck, real_players, turn_num, reverse, skip, start_time)
 
-        uno_game = game_logic.Game(lst["size"][0],lst["size"][1],lst["color_blind_mode"],lst["player_numbers"]) 
-        uno_game.run()
-        # win.fill((128, 128, 128)) 
-        # font = pygame.font.SysFont("comicsans", 60)
-        # text = font.render("Click to Play!", 1, (255,0,0))
-        # win.blit(text, (100,200))
-        # pygame.display.update()
+        with open('game_data.json', 'w') as f:
+            send_deck = uno_game.deck.to_list()
+            send_players = []
+            for player in uno_game.players:
+                send_player = player.to_list()
+                send_players.append(send_player)
+            data = {
+                'deck': send_deck, 
+                'players': send_players, 
+                'turn_num': uno_game.turn_num, 
+                'reverse': uno_game.reverse, 
+                'skip': uno_game.skip, 
+                'start_time': uno_game.start_time
+            }
+            message = json.dumps(data)
+            json.dumps(data, f)
+            self.sock.send(message.encode('utf-8'))
 
-        for event in pygame.event.get():                           #  게임 종료 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                run = False
+    
 
-    main()
 
-while True:               # 시작 
-    menu_screen()
+    def serialize_data(self, data):
+        return pickle.dumps(data)
+
+    def deserialize_data(self, data):
+        return pickle.loads(data)
