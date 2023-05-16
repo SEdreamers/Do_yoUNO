@@ -274,6 +274,7 @@ class Game:
         except: 
             print("No file created yet!")    
             
+        self.turn_num = 0
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if self.turn_num == 0: # Human turn
