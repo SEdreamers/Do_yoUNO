@@ -3,7 +3,7 @@ import socket
 import pickle
 import json
 import game_logic
-import computer as Computer
+from computer import Computer
 import human as hm
 from deck import Deck
 from player import Player
@@ -62,23 +62,43 @@ class Client:
             self.current_state.run()
         pygame.time.delay(33)  # to limit the frame rate to 30 fps
 
+
     def update(self, data):
-        with open('game_data.pickle', 'rb') as f:
-            data = pickle.load(f)
-            deck, players, turn_num, reverse, skip, start_time = data
+        with open('game_data.json', 'r') as f:
+            data = json.load(f)
+            deck, players, turn_num, reverse, skip, start_time = data.values()
             deck = Deck.from_list(self.lst["size"][0], self.lst["size"][1], deck)
-        print(f"{data}")
-        real_players = [] 
-        for idx, player in enumerate(players):
-            if idx == 0:
-                real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
-            else:
-                real_player = Computer.from_list(self.screen, deck, idx, 'Z', player)
-        real_players.append(real_player)
-        uno_game = game_logic.Game(self.lst["size"][0], self.lst["size"][1], self.lst["color_blind_mode"],
-                                               self.lst["player_numbers"])
-        uno_game.run(deck, real_players, turn_num, reverse, skip, start_time)
-        
+            real_players = [] 
+            for idx, player in enumerate(players):
+                if idx == 0:
+                    real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
+                else:
+                    real_player = Computer.from_list(self.screen, deck, idx, 'Z', player)
+            real_players.append(real_player)
+            uno_game = game_logic.Game(self.lst["size"][0], self.lst["size"][1], self.lst["color_blind_mode"],
+                                                self.lst["player_numbers"])
+            uno_game.run(deck, real_players, turn_num, reverse, skip, start_time)
+
+        with open('game_data.json', 'w') as f:
+            send_deck = uno_game.deck.to_list()
+            send_players = []
+            for player in uno_game.players:
+                send_player = player.to_list()
+                send_players.append(send_player)
+            data = {
+                'deck': send_deck, 
+                'players': send_players, 
+                'turn_num': uno_game.turn_num, 
+                'reverse': uno_game.reverse, 
+                'skip': uno_game.skip, 
+                'start_time': uno_game.start_time
+            }
+            message = json.dumps(data)
+            json.dumps(data, f)
+            self.sock.send(message.encode('utf-8'))
+
+    
+
 
     def serialize_data(self, data):
         return pickle.dumps(data)
