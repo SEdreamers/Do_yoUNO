@@ -1,5 +1,7 @@
 import pygame
 from player import Player
+import human as hm
+import computer as com
 from deck import Deck
 import time
 import json
@@ -259,17 +261,32 @@ class Lobby():
                     uno_game = game.Game(self.screen_size[0], self.screen_size[1], color, self.data["player_numbers"]) 
                     with open('game_data.pickle', 'wb') as f:
                         send_deck = uno_game.deck.to_list()
-                        data = (send_deck, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
-                        
+                        send_players = []
+                        for player in uno_game.players:
+                            send_player = player.to_list()
+                            send_players.append(send_player)
+                            
+                        # send_turn_num = uno_game.turn_num.to_list()
+                        data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
                         pickle.dump(data, f)
                     
 
                     with open('game_data.pickle', 'rb') as f:
                         data = pickle.load(f)
-                        deck, turn_num, reverse, skip, start_time = data
+                        deck, players, turn_num, reverse, skip, start_time = data
                         deck = Deck.from_list(self.screen_size[0], self.screen_size[1], deck)
-                        # players = Player.from_list()
-                    uno_game.run()
+                        real_players = [] 
+                        
+                        for idx, player in enumerate(players):
+                            if idx == 0:
+                                real_player = hm.Human.from_list(self.screen, deck, False, 'Z', player)
+                            else:
+                                real_player = com.Computer.from_list(self.screen, deck, idx, 'Z', player)
+                            real_players.append(real_player)
+
+                        # print(deck)
+                        # print(players)
+                    uno_game.run(deck, real_players, turn_num, reverse, skip, start_time)
 
 
             screen.blit(title, title_rect)
