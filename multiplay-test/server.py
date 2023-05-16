@@ -1,102 +1,73 @@
-import os
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import socket
-from _thread import *
-import pickle
-from game_logic import Game
+import threading
 import json
+import game_logic
+import json
+import pickle 
+from deck import Deck
+from computer import Computer
+from human import Human
 
-server = "localhost"
-port = 5555
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+class Server:
+    def __init__(self, host, port):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind((host, int(port)))
+        self.sock.listen(1)
+        # make game
+        self.clients = []
 
-try:
-    s.bind((server, port))
-except socket.error as e:
-    str(e)
-
-s.listen()     
-print("Waiting for a connection, Server Started")
-
-connected = set()
-games = {}
-idCount = 0
-
-
-def threaded_client(conn, p, gameId):
-    global idCount
-    conn.send(str.encode(str(p)))
-
-    reply = ""
-    while True:
+    def send_game_state(self):
         try:
-            data = conn.recv(4096).decode()
-
-            if gameId in games:
-                game = games[gameId]
-
-                if not data:
-                    break
-                else:
-                    if data == "reset":
-                        game.resetWent()
-                    elif data != "get":
-                        game.play(p, data)
-
-                    conn.sendall(pickle.dumps(game))
-            else:
-                break
+            with open('setting_data.json') as game_file:
+                lst = json.load(game_file)
         except:
-            break
+            lst = {
+                "color_blind_mode": False,
+                "size": (800, 600),
+                "Total_Volume": 0.3,
+                "Background_Volume": 0.3,
+                "Sideeffect_Volume": 0.3,
+                "player_numbers": 3,
+                "me": 'player',
+                "c1name": 'computer1',
+                "c2name": 'computer2',
+                "c3name": 'computer3',
+                "c4name": 'computer4',
+                "c5name": 'computer5',
+                "unclicked_list": [],
+                "characters": []
+            }
+        uno_game = game_logic.Game(lst["size"][0], lst["size"][1], lst["color_blind_mode"],
+                                               lst["player_numbers"])
+        with open('game_data.pickle', 'wb') as f:
+            send_deck = uno_game.deck.to_list()
+            send_players = []
+            for player in uno_game.players:
+                send_player = player.to_list()
+                send_players.append(send_player)
+            data = (send_deck, send_players, uno_game.turn_num, uno_game.reverse, uno_game.skip, uno_game.start_time)
+            pickle.dump(data, f)
+            self.broadcast(f)
 
-    print("Lost connection")
-    try:
-        del games[gameId]
-        print("Closing Game", gameId)
-    except:
-        pass
-    idCount -= 1
-    conn.close()
+    def broadcast(self, msg):
+        for client in self.clients:
+            client.sendall(msg)
 
+    def handle_client(self):
+        messages = []
+        for client in self.clients:
+            msg = client.recv(1024)
+            messages.append(msg)
+        self.broadcast(messages[0])
 
+    def start(self):
+        print("Server started...")
+        while True:
+            client, addr = self.sock.accept()
+            print("server_working")
+            self.clients.append(client)
+            # self.game_logic.players.append("")
+            print(client.getpeername())
+            threading.Thread(target=self.handle_client, args=(client,)).start()
 
-
-
-try:
-    with open('setting_data.json') as game_file:
-        lst = json.load(game_file)
-except: 
-    lst ={
-    "color_blind_mode": False,
-    "size": (800,600),
-    "Total_Volume": 0.3,
-    "Background_Volume": 0.3,
-    "Sideeffect_Volume": 0.3,
-    "player_numbers":3,
-    "me": 'player',
-    "c1name" :'computer1',
-    "c2name" :'computer2',
-    "c3name" :'computer3',
-    "c4name" :'computer4',
-    "c5name" :'computer5',
-    "unclicked_list": [],
-    "characters" : []
-    }
-
-
-while True:
-    conn, addr = s.accept()
-    print("Connected to:", addr)
-
-    idCount += 1
-    p = 0
-    gameId = (idCount - 1)//2
-    if idCount % 2 == 1:
-        games[gameId] = Game(lst["size"][0],lst["size"][1],lst["color_blind_mode"],lst["player_numbers"],lst["characters"],gameId)
-        print("Creating a new game...")
-    else:
-        games[gameId].ready = True
-        p = 1
-
-    start_new_thread(threaded_client, (conn, p, gameId))
+    

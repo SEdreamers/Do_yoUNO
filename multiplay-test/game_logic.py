@@ -637,6 +637,7 @@ class Game:
                     tvol = data["Total_Volume"]
                     bvol = data["Background_Volume"]
                     svol = data["Sideeffect_Volume"]
+                    
             if self.card_clicked is not None:
                 end = self.human_animation(start_time, self.card_clicked)
                 if end:
