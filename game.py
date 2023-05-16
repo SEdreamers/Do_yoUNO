@@ -126,11 +126,11 @@ class Game:
         # add computers(player 숫자 받아서 설정)
         computers = []
         for i in range(self.numberofPlayers):     ## player 수
-            region = "E"
             for j in range(len(self.data["characters"])) :
                 if self.data["characters"][j] == self.data["unclicked_list"][i]:
-                    region = "A"
-            computers.append(Computer(self.screen, self.deck, i, region))
+                    computers.append(Computer(self.screen, self.deck, i, "A"))
+                else:
+                    computers.append(Computer(self.screen, self.deck, i, region))
         self.players.extend(computers)
         
         # 사람은 가중치 없이 뽑아야 함
