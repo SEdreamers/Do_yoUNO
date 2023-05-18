@@ -68,7 +68,7 @@ class Game:
 
         self.skip_flag = 0
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
-        
+        ##
         self.achv_index = None # 게임 도중 팝업으로 띄울 달성 업적 index
         self.tech_use_cnt = 0 # 기술카드 사용 횟수
         self.achv1_comp = False # 업적1 달성 팝업 띄운적이 있는지
