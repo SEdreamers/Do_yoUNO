@@ -6,11 +6,13 @@ import time
 import storyMap
 import lobby
 import acheivementList
+from pygame.locals import *
 
 # 색상 상수 설정
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
+
 
 def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
     pygame.init()
@@ -23,6 +25,13 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
         screen_width = size[0]
         screen_height = size[1]
         font = pygame.font.SysFont("arial", size[0] // 20, True)
+        if data["AWDS"] == True:
+            key_up = pygame.K_w
+            key_down = pygame.K_s
+        else:
+            key_up = pygame.K_UP
+            key_down = pygame.K_DOWN
+        
     except: 
         print("No file created yet!")
         set = setting.Setting(screen_width,screen_height)
@@ -81,9 +90,9 @@ def main(screen_width = 800, screen_height = 600, color_blind_mode = False):
             if event.type == pygame.QUIT:
                  play = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
+                if event.key == key_up:
                     menu_flag -= 1
-                elif event.key == pygame.K_DOWN:
+                elif event.key == key_down:
                     menu_flag += 1
                 elif event.key == 13:
                     if menu_flag == 0:

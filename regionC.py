@@ -201,6 +201,7 @@ class Game:
                             tvol = data["Total_Volume"]
                             bvol = data["Background_Volume"]
                             svol = data["Sideeffect_Volume"]
+ 
 
 
         pygame.mixer.music.set_volume(tvol)
@@ -389,12 +390,12 @@ class Game:
                         self.running = False
                         main.main(self.screen_size[0], self.screen_size[1], self.color_blind_mode)
                     if not GameUI.backcard_uno_flag:
-                        if event.key == pygame.K_LEFT:
+                        if event.key == self.K_LEFT:
                             GameUI.cur_card -= 1
                             if GameUI.cur_card < 0:
                                 GameUI.cur_card = 0
                             self.render()
-                        elif event.key == pygame.K_RIGHT:
+                        elif event.key == self.K_RIGHT:
                             GameUI.cur_card += 1
                             if GameUI.cur_card > len(self.players[0].hand.cards) - 1:
                                 GameUI.cur_card = len(self.players[0].hand.cards) - 1
@@ -436,11 +437,11 @@ class Game:
                                                 self.render()
                                                 play = False
                                         elif event.type == pygame.KEYDOWN:
-                                            if event.key == pygame.K_RIGHT:
+                                            if event.key == self.K_RIGHT:
                                                 GameUI.color_flag += 1
                                                 GameUI.color_flag %= 4
                                                 self.render()
-                                            elif event.key == pygame.K_LEFT:
+                                            elif event.key == self.K_LEFT:
                                                 GameUI.color_flag -= 1
                                                 GameUI.color_flag %= 4
                                                 self.render()
@@ -456,13 +457,13 @@ class Game:
                                                 self.render()
                                                 play == False
                                                 return False
-                    if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    if event.key == self.K_UP or event.key == self.K_DOWN:
                         if GameUI.backcard_uno_flag:
                             GameUI.backcard_uno_flag = 0
                         else:
                             GameUI.backcard_uno_flag = 1
                         self.render()
-                    elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    elif event.key == self.K_LEFT or event.key == self.K_RIGHT:
                         if GameUI.backcard_uno_flag == 1:
                             GameUI.backcard_uno_flag = 2
                         elif GameUI.backcard_uno_flag == 2:
@@ -541,11 +542,11 @@ class Game:
                                         play = False
 
                                 elif event.type == pygame.KEYDOWN:
-                                    if event.key == pygame.K_RIGHT:
+                                    if event.key == self.K_RIGHT:
                                         GameUI.color_flag += 1
                                         GameUI.color_flag %= 4
                                         self.render()
-                                    elif event.key == pygame.K_LEFT:
+                                    elif event.key == self.K_LEFT:
                                         GameUI.color_flag -= 1
                                         GameUI.color_flag %= 4
                                         self.render()
@@ -588,6 +589,16 @@ class Game:
                     tvol = data["Total_Volume"]
                     bvol = data["Background_Volume"]
                     svol = data["Sideeffect_Volume"]
+                    if data["AWDS"] == True:
+                        self.K_UP = pygame.K_w
+                        self.K_DOWN = pygame.K_s
+                        self.K_LEFT = pygame.K_a
+                        self.K_RIGHT = pygame.K_d
+                    else: 
+                        self.K_UP = pygame.K_UP
+                        self.K_DOWN = pygame.K_DOWN
+                        self.K_LEFT = pygame.K_LEFT
+                        self.K_RIGHT = pygame.K_RIGHT
 
             if self.card_clicked is not None:
                 running = True

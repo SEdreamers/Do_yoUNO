@@ -3,10 +3,16 @@ import sys
 import game
 import regionB
 import regionC
+import regionD
 import json
 
 class StoryMap:
     def __init__(self, screen_width, screen_height):
+        self.K_UP = pygame.K_w
+        self.K_DOWN = pygame.K_s
+        self.K_LEFT = pygame.K_a
+        self.K_RIGHT = pygame.K_d
+        
         self.menu_flag = 0
         # 화면 크기 설정
         self.screen_width = screen_width
@@ -154,7 +160,7 @@ class StoryMap:
             desc_text = "2명의 플레이어와 대전합니다.\n매 5턴마다 낼 수 있는 카드의 색상이\n 무작위로 변경됩니다."
         elif self.current_region == 3:
             title_text = self.title_font.render("지역 D", True, (13, 0, 12))
-            desc_text = "1명의 플레이어와 대전합니다.\n매 턴은 5초가 주어집니다."
+            desc_text = "1명의 플레이어와 대전합니다.\n카드는 플레이어 당 8장씩 주어집니다."
             
         lines = desc_text.split('\n')
         for i, line in enumerate(lines):
@@ -199,7 +205,7 @@ class StoryMap:
                 gameC = regionC.Game(self.size[0], self.size[1], self.color, 2, "C")
                 gameC.run()
             elif self.current_region == 3:
-                gameD = game.Game(self.size[0], self.size[1], self.color, 3, "D")
+                gameD = regionD.Game(self.size[0], self.size[1], self.color, 3, "D")
                 gameD.run()
             self.mouse_click = False ## 임시 // 추후 게임 로드 추가 시 삭제해도됨
         elif self.back_btn1_rect.collidepoint(mouse_pos) and self.mouse_click:
@@ -216,16 +222,16 @@ class StoryMap:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if not self.selected: # 지역 선택
-                    if event.key == pygame.K_UP:
+                    if event.key == self.K_UP:
                         self.current_region -= 1
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key == self.K_DOWN:
                         self.current_region += 1
                     elif event.key == 13: # enter
                         self.selected = True
                 else: # start, back 선택
-                    if event.key == pygame.K_LEFT:
+                    if event.key == self.K_LEFT:
                         self.menu_flag -= 1
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == self.K_RIGHT:
                         self.menu_flag += 1
                     elif event.key == 13: # enter
                         if self.menu_flag == 0: # start
@@ -243,7 +249,7 @@ class StoryMap:
                                 gameC.run()
                             elif self.current_region == 3:
                                 print('regionD')
-                                gameD = game.Game(self.size[0], self.size[1], self.color, 4, "D")
+                                gameD = regionD.Game(self.size[0], self.size[1], self.color, 4, "D")
                                 gameD.run()
                         elif self.menu_flag == 1: # back
                             self.selected = False
@@ -327,6 +333,18 @@ class StoryMap:
             data = json.load(game_file)
             self.color = data['color_blind_mode']     ## 저장된 값 불러오기. 
             self.size = data["size"]
+            
+            if data["AWDS"] == True:
+                self.K_UP = pygame.K_w
+                self.K_DOWN = pygame.K_s
+                self.K_LEFT = pygame.K_a
+                self.K_RIGHT = pygame.K_d
+            else: 
+                self.K_UP = pygame.K_UP
+                self.K_DOWN = pygame.K_DOWN
+                self.K_LEFT = pygame.K_LEFT
+                self.K_RIGHT = pygame.K_RIGHT
+
         ## region 클릭
         if self.mouse_click:
             if self.regionA_rect.collidepoint(mouse_pos) and len(self.unlocked_regions):

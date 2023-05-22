@@ -3,6 +3,7 @@ import pygame
 import time
 import main
 import json
+from pygame.locals import *
 
 
 # Initialize Pygame
@@ -43,6 +44,10 @@ class Setting():
         self.back_text_surface = self.font.render("Go Back",True, 'white')
         self.back_text_rect = self.back_text_surface.get_rect()
         
+        # Create the controls buttons
+        self.controls_text_surface = self.font.render("Controls(AWSD)",True, 'white')
+        self.controls_text_rect = self.controls_text_surface.get_rect()
+        
         # Create the Exit buttons
         self.exit_text_surface = self.font.render("Exit",True, 'white')
         self.exit_text_rect = self.exit_text_surface.get_rect()
@@ -64,7 +69,12 @@ class Setting():
         self.size4_text_rect = self.size4_text_surface.get_rect()
 
         self.reposition(self.screen)
-        
+        self.K_UP = pygame.K_UP
+        self.K_DOWN = pygame.K_DOWN
+        self.K_LEFT = pygame.K_LEFT
+        self.K_RIGHT = pygame.K_RIGHT
+        self.AWDS = False
+            
         try:
             with open('setting_data.json') as game_file:
                 self.data = json.load(game_file)
@@ -82,9 +92,14 @@ class Setting():
             "c3name" :'computer3',
             "c4name" :'computer4',
             "c5name" :'computer5',
-            "unclicked_list": []
+            "unclicked_list": [],
+            "AWDS": False
             }
             self.save_game()
+            
+            
+            
+
 
     def save_game(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장 
@@ -95,6 +110,20 @@ class Setting():
     def run(self, screen_width, screen_height):
         window_size = (screen_width, screen_height)
         self.screen = pygame.display.set_mode(window_size)
+        if self.data["AWDS"] == True:
+            self.K_UP = pygame.K_w
+            self.K_DOWN = pygame.K_s
+            self.K_LEFT = pygame.K_a
+            self.K_RIGHT = pygame.K_d
+            self.AWDS = True
+            self.data["AWDS"] = True
+        else: 
+            self.K_UP = pygame.K_UP
+            self.K_DOWN = pygame.K_DOWN
+            self.K_LEFT = pygame.K_LEFT
+            self.K_RIGHT = pygame.K_RIGHT
+            self.AWDS = False
+            self.data["AWDS"] = False
                 
         #메뉴 상수
         menu_flag = 0
@@ -106,9 +135,9 @@ class Setting():
                     self.running = False
                     
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
+                    if event.key == self.K_UP:
                         menu_flag -= 1
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key == self.K_DOWN:
                         menu_flag += 1
                     elif event.key == 13:
                         if menu_flag == 0:
@@ -130,37 +159,53 @@ class Setting():
                             time.sleep(0.3)
                             main.main(self.data["size"][0], self.data["size"][1], self.color_blind_mode)
                             
-                        elif menu_flag == 3: 
+                        elif menu_flag == 3:
+                            if self.AWDS == False:
+                                self.K_UP = pygame.K_w
+                                self.K_DOWN = pygame.K_s
+                                self.K_LEFT = pygame.K_a
+                                self.K_RIGHT = pygame.K_d
+                                self.AWDS = True
+                                self.data["AWDS"] = True
+                            else: 
+                                self.K_UP = pygame.K_UP
+                                self.K_DOWN = pygame.K_DOWN
+                                self.K_LEFT = pygame.K_LEFT
+                                self.K_RIGHT = pygame.K_RIGHT
+                                self.AWDS = False
+                                self.data["AWDS"] = False
+                            
+                        elif menu_flag == 4: 
                             self.save_game()
                             self.running = False
                             
-                        elif menu_flag == 4:
+                        elif menu_flag == 5:
                             window_size = self.screen_sizes[0]
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size1")
                             self.data["size"] = window_size
-                        elif menu_flag == 5:
+                        elif menu_flag == 6:
                             window_size = self.screen_sizes[1]
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size2")
                             self.data["size"] = window_size
 
-                        elif menu_flag == 6:
+                        elif menu_flag == 7:
                             window_size = self.screen_sizes[2]
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size3")
                             self.data["size"] = window_size
 
-                        elif menu_flag == 7:
+                        elif menu_flag == 8:
                             window_size = self.screen_sizes[3]
                             screen = pygame.display.set_mode(window_size)
                             self.reposition(screen)
                             print("size4") 
                             self.data["size"] = window_size
-                menu_flag %= 8        
+                menu_flag %= 9
                     
                     
                     
@@ -183,27 +228,30 @@ class Setting():
             if self.back_text_rect.collidepoint(mouse_pos) or menu_flag == 2:
                 self.back_text_surface = self.font.render("Go Back", True, "red")
             else: self.back_text_surface = self.font.render("Go Back", True, "white")
+            
+            if self.controls_text_rect.collidepoint(mouse_pos) or menu_flag == 3:
+                self.controls_text_surface = self.font.render("Controls(AWSD)", True, "red")
+            else: self.controls_text_surface = self.font.render("Controls(AWSD)", True, "white")
 
-            if self.exit_text_rect.collidepoint(mouse_pos) or menu_flag == 3:
+            if self.exit_text_rect.collidepoint(mouse_pos) or menu_flag == 4:
                 self.exit_text_surface = self.font.render("Exit", True, "red")
             else: self.exit_text_surface = self.font.render("Exit", True, "white")
 
 
 
-
-            if self.size1_text_rect.collidepoint(mouse_pos) or menu_flag == 4:
+            if self.size1_text_rect.collidepoint(mouse_pos) or menu_flag == 5:
                 self.size1_text_surface = self.screen_sizes_font.render("size1", True, "red")
             else: self.size1_text_surface = self.screen_sizes_font.render("size1", True, "white")
 
-            if self.size2_text_rect.collidepoint(mouse_pos) or menu_flag == 5:
+            if self.size2_text_rect.collidepoint(mouse_pos) or menu_flag == 6:
                 self.size2_text_surface = self.screen_sizes_font.render("size2", True, "red")
             else: self.size2_text_surface = self.screen_sizes_font.render("size2", True, "white")
             
-            if self.size3_text_rect.collidepoint(mouse_pos) or menu_flag == 6:
+            if self.size3_text_rect.collidepoint(mouse_pos) or menu_flag == 7:
                 self.size3_text_surface = self.screen_sizes_font.render("size3", True, "red")
             else: self.size3_text_surface = self.screen_sizes_font.render("size3", True, "white")
             
-            if self.size4_text_rect.collidepoint(mouse_pos) or menu_flag == 7:
+            if self.size4_text_rect.collidepoint(mouse_pos) or menu_flag == 8:
                 self.size4_text_surface = self.screen_sizes_font.render("size4", True, "red")
             else: self.size4_text_surface = self.screen_sizes_font.render("size4", True, "white")
 
@@ -226,7 +274,23 @@ class Setting():
                 self.save_game()
                 time.sleep(0.3)
                 main.main(self.data["size"][0], self.data["size"][1],self.color_blind_mode)
-                
+
+            elif self.controls_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
+                if self.AWDS == False:
+                    self.K_UP = pygame.K_w
+                    self.K_DOWN = pygame.K_s
+                    self.K_LEFT = pygame.K_a
+                    self.K_RIGHT = pygame.K_d
+                    self.AWDS = True
+                    self.data["AWDS"] = True
+                else: 
+                    self.K_UP = pygame.K_UP
+                    self.K_DOWN = pygame.K_DOWN
+                    self.K_LEFT = pygame.K_LEFT
+                    self.K_RIGHT = pygame.K_RIGHT
+                    self.AWDS = False
+                    self.data["AWDS"] = False
+                       
 
             elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
                 self.save_game()
@@ -264,6 +328,7 @@ class Setting():
             self.screen.blit(self.game_title, self.game_title_rect)
             self.screen.blit(self.blind_text_surface, self.blind_text_rect)
             self.screen.blit(self.default_text_surface, self.default_text_rect)
+            self.screen.blit(self.controls_text_surface, self.controls_text_rect)
             self.screen.blit(self.back_text_surface, self.back_text_rect)
             self.screen.blit(self.exit_text_surface, self.exit_text_rect)
 
@@ -280,6 +345,9 @@ class Setting():
             
 
     def reposition(self, screen):
+        start_y = 0.4 # 메뉴 출력 시작 y값
+        interval = 0.12 # 메뉴 간격
+    
         self.font = pygame.font.SysFont("arial", screen.get_size()[0]//20, True)
         self.screen_sizes_font = pygame.font.SysFont("arial", screen.get_size()[0]//40, True)
 
@@ -291,24 +359,29 @@ class Setting():
         self.blind_text_surface = self.font.render("Color Blind Mode",True, 'white')
         self.blind_text_rect = self.blind_text_surface.get_rect()
         self.blind_text_rect.centerx = screen.get_rect().centerx
-        self.blind_text_rect.y = screen.get_size()[1] / 2.4
+        self.blind_text_rect.y = screen.get_size()[1] * start_y
 
         self.default_text_surface = self.font.render("Default Setting",True, 'white')
         self.default_text_rect = self.default_text_surface.get_rect()
         self.default_text_rect.centerx = screen.get_rect().centerx
-        self.default_text_rect.y = screen.get_size()[1] / 1.714
+        self.default_text_rect.y = screen.get_size()[1] * (start_y + interval)
 
         self.back_text_surface = self.font.render("Go Back",True, 'white')
         self.back_text_rect = self.back_text_surface.get_rect()
         self.back_text_rect.centerx = screen.get_rect().centerx
-        self.back_text_rect.y = screen.get_size()[1] / 1.333
+        self.back_text_rect.y = screen.get_size()[1] * (start_y + interval * 2)
+        
+        self.controls_text_surface = self.font.render("Controls(AWSD)",True, 'white')
+        self.controls_text_rect = self.controls_text_surface.get_rect()
+        self.controls_text_rect.centerx = screen.get_rect().centerx
+        self.controls_text_rect.y = screen.get_size()[1] * (start_y + interval * 3)
+
 
         self.exit_text_surface = self.font.render("Exit",True, 'white')
-        self.exit_text_rect = self.back_text_surface.get_rect()
+        self.exit_text_rect = self.exit_text_surface.get_rect()
         self.exit_text_rect.centerx = screen.get_rect().centerx
-        self.exit_text_rect.x = screen.get_size()[0] / 2.222
-        self.exit_text_rect.y = screen.get_size()[1] / 1.111
-
+        self.exit_text_rect.y = screen.get_size()[1] * (start_y + interval * 4)
+        
 
 
         self.size1_text_surface = self.screen_sizes_font.render("size1",True, 'white')
