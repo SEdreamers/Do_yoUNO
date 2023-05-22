@@ -220,10 +220,10 @@ class Game:
         
                
         if self.skip: # 시작 카드가 skip 카드인 경우
-            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
+            self.GameUI.display(self.players, self.turn_num-1, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, None)
             self.skip = False
         else:
-            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
+            self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, None)
         
         try: 
             with open('game_data.json','w') as play_data_file: 
@@ -330,7 +330,7 @@ class Game:
         self.clicked_uno = []
         fps = 500
         while self.running:
-            count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player) # 타이머 시간 업데이트
+            count_down = self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, None) # 타이머 시간 업데이트
             
             if count_down <= 0: # 제한 시간 내에 카드를 내지 못한 경우
                 start_time = pygame.time.get_ticks()
@@ -637,7 +637,7 @@ class Game:
                     
 
     def auto_handling(self):     ## 자동으로 카드 가져가거나 내도록
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player) # 타이머 안뜨게 화면 업데이트
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, None) # 타이머 안뜨게 화면 업데이트
         
         self.set_random_delay()
         start_time2 = pygame.time.get_ticks()
@@ -768,7 +768,7 @@ class Game:
 
     #  is responsible for rendering the current game state to the screen, including drawing game objects
     def render(self):
-        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player)
+        self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, None)
         self.skip = False
 
     def set_random_delay(self):
