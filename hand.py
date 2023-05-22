@@ -30,7 +30,7 @@ class Hand:
                 if card:
                     self.cards.append(card)
         elif region == "D":
-            for _ in range(5):      ## 처음 주어지는 카드 수
+            for _ in range(8):      ## 처음 주어지는 카드 수
                 card = self.deck.pop()
                 if card:
                     self.cards.append(card)
