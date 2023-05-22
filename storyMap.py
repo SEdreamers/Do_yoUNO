@@ -8,6 +8,11 @@ import json
 
 class StoryMap:
     def __init__(self, screen_width, screen_height):
+        self.K_UP = pygame.K_w
+        self.K_DOWN = pygame.K_s
+        self.K_LEFT = pygame.K_a
+        self.K_RIGHT = pygame.K_d
+        
         self.menu_flag = 0
         # 화면 크기 설정
         self.screen_width = screen_width
@@ -217,16 +222,16 @@ class StoryMap:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if not self.selected: # 지역 선택
-                    if event.key == pygame.K_UP:
+                    if event.key == self.K_UP:
                         self.current_region -= 1
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key == self.K_DOWN:
                         self.current_region += 1
                     elif event.key == 13: # enter
                         self.selected = True
                 else: # start, back 선택
-                    if event.key == pygame.K_LEFT:
+                    if event.key == self.K_LEFT:
                         self.menu_flag -= 1
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == self.K_RIGHT:
                         self.menu_flag += 1
                     elif event.key == 13: # enter
                         if self.menu_flag == 0: # start
@@ -328,6 +333,18 @@ class StoryMap:
             data = json.load(game_file)
             self.color = data['color_blind_mode']     ## 저장된 값 불러오기. 
             self.size = data["size"]
+            
+            if data["AWDS"] == True:
+                self.K_UP = pygame.K_w
+                self.K_DOWN = pygame.K_s
+                self.K_LEFT = pygame.K_a
+                self.K_RIGHT = pygame.K_d
+            else: 
+                self.K_UP = pygame.K_UP
+                self.K_DOWN = pygame.K_DOWN
+                self.K_LEFT = pygame.K_LEFT
+                self.K_RIGHT = pygame.K_RIGHT
+
         ## region 클릭
         if self.mouse_click:
             if self.regionA_rect.collidepoint(mouse_pos) and len(self.unlocked_regions):
