@@ -66,14 +66,17 @@ class Game:
         background_image = pygame.transform.scale(background_image, self.screen_size)     
         self.running = True
 
+        self.skip_flag = 0
         self.deck = Deck(self.screen_size[0], self.screen_size[1])
         
-        self.achv_index = None
+        
+        self.achv_index = None # 게임 도중 팝업으로 띄울 달성 업적 index
         self.tech_use_cnt = 0 # 기술카드 사용 횟수
         self.achv1_comp = False # 업적1 달성 팝업 띄운적이 있는지
         self.achv2_comp = False # 업적2 달성 팝업 띄운적이 있는지
         self.other_clicked_uno_first = False # 다른 플레이어가 uno버튼을 먼저 클릭했는지
         self.comp_achv_list = [] # 게임 오버 시 띄울 달성 업적 리스트
+        self.turn_cnt = 0
        
         # combo
         self.combo = 0
@@ -135,11 +138,14 @@ class Game:
         self.lst = self.firstDeck.showlist()
         self.top_card = self.deck.pop()  
 
+        self.players_num = len(self.players)
 
         # 시작 카드(top_card) 동작 처리
         if self.top_card.value == 'skip':
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
             self.skip = True
+            if self.turn_num % self.players_num == 0: # 마지막 턴 플레이어 skip 시
+                self.turn_cnt += 1
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
         elif self.top_card.value == 'draw2' or self.top_card.value == 'draw4':
@@ -208,7 +214,6 @@ class Game:
         except: 
             print("No file created yet!")    
 
-        self.turn_num = 0
         while self.running:
             # Human turn인지 Computer turn인지 구분
             if self.turn_num == 0: # Human turn
@@ -259,10 +264,16 @@ class Game:
                         self.set_achv_date(0)
                     else:
                         pass
-                    
+                    if self.turn_cnt <= 10: # 10턴 승리(업적) 달성
+                        self.set_achv_date(3)
+
+                    if self.turn_cnt <= 20: # 20턴 승리(업적) 달성
+                        self.set_achv_date(4)
+                        
                     if not self.card_picked: # 픽0 승리(업적) 달성
                         self.set_achv_date(5)
-                        
+                    if self.other_clicked_uno_first: # UNO 승리(업적) 달성
+                        self.set_achv_date(6)
                     if self.tech_use_cnt == 0: # 기술0 승리(업적) 달성
                         self.set_achv_date(11)
                         
@@ -292,6 +303,8 @@ class Game:
             # combo true일 때는 turn 안 넘기기
             if self.combo == 0:           
                 # turn 전환
+                if (self.turn_num + 1) % self.players_num == 0: # 한 턴이 완전히 진행된 경우
+                    self.turn_cnt += 1
                 if not self.reverse:
                     self.turn_num += 1
                     if self.turn_num >= len(self.players):
@@ -781,6 +794,8 @@ class Game:
             self.turn_num = self.top_card.skip_action(self.turn_num, len(self.players), self.reverse)
             self.skip = True
             self.skip_flag += 1
+            if self.turn_num % self.players_num == 0: # 마지막 턴 플레이어 skip 시
+                self.turn_cnt += 1
             
         elif self.top_card.value == 'reverse':
             self.reverse = self.top_card.reverse_action(self.reverse)
