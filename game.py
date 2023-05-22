@@ -182,27 +182,30 @@ class Game:
         
         self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
-
+        
         # 실행중이던 게임을 딕셔너리 형태로 저장
-        self.data = {
-            # "running_time": ,
-            # "human_hand": list(map(str,self.players[0].hand.cards)),  
-            # ##사람 손에 있는 카드  ## self.players[0].hand.cards      리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다. 
-            # "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
-            # "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
-            # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
-            # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
+        self.game_data = {
         }
-        self.save_play()
         
     def save_play(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         with open('game_data.json','w') as game_data_file: 
-            json.dump(self.data, game_data_file)    
+            json.dump(self.game_data, game_data_file)    
 
-    def run(self):
+    def run(self, pause=False):
         pygame.init()
-                            
+        
+        if pause == True:
+            with open('game_data.json') as game_file:
+                self.game_data = json.load(game_file)
+                if self.game_data != {}:
+                            self.players[0].hand.cards = self.str_to_card_obj("human_hand")
+                            for i in range(1, len(self.players)):
+                                self.players[i].hand.cards = self.str_to_card_obj(f"computer{i}_hand")
+        else:
+            self.game_data = {}
+            self.save_play()
+                                        
         with open('setting_data.json') as game_file:
                             data = json.load(game_file)
                             tvol = data["Total_Volume"]
@@ -221,11 +224,13 @@ class Game:
         else:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
         
+        '''
         try: 
             with open('game_data.json','w') as play_data_file: 
                 json.dump(self.data, play_data_file)
         except: 
             print("No file created yet!")    
+        '''
 
         while self.running:
             # Human turn인지 Computer turn인지 구분
@@ -392,6 +397,7 @@ class Game:
                 else:
                     GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
+                    self.game_data = {}
                     self.save_play()
                     self.running = False
                 # keyboard handling
@@ -399,18 +405,55 @@ class Game:
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
                         game_paused = True
-                        # pygame.mixer.music.pause()    ##잠시 음악 중단 - 넣을 필요 없음(setting들어가서 볼륨 얼마나 조절되는지 확인하기 위해;)
-
-                        # font = pygame.font.SysFont("arial", self.screen_width // 40, True)
-                        # surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
-                        # text_surface = font.render("Setting", True, (255, 0, 0))
-                        # surface.fill((255, 255, 255))
-                        # surface.blit(text_surface, (surface.get_width() / 3, surface.get_height() / 8))
-                        # self.screen.blit(surface, (size[0] / 6, size[1] / 6))
-                        # pygame.display.update()
-                        # pygame.time.delay(15000)
-
+                        print(len(self.players))
+                        print(self.players)
+                        if len(self.players) == 6:
+                            self.game_data = {
+                                "start_time": self.start_time,
+                                "human_hand": list(map(str,self.players[0].hand.cards)),
+                                # ##사람 손에 있는 카드  ## self.players[0].hand.cards
+                                "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
+                                "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
+                                "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
+                                "computer4_hand": list(map(str,self.players[4].hand.cards)), ## 컴퓨터 손에 있는 카드 
+                                "computer5_hand": list(map(str,self.players[5].hand.cards)) ## 컴퓨터 손에 있는 카드
+                            }
+                        elif len(self.players) == 5:
+                            self.game_data = {
+                                "start_time": self.start_time,
+                                "human_hand": list(map(str,self.players[0].hand.cards)),
+                                # ##사람 손에 있는 카드  ## self.players[0].hand.cards
+                                "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
+                                "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
+                                "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
+                                "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
+                            }
+                        elif len(self.players) == 4:
+                            self.game_data = {
+                                "start_time": self.start_time,
+                                "human_hand": list(map(str,self.players[0].hand.cards)),
+                                "computer1_hand": list(map(str,self.players[1].hand.cards)), 
+                                "computer2_hand": list(map(str,self.players[2].hand.cards)), 
+                                "computer3_hand": list(map(str,self.players[3].hand.cards)) 
+                            }
+                        elif len(self.players) == 3:
+                            self.game_data = {
+                                "start_time": self.start_time,
+                                "human_hand": list(map(str,self.players[0].hand.cards)),
+                                "computer1_hand": list(map(str,self.players[1].hand.cards)), 
+                                "computer2_hand": list(map(str,self.players[2].hand.cards))  
+                            }
+                        elif len(self.players) == 2:
+                            self.game_data = {
+                                "start_time": self.start_time,
+                                "human_hand": list(map(str,self.players[0].hand.cards)),
+                                "computer1_hand": list(map(str,self.players[1].hand.cards)) 
+                            }
+                            
+                
+                        self.save_play()
                         self.set.run(self.screen_width, self.screen_height)
+
                         
                     elif event.key == pygame.K_q:
                         self.running = False
@@ -536,9 +579,11 @@ class Game:
                         while play:
                             for event in pygame.event.get():
                                     if event.type == pygame.QUIT:
-                                        self.save_play()
                                         play = False
+                                        self.game_data = {}
+                                        self.save_play()        
                                         self.running = False
+
                             if count_down <= 0: # 제한 시간 내에 카드를 내지 못한 경우
                                 start_time = pygame.time.get_ticks()
                                 self.players[self.turn_num].hand.cards.append(self.deck.pop()) # 카드 한장 강제 부여
@@ -690,7 +735,10 @@ class Game:
                 if event.type == pygame.QUIT:
                     with open('game_data.json','w') as play_data_file: 
                         json.dump(self.data, play_data_file)
+                    self.game_data = {}
+                    self.save_play()
                     self.running = False
+                    
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
                     if self.uno_rect.collidepoint(pos): # uno 버튼이 클릭된 경우
@@ -859,6 +907,15 @@ class Game:
                     json.dump(data, acheivement_data_file)
                 return True # 달성한 적이 없는 경우
         return False # 이미 달성한 경우
+    
+    def str_to_card_obj(self, player):
+        card_data = []
+        if self.game_data[player] != None:
+            for i in range(len(self.game_data[player])):
+                print(self.game_data[player][i])
+                color, value = self.game_data[player][i].split('_', 1)
+                card_data.append(Card(value, color, self.screen_size[0], self.screen_size[1]))
+        return card_data
 
 '''
 self.back_card 는 뒷면 그려진 카드 뭉치

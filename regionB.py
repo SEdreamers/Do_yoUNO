@@ -192,7 +192,7 @@ class Game:
             json.dump(self.data, game_data_file)    
     
 
-    def run(self):
+    def run(self, pause=False):
         pygame.init()
     
         

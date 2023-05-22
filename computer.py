@@ -46,11 +46,16 @@ class Computer(Player):
         self.skip_icon = pygame.image.load("images/skip.png")
         self.skip_icon = pygame.transform.scale(self.skip_icon, (self.computer_width / 4, self.computer_width / 4))
         self.skip_rect = self.skip_icon.get_rect()
+        self.region = region
 
 
 
 
         font = pygame.font.SysFont("arial", self.screen_size[0]//40, True)
+        
+        self.cName = font.render(f"Computer{i}",True,'GREEN')
+        self.cName_rect = self.cName.get_rect()
+                    
         # create computer name 
         self.c1name = font.render(self.data["c1name"],True,'GREEN')      ## 이름 받는 부분
         self.c1name_rect = self.c1name.get_rect()
@@ -79,25 +84,28 @@ class Computer(Player):
         N = Player.count_cards(self)
         for x in range(N):
             self.screen.blit(self.backcard_image,(computer_x+ x*self.computer_height*0.1, computer_y + i * self.computer_height))
-
         
-        # 컴퓨터 이름 화면에 띄우는 부분. 
-        if self.data["unclicked_list"][i] == 0 :
-            self.c1name_rect.x, self.c1name_rect.y = computer_x, i * self.computer_height
-            self.screen.blit(self.c1name,self.c1name_rect)
-        elif self.data["unclicked_list"][i] == 1:
-            self.c2name_rect.x, self.c2name_rect.y = computer_x, i * self.computer_height
-            self.screen.blit(self.c2name,self.c2name_rect)
-        elif self.data["unclicked_list"][i] == 2:
-            self.c3name_rect.x, self.c3name_rect.y = computer_x, i * self.computer_height
-            self.screen.blit(self.c3name,self.c3name_rect)
-        elif self.data["unclicked_list"][i] == 3:
-            self.c4name_rect.x, self.c4name_rect.y = computer_x, i * self.computer_height
-            self.screen.blit(self.c4name,self.c4name_rect)
-        elif self.data["unclicked_list"][i] == 4:
-            self.c5name_rect.x, self.c5name_rect.y = computer_x, i * self.computer_height
-            self.screen.blit(self.c5name,self.c5name_rect)
 
+        if self.region == 'E' or self.region == 'A':
+            # 컴퓨터 이름 화면에 띄우는 부분. 
+            if self.data["unclicked_list"][i] == 0 :
+                self.c1name_rect.x, self.c1name_rect.y = computer_x, i * self.computer_height
+                self.screen.blit(self.c1name,self.c1name_rect)
+            elif self.data["unclicked_list"][i] == 1:
+                self.c2name_rect.x, self.c2name_rect.y = computer_x, i * self.computer_height
+                self.screen.blit(self.c2name,self.c2name_rect)
+            elif self.data["unclicked_list"][i] == 2:
+                self.c3name_rect.x, self.c3name_rect.y = computer_x, i * self.computer_height
+                self.screen.blit(self.c3name,self.c3name_rect)
+            elif self.data["unclicked_list"][i] == 3:
+                self.c4name_rect.x, self.c4name_rect.y = computer_x, i * self.computer_height
+                self.screen.blit(self.c4name,self.c4name_rect)
+            elif self.data["unclicked_list"][i] == 4:
+                self.c5name_rect.x, self.c5name_rect.y = computer_x, i * self.computer_height
+                self.screen.blit(self.c5name,self.c5name_rect)
+        else:
+            self.cName_rect.x, self.cName_rect.y = computer_x, i * self.computer_height
+            self.screen.blit(self.cName, self.cName_rect)
 
         
             
