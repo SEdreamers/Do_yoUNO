@@ -167,15 +167,7 @@ class Game:
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
 
         # 실행중이던 게임을 딕셔너리 형태로 저장
-        self.data = {
-            # "running_time": ,
-            # "human_hand": list(map(str,self.players[0].hand.cards)),  
-            # ##사람 손에 있는 카드  ## self.players[0].hand.cards      리스트에 있는 element값들은 모두 <class 'card.Card'> 형이다. 
-            # "computer1_hand": list(map(str,self.players[1].hand.cards)), ## 컴퓨터 손에 있는 카드
-            # "computer2_hand": list(map(str,self.players[2].hand.cards)), ## 컴퓨터 손에 있는 카드
-            # "computer3_hand": list(map(str,self.players[3].hand.cards)), ## 컴퓨터 손에 있는 카드
-            # "computer4_hand": list(map(str,self.players[4].hand.cards)) ## 컴퓨터 손에 있는 카드
-        }
+        self.game_data = {}
         self.save_play()
         
     def save_play(self):
@@ -386,6 +378,7 @@ class Game:
                 else:
                     GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
+                    game_data = {}
                     self.save_play()
                     self.running = False
                 # keyboard handling
@@ -530,6 +523,7 @@ class Game:
                         while play:
                             for event in pygame.event.get():
                                     if event.type == pygame.QUIT:
+                                        game_data = {}
                                         self.save_play()
                                         play = False
                                         self.running = False
@@ -682,8 +676,7 @@ class Game:
             
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
-                    with open('game_data.json','w') as play_data_file: 
-                        json.dump(self.data, play_data_file)
+                    self.game_data = {}
                     self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
