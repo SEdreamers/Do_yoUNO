@@ -183,7 +183,7 @@ class Game:
         with open('game_data.json','w') as game_data_file: 
             json.dump(self.data, game_data_file)    
 
-    def run(self):
+    def run(self, pause=False):
         pygame.init()
                             
         with open('setting_data.json') as game_file:

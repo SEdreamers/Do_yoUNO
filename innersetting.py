@@ -208,7 +208,7 @@ class Setting():
                             time.sleep(0.3)
                             play = game.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)
                             self.save_game()
-                            play.run()
+                            play.run(True)
 
                             
                         elif menu_flag == 3: 
@@ -307,7 +307,7 @@ class Setting():
                 time.sleep(0.3)
                 play = game.Game(window_size[0], window_size[1],self.color_blind_mode,len(self.players)-1)
                 self.save_game()
-                play.run()
+                play.run(True)
                 
 
             elif self.exit_text_rect.collidepoint(mouse_pos) and mouse_click[0]:
