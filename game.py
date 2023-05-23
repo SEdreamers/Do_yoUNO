@@ -223,14 +223,6 @@ class Game:
             self.skip = False
         else:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, self.achv_index)
-        
-        '''
-        try: 
-            with open('game_data.json','w') as play_data_file: 
-                json.dump(self.data, play_data_file)
-        except: 
-            print("No file created yet!")    
-        '''
 
         while self.running:
             # Human turn인지 Computer turn인지 구분

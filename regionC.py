@@ -163,6 +163,8 @@ class Game:
         
         self.back_card_pos = [self.screen_size[0] * 0.2, self.screen_size[1] * 0.2]
         self.top_card_pos = [self.screen_size[0] * 0.4, self.screen_size[1] * 0.2]
+        
+        self.game_data = {}
 
 
 
@@ -187,12 +189,22 @@ class Game:
     def save_play(self):
         # 실행중이던 세팅 설정을 딕셔너리 형태로 저장
         with open('game_data.json','w') as game_data_file: 
-            json.dump(self.data, game_data_file)    
+            json.dump(self.game_data, game_data_file)    
     
 
     def run(self, pause=False):
         pygame.init()
-    
+
+        if pause == True:
+            with open('game_data.json') as game_file:
+                self.game_data = json.load(game_file)
+                if self.game_data != {}:
+                            self.players[0].hand.cards = self.str_to_card_obj("human_hand")
+                            for i in range(1, len(self.players)):
+                                self.players[i].hand.cards = self.str_to_card_obj(f"computer{i}_hand")
+        else:
+            self.game_data = {}
+            self.save_play()
         
 
                             
@@ -225,16 +237,6 @@ class Game:
             self.skip = False
         else:
             self.GameUI.display(self.players, self.turn_num, self.top_card, self.back_card, self.reverse, self.skip, self.start_time, self.clicked_uno_player, None)
-        
-        try: 
-            with open('game_data.json','w') as play_data_file: 
-                json.dump(self.data, play_data_file)
-        except: 
-            print("No file created yet!")    
-    
-
-
-
             
 
         self.turn_num = 0
@@ -359,6 +361,7 @@ class Game:
                 else:
                     GameUI.exit_flag = 0
                 if event.type == pygame.QUIT:
+                    self.game_data = {}
                     self.save_play()
                     self.running = False
                 # keyboard handling
@@ -366,21 +369,13 @@ class Game:
                     if event.key == pygame.K_ESCAPE: 
                         print("Pause!")
                         game_paused = True
-                        # pygame.mixer.music.pause()    ##잠시 음악 중단 - 넣을 필요 없음(setting들어가서 볼륨 얼마나 조절되는지 확인하기 위해;)
-                        
-
-
-                        
-
-                        # font = pygame.font.SysFont("arial", self.screen_width // 40, True)
-                        # surface = pygame.Surface((size[0] / 1.5, size[1] / 1.5))
-                        # text_surface = font.render("Setting", True, (255, 0, 0))
-                        # surface.fill((255, 255, 255))
-                        # surface.blit(text_surface, (surface.get_width() / 3, surface.get_height() / 8))
-                        # self.screen.blit(surface, (size[0] / 6, size[1] / 6))
-                        # pygame.display.update()
-                        # pygame.time.delay(15000)
-
+                        self.game_data = {
+                                "start_time": self.start_time,
+                                "human_hand": list(map(str,self.players[0].hand.cards)),
+                                "computer1_hand": list(map(str,self.players[1].hand.cards)), 
+                                "computer2_hand": list(map(str,self.players[2].hand.cards)) 
+                        }
+                        self.save_play()
 
                         self.set.run(self.screen_width, self.screen_height)
 
@@ -511,6 +506,7 @@ class Game:
                         while play:
                             for event in pygame.event.get():
                                     if event.type == pygame.QUIT:
+                                        self.game_data = {}
                                         self.save_play()
                                         play = False
                                         self.running = False
@@ -685,8 +681,8 @@ class Game:
             
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT:
-                    with open('game_data.json','w') as play_data_file: 
-                        json.dump(self.data, play_data_file)
+                    self.game_data = {}
+                    self.save_play()
                     self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     pos = pygame.mouse.get_pos()
@@ -796,7 +792,15 @@ class Game:
                     random_color = random.choice(colors)
                     card.reinit(card.value, random_color, self.screen_width, self.screen_height)
         self.render()
-
+        
+    def str_to_card_obj(self, player):
+        card_data = []
+        if self.game_data[player] != None:
+            for i in range(len(self.game_data[player])):
+                print(self.game_data[player][i])
+                color, value = self.game_data[player][i].split('_', 1)
+                card_data.append(Card(value, color, self.screen_size[0], self.screen_size[1]))
+        return card_data
 
 
 
